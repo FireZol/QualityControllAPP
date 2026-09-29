@@ -170,7 +170,7 @@ table.sheet td.changed, .changed { color: var(--changed); font-weight: 700; }
 .chart-card { margin: 0 0 var(--gap); padding: 8px; }
 svg.chart { width: 100%; height: auto; display: block; }
 .chart .ch-text { font: 12px "Segoe UI", system-ui, Arial, sans-serif; fill: #33414f; }
-.chart .ch-text.end { text-anchor: end; } .chart .ch-text.mid { text-anchor: middle; } .chart .ch-text.small { font-size: 11px; fill: #5d6b7c; }
+.chart .ch-text.start { text-anchor: start; } .chart .ch-text.end { text-anchor: end; } .chart .ch-text.mid { text-anchor: middle; } .chart .ch-text.small { font-size: 11px; fill: #5d6b7c; }
 .chart .ch-grid { stroke: #e1e6ed; stroke-width: 1; }
 .chart .ch-axis { stroke: #7c8896; stroke-width: 1.2; }
 .chart .ch-line { stroke: #14507a; stroke-width: 1.6; }

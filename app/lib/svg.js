@@ -65,7 +65,7 @@ function trendChart({ points, title, xLabels }) {
     const shape = out ? `<path d="M${r1(x)} ${r1(y - 6)} L${r1(x + 6)} ${r1(y + 5)} L${r1(x - 6)} ${r1(y + 5)} Z" class="ch-pt-out"/>` : `<circle cx="${r1(x)}" cy="${r1(y)}" r="3.2" class="ch-pt-${p.verdict === 'ok' ? 'ok' : 'na'}"/>`;
     return `<g>${shape}<title>${h(p.label)}</title></g>`;
   }).join('');
-  const xl = (xLabels || []).map(({ i, text }) => t(xOf(i), y0 + 20, 'ch-text mid', text)).join('');
+  const xl = (xLabels || []).map(({ i, text }) => t(xOf(i), y0 + 20, `ch-text ${n > 1 && i === 0 ? 'start' : n > 1 && i === n - 1 ? 'end' : 'mid'}`, text)).join('');
   return wrap(H, title, `${yAxis(ticks, step, yOf, x0, x1)}<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" class="ch-axis"/>
     ${stepLine('min', 'ch-lim')}${stepLine('max', 'ch-lim')}<path d="${path}" class="ch-line" fill="none"/>${dots}${xl}`);
 }
@@ -82,7 +82,7 @@ function histogramChart({ bins, lo, hi, mean, lsl, usl, title }) {
   const yTop = yt[yt.length - 1];
   const yOf = (c) => y0 - (c / yTop) * (y0 - y1);
   const bars = bins.map((b) => `<rect x="${r1(xOf(b.from) + 1)}" y="${r1(yOf(b.count))}" width="${Math.max(1, r1(xOf(b.to) - xOf(b.from) - 2))}" height="${r1(y0 - yOf(b.count))}" class="ch-bar"><title>${h(`${calc.formatNumber(b.from, 0, 4)} … ${calc.formatNumber(b.to, 0, 4)}: ${b.count}`)}</title></rect>`).join('');
-  const vline = (v, cls, label) => (v === null || v === undefined ? '' : `<line x1="${r1(xOf(v))}" x2="${r1(xOf(v))}" y1="${y1}" y2="${y0}" class="${cls}"/>${t(xOf(v) + 4, y1 + 12, 'ch-text small', label)}`);
+  const vline = (v, cls, label) => (v === null || v === undefined ? '' : `<line x1="${r1(xOf(v))}" x2="${r1(xOf(v))}" y1="${y1}" y2="${y0}" class="${cls}"/>${xOf(v) > x1 - 60 ? t(xOf(v) - 4, y1 + 12, 'ch-text small end', label) : t(xOf(v) + 4, y1 + 12, 'ch-text small', label)}`);
   const xLabels = xt.filter((v) => v >= lo - 1e-9 && v <= hi + 1e-9).map((v) => t(xOf(v), y0 + 20, 'ch-text mid', fmtTick(v, xs))).join('');
   return wrap(H, title, `${yAxis(yt, ys, yOf, x0, x1)}${bars}<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" class="ch-axis"/>${xLabels}
     ${vline(lsl, 'ch-lim', 'min')}${vline(usl, 'ch-lim', 'max')}${vline(mean, 'ch-mean', 'x̄')}`);

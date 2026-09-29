@@ -40,7 +40,7 @@ module.exports = function register(app) {
       label: `${displayDateTime(r.created_at)} · #${r.record_no} · ${r.machine} · ${valueFmt(quantity)(r.value)} (${verdictText(r.verdict)})`,
     }));
     const idx = rows.length <= 1 ? [0] : [0, Math.floor((rows.length - 1) / 2), rows.length - 1];
-    const xLabels = [...new Set(idx)].map((i) => ({ i, text: displayDateTime(rows[i].created_at).slice(0, 10) }));
+    const xLabels = [...new Set(idx)].map((i) => ({ i, text: displayDateTime(rows[i].created_at) }));
     const lim = A.latestLimits(rows);
     const s = A.stats(rows.map((r) => r.value), lim.min, lim.max);
     const out = rows.filter((r) => r.verdict === 'sub' || r.verdict === 'peste').length;
