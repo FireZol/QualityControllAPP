@@ -1,0 +1,77 @@
+[
+ {
+  "nivel": "A",
+  "unde": "Flexibil cl.5 25 mm² (4 x 0.412 + 4 x 0.420)",
+  "problema": "Ø fir 0.413 > maxim IEC 0.41"
+ },
+ {
+  "nivel": "A",
+  "unde": "Sârmă Al 10 RM",
+  "problema": "masă 26.93–27.17 kg/km vs teoretic 3.87 kg/km pentru Ø 1.35 (pare masa întregului conductor: 7 × 3.87 = 27.08)"
+ },
+ {
+  "nivel": "A",
+  "unde": "Sârmă Cu Multifilar 10RM",
+  "problema": "masă 12.27–12.38 kg/km vs teoretic 11.98 kg/km pentru Ø 1.31"
+ },
+ {
+  "nivel": "A",
+  "unde": "Sârmă Cu Unifilar 16RM",
+  "problema": "masă 19.26–19.4 kg/km vs teoretic 18.85 kg/km pentru Ø 1.643"
+ },
+ {
+  "nivel": "B",
+  "unde": "Funie Al 300 SM 120°",
+  "problema": "Ø fir 3.15 ≠ anexa A6 (300 RM/SM 90°/72°/120°: 3.13)"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Al 16 RM",
+  "problema": "toleranță Ø asimetrică: −0.005 / +0.000 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Al 185 RM",
+  "problema": "toleranță Ø asimetrică: −0.006 / +0.000 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Al 70 RM",
+  "problema": "toleranță Ø asimetrică: −0.006 / +0.000 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Multifilar 10RE",
+  "problema": "toleranță Ø asimetrică: −0.020 / +0.002 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Multifilar 16RE",
+  "problema": "toleranță Ø asimetrică: −0.000 / +0.008 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Unifilar 10RE",
+  "problema": "toleranță Ø asimetrică: −0.000 / +0.008 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Unifilar 10RM",
+  "problema": "toleranță Ø asimetrică: −0.000 / +0.006 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Unifilar 16RE",
+  "problema": "toleranță Ø asimetrică: −0.000 / +0.008 mm"
+ },
+ {
+  "nivel": "B",
+  "unde": "Sârmă Cu Unifilar 16RM",
+  "problema": "toleranță Ø asimetrică: −0.006 / +0.023 mm"
+ },
+ {
+  "nivel": "C",
+  "unde": "Funie Al 50 RM",
+  "problema": "marcat RM (nu RMC): dacă nu este compactat, IEC cere minim 19 fire circular; cu 7 fire este conform doar ca și compactat (minim 6)"
+ }
+]

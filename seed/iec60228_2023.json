@@ -1,0 +1,1012 @@
+{
+ "source": "IEC 60228:2023 (licensed copy ROMCAB SA)",
+ "unit": "ohm/km at 20C",
+ "class1": [
+  {
+   "sectiune": 0.5,
+   "cu_simplu": 36.0,
+   "cu_acoperit": 36.7,
+   "al": null
+  },
+  {
+   "sectiune": 0.75,
+   "cu_simplu": 24.5,
+   "cu_acoperit": 24.8,
+   "al": null
+  },
+  {
+   "sectiune": 1,
+   "cu_simplu": 18.1,
+   "cu_acoperit": 18.2,
+   "al": null
+  },
+  {
+   "sectiune": 1.5,
+   "cu_simplu": 12.1,
+   "cu_acoperit": 12.2,
+   "al": null
+  },
+  {
+   "sectiune": 2.5,
+   "cu_simplu": 7.41,
+   "cu_acoperit": 7.56,
+   "al": null
+  },
+  {
+   "sectiune": 4,
+   "cu_simplu": 4.61,
+   "cu_acoperit": 4.7,
+   "al": null
+  },
+  {
+   "sectiune": 6,
+   "cu_simplu": 3.08,
+   "cu_acoperit": 3.11,
+   "al": null
+  },
+  {
+   "sectiune": 10,
+   "cu_simplu": 1.83,
+   "cu_acoperit": 1.84,
+   "al": 3.08
+  },
+  {
+   "sectiune": 16,
+   "cu_simplu": 1.15,
+   "cu_acoperit": 1.16,
+   "al": 1.91
+  },
+  {
+   "sectiune": 25,
+   "cu_simplu": 0.727,
+   "cu_acoperit": null,
+   "al": 1.2
+  },
+  {
+   "sectiune": 35,
+   "cu_simplu": 0.524,
+   "cu_acoperit": null,
+   "al": 0.868
+  },
+  {
+   "sectiune": 50,
+   "cu_simplu": 0.387,
+   "cu_acoperit": null,
+   "al": 0.641
+  },
+  {
+   "sectiune": 70,
+   "cu_simplu": 0.268,
+   "cu_acoperit": null,
+   "al": 0.443
+  },
+  {
+   "sectiune": 95,
+   "cu_simplu": 0.193,
+   "cu_acoperit": null,
+   "al": 0.32
+  },
+  {
+   "sectiune": 120,
+   "cu_simplu": 0.153,
+   "cu_acoperit": null,
+   "al": 0.253
+  },
+  {
+   "sectiune": 150,
+   "cu_simplu": 0.124,
+   "cu_acoperit": null,
+   "al": 0.206
+  },
+  {
+   "sectiune": 185,
+   "cu_simplu": 0.101,
+   "cu_acoperit": null,
+   "al": 0.164
+  },
+  {
+   "sectiune": 240,
+   "cu_simplu": 0.0775,
+   "cu_acoperit": null,
+   "al": 0.125
+  },
+  {
+   "sectiune": 300,
+   "cu_simplu": 0.062,
+   "cu_acoperit": null,
+   "al": 0.1
+  },
+  {
+   "sectiune": 400,
+   "cu_simplu": 0.0465,
+   "cu_acoperit": null,
+   "al": 0.0778
+  },
+  {
+   "sectiune": 500,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0605
+  },
+  {
+   "sectiune": 630,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0469
+  },
+  {
+   "sectiune": 800,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0367
+  },
+  {
+   "sectiune": 1000,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0291
+  },
+  {
+   "sectiune": 1200,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0247
+  },
+  {
+   "sectiune": 1400,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0212
+  },
+  {
+   "sectiune": 1600,
+   "cu_simplu": null,
+   "cu_acoperit": null,
+   "al": 0.0186
+  }
+ ],
+ "class1_notes": {
+  "al_10_35": "Al 10-35 mm2 doar circulare (6.1.1 c)",
+  "cu_25_400": "vezi nota 6.1.1 b)",
+  "al_95_300": "4 conductoare sector asamblate: R max = 25% din R componentă"
+ },
+ "class2": [
+  {
+   "sectiune": 0.5,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 36.0,
+   "cu_acoperit": 36.7,
+   "al": null
+  },
+  {
+   "sectiune": 0.75,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 24.5,
+   "cu_acoperit": 24.8,
+   "al": null
+  },
+  {
+   "sectiune": 1,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 18.1,
+   "cu_acoperit": 18.2,
+   "al": null
+  },
+  {
+   "sectiune": 1.5,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": 6,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 12.1,
+   "cu_acoperit": 12.2,
+   "al": null
+  },
+  {
+   "sectiune": 2.5,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": 6,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 7.41,
+   "cu_acoperit": 7.56,
+   "al": null
+  },
+  {
+   "sectiune": 4,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": 6,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 4.61,
+   "cu_acoperit": 4.7,
+   "al": null
+  },
+  {
+   "sectiune": 6,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": null
+    },
+    "compactat": {
+     "cu": 6,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 3.08,
+   "cu_acoperit": 3.11,
+   "al": null
+  },
+  {
+   "sectiune": 10,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": 7
+    },
+    "compactat": {
+     "cu": 6,
+     "al": 6
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 1.83,
+   "cu_acoperit": 1.84,
+   "al": 3.08
+  },
+  {
+   "sectiune": 16,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": 7
+    },
+    "compactat": {
+     "cu": 6,
+     "al": 6
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 1.15,
+   "cu_acoperit": 1.16,
+   "al": 1.91
+  },
+  {
+   "sectiune": 25,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": 7
+    },
+    "compactat": {
+     "cu": 6,
+     "al": 6
+    },
+    "profilat": {
+     "cu": 6,
+     "al": 6
+    }
+   },
+   "cu_simplu": 0.727,
+   "cu_acoperit": 0.734,
+   "al": 1.2
+  },
+  {
+   "sectiune": 35,
+   "fire_min": {
+    "circular": {
+     "cu": 7,
+     "al": 7
+    },
+    "compactat": {
+     "cu": 6,
+     "al": 6
+    },
+    "profilat": {
+     "cu": 6,
+     "al": 6
+    }
+   },
+   "cu_simplu": 0.524,
+   "cu_acoperit": 0.529,
+   "al": 0.868
+  },
+  {
+   "sectiune": 50,
+   "fire_min": {
+    "circular": {
+     "cu": 19,
+     "al": 19
+    },
+    "compactat": {
+     "cu": 6,
+     "al": 6
+    },
+    "profilat": {
+     "cu": 6,
+     "al": 6
+    }
+   },
+   "cu_simplu": 0.387,
+   "cu_acoperit": 0.391,
+   "al": 0.641
+  },
+  {
+   "sectiune": 70,
+   "fire_min": {
+    "circular": {
+     "cu": 19,
+     "al": 19
+    },
+    "compactat": {
+     "cu": 12,
+     "al": 12
+    },
+    "profilat": {
+     "cu": 12,
+     "al": 12
+    }
+   },
+   "cu_simplu": 0.268,
+   "cu_acoperit": 0.27,
+   "al": 0.443
+  },
+  {
+   "sectiune": 95,
+   "fire_min": {
+    "circular": {
+     "cu": 19,
+     "al": 19
+    },
+    "compactat": {
+     "cu": 15,
+     "al": 15
+    },
+    "profilat": {
+     "cu": 15,
+     "al": 15
+    }
+   },
+   "cu_simplu": 0.193,
+   "cu_acoperit": 0.195,
+   "al": 0.32
+  },
+  {
+   "sectiune": 120,
+   "fire_min": {
+    "circular": {
+     "cu": 37,
+     "al": 37
+    },
+    "compactat": {
+     "cu": 18,
+     "al": 15
+    },
+    "profilat": {
+     "cu": 18,
+     "al": 15
+    }
+   },
+   "cu_simplu": 0.153,
+   "cu_acoperit": 0.154,
+   "al": 0.253
+  },
+  {
+   "sectiune": 150,
+   "fire_min": {
+    "circular": {
+     "cu": 37,
+     "al": 37
+    },
+    "compactat": {
+     "cu": 18,
+     "al": 15
+    },
+    "profilat": {
+     "cu": 18,
+     "al": 15
+    }
+   },
+   "cu_simplu": 0.124,
+   "cu_acoperit": 0.126,
+   "al": 0.206
+  },
+  {
+   "sectiune": 185,
+   "fire_min": {
+    "circular": {
+     "cu": 37,
+     "al": 37
+    },
+    "compactat": {
+     "cu": 30,
+     "al": 30
+    },
+    "profilat": {
+     "cu": 30,
+     "al": 30
+    }
+   },
+   "cu_simplu": 0.0991,
+   "cu_acoperit": 0.1,
+   "al": 0.164
+  },
+  {
+   "sectiune": 240,
+   "fire_min": {
+    "circular": {
+     "cu": 37,
+     "al": 37
+    },
+    "compactat": {
+     "cu": 34,
+     "al": 30
+    },
+    "profilat": {
+     "cu": 34,
+     "al": 30
+    }
+   },
+   "cu_simplu": 0.0754,
+   "cu_acoperit": 0.0762,
+   "al": 0.125
+  },
+  {
+   "sectiune": 300,
+   "fire_min": {
+    "circular": {
+     "cu": 61,
+     "al": 61
+    },
+    "compactat": {
+     "cu": 34,
+     "al": 30
+    },
+    "profilat": {
+     "cu": 34,
+     "al": 30
+    }
+   },
+   "cu_simplu": 0.0601,
+   "cu_acoperit": 0.0607,
+   "al": 0.1
+  },
+  {
+   "sectiune": 400,
+   "fire_min": {
+    "circular": {
+     "cu": 61,
+     "al": 61
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": 53,
+     "al": 53
+    }
+   },
+   "cu_simplu": 0.047,
+   "cu_acoperit": 0.0475,
+   "al": 0.0778
+  },
+  {
+   "sectiune": 500,
+   "fire_min": {
+    "circular": {
+     "cu": 61,
+     "al": 61
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": 53,
+     "al": 53
+    }
+   },
+   "cu_simplu": 0.0366,
+   "cu_acoperit": 0.0369,
+   "al": 0.0605
+  },
+  {
+   "sectiune": 630,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": 53,
+     "al": 53
+    }
+   },
+   "cu_simplu": 0.0283,
+   "cu_acoperit": 0.0286,
+   "al": 0.0469
+  },
+  {
+   "sectiune": 800,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0221,
+   "cu_acoperit": 0.0224,
+   "al": 0.0367
+  },
+  {
+   "sectiune": 1000,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0176,
+   "cu_acoperit": 0.0177,
+   "al": 0.0291
+  },
+  {
+   "sectiune": 1200,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0151,
+   "cu_acoperit": 0.0151,
+   "al": 0.0247
+  },
+  {
+   "sectiune": 1400,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0129,
+   "cu_acoperit": 0.0129,
+   "al": 0.0212
+  },
+  {
+   "sectiune": 1600,
+   "fire_min": {
+    "circular": {
+     "cu": 91,
+     "al": 91
+    },
+    "compactat": {
+     "cu": 53,
+     "al": 53
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0113,
+   "cu_acoperit": 0.0113,
+   "al": 0.0186
+  },
+  {
+   "sectiune": 1800,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0101,
+   "cu_acoperit": 0.0101,
+   "al": 0.0165
+  },
+  {
+   "sectiune": 2000,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.009,
+   "cu_acoperit": 0.009,
+   "al": 0.0149
+  },
+  {
+   "sectiune": 2500,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0072,
+   "cu_acoperit": 0.0072,
+   "al": 0.0119
+  },
+  {
+   "sectiune": 3000,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.006,
+   "cu_acoperit": 0.006,
+   "al": 0.0099
+  },
+  {
+   "sectiune": 3200,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0056,
+   "cu_acoperit": 0.0056,
+   "al": 0.0093
+  },
+  {
+   "sectiune": 3500,
+   "fire_min": {
+    "circular": {
+     "cu": null,
+     "al": null
+    },
+    "compactat": {
+     "cu": null,
+     "al": null
+    },
+    "profilat": {
+     "cu": null,
+     "al": null
+    }
+   },
+   "cu_simplu": 0.0051,
+   "cu_acoperit": 0.0051,
+   "al": 0.0085
+  }
+ ],
+ "class5_cu": [
+  {
+   "sectiune": 0.5,
+   "d_max_fir": 0.21,
+   "cu_simplu": 39.0,
+   "cu_acoperit": 40.1
+  },
+  {
+   "sectiune": 0.75,
+   "d_max_fir": 0.21,
+   "cu_simplu": 26.0,
+   "cu_acoperit": 26.7
+  },
+  {
+   "sectiune": 1,
+   "d_max_fir": 0.21,
+   "cu_simplu": 19.5,
+   "cu_acoperit": 20.0
+  },
+  {
+   "sectiune": 1.5,
+   "d_max_fir": 0.26,
+   "cu_simplu": 13.3,
+   "cu_acoperit": 13.7
+  },
+  {
+   "sectiune": 2.5,
+   "d_max_fir": 0.26,
+   "cu_simplu": 7.98,
+   "cu_acoperit": 8.21
+  },
+  {
+   "sectiune": 4,
+   "d_max_fir": 0.31,
+   "cu_simplu": 4.95,
+   "cu_acoperit": 5.09
+  },
+  {
+   "sectiune": 6,
+   "d_max_fir": 0.31,
+   "cu_simplu": 3.3,
+   "cu_acoperit": 3.39
+  },
+  {
+   "sectiune": 10,
+   "d_max_fir": 0.41,
+   "cu_simplu": 1.91,
+   "cu_acoperit": 1.95
+  },
+  {
+   "sectiune": 16,
+   "d_max_fir": 0.41,
+   "cu_simplu": 1.21,
+   "cu_acoperit": 1.24
+  },
+  {
+   "sectiune": 25,
+   "d_max_fir": 0.41,
+   "cu_simplu": 0.78,
+   "cu_acoperit": 0.795
+  },
+  {
+   "sectiune": 35,
+   "d_max_fir": 0.41,
+   "cu_simplu": 0.554,
+   "cu_acoperit": 0.565
+  },
+  {
+   "sectiune": 50,
+   "d_max_fir": 0.41,
+   "cu_simplu": 0.386,
+   "cu_acoperit": 0.393
+  },
+  {
+   "sectiune": 70,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.272,
+   "cu_acoperit": 0.277
+  },
+  {
+   "sectiune": 95,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.206,
+   "cu_acoperit": 0.21
+  },
+  {
+   "sectiune": 120,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.161,
+   "cu_acoperit": 0.164
+  },
+  {
+   "sectiune": 150,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.129,
+   "cu_acoperit": 0.132
+  },
+  {
+   "sectiune": 185,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.106,
+   "cu_acoperit": 0.108
+  },
+  {
+   "sectiune": 240,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.0801,
+   "cu_acoperit": 0.0817
+  },
+  {
+   "sectiune": 300,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.0641,
+   "cu_acoperit": 0.0654
+  },
+  {
+   "sectiune": 400,
+   "d_max_fir": 0.51,
+   "cu_simplu": 0.0486,
+   "cu_acoperit": 0.0495
+  },
+  {
+   "sectiune": 500,
+   "d_max_fir": 0.61,
+   "cu_simplu": 0.0384,
+   "cu_acoperit": 0.0391
+  },
+  {
+   "sectiune": 630,
+   "d_max_fir": 0.61,
+   "cu_simplu": 0.0287,
+   "cu_acoperit": 0.0292
+  }
+ ],
+ "kt_table_A1": {
+  "0": 1.087,
+  "1": 1.082,
+  "2": 1.078,
+  "3": 1.073,
+  "4": 1.068,
+  "5": 1.064,
+  "6": 1.059,
+  "7": 1.055,
+  "8": 1.05,
+  "9": 1.046,
+  "10": 1.042,
+  "11": 1.037,
+  "12": 1.033,
+  "13": 1.029,
+  "14": 1.025,
+  "15": 1.02,
+  "16": 1.016,
+  "17": 1.012,
+  "18": 1.008,
+  "19": 1.004,
+  "20": 1.0,
+  "21": 0.996,
+  "22": 0.992,
+  "23": 0.988,
+  "24": 0.984,
+  "25": 0.98,
+  "26": 0.977,
+  "27": 0.973,
+  "28": 0.969,
+  "29": 0.965,
+  "30": 0.962,
+  "31": 0.958,
+  "32": 0.954,
+  "33": 0.951,
+  "34": 0.947,
+  "35": 0.943,
+  "36": 0.94,
+  "37": 0.936,
+  "38": 0.933,
+  "39": 0.929,
+  "40": 0.926
+ }
+}

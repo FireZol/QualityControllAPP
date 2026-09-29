@@ -1,0 +1,4432 @@
+{
+ "sarma_trefilata": [
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "6 RE",
+   "sectiune": 6,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "2.81",
+   "d_nom": 2.78,
+   "d_min": 2.777,
+   "d_max": 2.783,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 16.35,
+   "masa_max_kg_km": 16.42,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "10 RE",
+   "sectiune": 10,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "3.45",
+   "d_nom": 3.43,
+   "d_min": 3.427,
+   "d_max": 3.433,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 24.9,
+   "masa_max_kg_km": 24.99,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "10 RM",
+   "sectiune": 10,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.368",
+   "d_nom": 1.35,
+   "d_min": 1.348,
+   "d_max": 1.352,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 26.93,
+   "masa_max_kg_km": 27.17,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "16 RM",
+   "sectiune": 16,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.65",
+   "d_nom": 1.64,
+   "d_min": 1.635,
+   "d_max": 1.64,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 5.7,
+   "masa_max_kg_km": 5.75,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "16 RE",
+   "sectiune": 16,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "4.37",
+   "d_nom": 4.34,
+   "d_min": 4.338,
+   "d_max": 4.342,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 39.98,
+   "masa_max_kg_km": 40.09,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "25 RM",
+   "sectiune": 25,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.09",
+   "d_nom": 2.07,
+   "d_min": 2.068,
+   "d_max": 2.072,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 9.12,
+   "masa_max_kg_km": 9.17,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "35 RM",
+   "sectiune": 35,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.49",
+   "d_nom": 2.47,
+   "d_min": 2.468,
+   "d_max": 2.472,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 12.92,
+   "masa_max_kg_km": 12.96,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "35 SM 72°",
+   "sectiune": 35,
+   "forme": [
+    "SM72"
+   ],
+   "filiera": "2.49",
+   "d_nom": 2.46,
+   "d_min": 2.457,
+   "d_max": 2.463,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 12.8,
+   "masa_max_kg_km": 12.86,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "35 SM 90°/120°",
+   "sectiune": 35,
+   "forme": [
+    "SM90",
+    "SM120"
+   ],
+   "filiera": "2.556",
+   "d_nom": 2.54,
+   "d_min": 2.537,
+   "d_max": 2.543,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 13.65,
+   "masa_max_kg_km": 13.71,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "50 RM, 72°",
+   "sectiune": 50,
+   "forme": [
+    "RM",
+    "SM72"
+   ],
+   "filiera": "2.861",
+   "d_nom": 2.84,
+   "d_min": 2.837,
+   "d_max": 2.843,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 17.07,
+   "masa_max_kg_km": 17.14,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "50 SM 90°/120°",
+   "sectiune": 50,
+   "forme": [
+    "SM90",
+    "SM120"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.91,
+   "d_min": 2.907,
+   "d_max": 2.913,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 17.92,
+   "masa_max_kg_km": 17.99,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "54.6 RM",
+   "sectiune": 54.6,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.18",
+   "d_nom": 3.15,
+   "d_min": 3.147,
+   "d_max": 3.153,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 21,
+   "masa_max_kg_km": 21.08,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "70 RM",
+   "sectiune": 70,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.75",
+   "d_nom": 2.74,
+   "d_min": 2.734,
+   "d_max": 2.74,
+   "nr_fire_conductor": 12,
+   "masa_min_kg_km": 15.9,
+   "masa_max_kg_km": 15.96,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "70 SM 72°/120°",
+   "sectiune": 70,
+   "forme": [
+    "SM72",
+    "SM120"
+   ],
+   "filiera": "2.7",
+   "d_nom": 2.68,
+   "d_min": 2.677,
+   "d_max": 2.683,
+   "nr_fire_conductor": 12,
+   "masa_min_kg_km": 15.23,
+   "masa_max_kg_km": 15.26,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "70 SM 90°",
+   "sectiune": 70,
+   "forme": [
+    "SM90"
+   ],
+   "filiera": "2.68",
+   "d_nom": 2.66,
+   "d_min": 2.657,
+   "d_max": 2.663,
+   "nr_fire_conductor": 12,
+   "masa_min_kg_km": 14.93,
+   "masa_max_kg_km": 15.04,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "95 RM/SM 72°/120°",
+   "sectiune": 95,
+   "forme": [
+    "RM",
+    "SM72",
+    "SM120"
+   ],
+   "filiera": "2.5",
+   "d_nom": 2.48,
+   "d_min": 2.477,
+   "d_max": 2.483,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 13.01,
+   "masa_max_kg_km": 13.07,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "95 SM 90°",
+   "sectiune": 95,
+   "forme": [
+    "SM90"
+   ],
+   "filiera": "2.49",
+   "d_nom": 2.47,
+   "d_min": 2.467,
+   "d_max": 2.473,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 12.87,
+   "masa_max_kg_km": 12.93,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "120 RM/SM 72°/120°",
+   "sectiune": 120,
+   "forme": [
+    "RM",
+    "SM72",
+    "SM120"
+   ],
+   "filiera": "2.81",
+   "d_nom": 2.78,
+   "d_min": 2.777,
+   "d_max": 2.783,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 16.35,
+   "masa_max_kg_km": 16.42,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "120 SM 90°",
+   "sectiune": 120,
+   "forme": [
+    "SM90"
+   ],
+   "filiera": "2.79",
+   "d_nom": 2.77,
+   "d_min": 2.767,
+   "d_max": 2.773,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 16.24,
+   "masa_max_kg_km": 16.31,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "150 RM/SM 72°/120°",
+   "sectiune": 150,
+   "forme": [
+    "RM",
+    "SM72",
+    "SM120"
+   ],
+   "filiera": "3.1",
+   "d_nom": 3.08,
+   "d_min": 3.078,
+   "d_max": 3.082,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 20.09,
+   "masa_max_kg_km": 20.14,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "150 SM 90°",
+   "sectiune": 150,
+   "forme": [
+    "SM90"
+   ],
+   "filiera": "3.1",
+   "d_nom": 3.08,
+   "d_min": 3.078,
+   "d_max": 3.082,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 20.09,
+   "masa_max_kg_km": 20.14,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "185 RM",
+   "sectiune": 185,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.75",
+   "d_nom": 2.74,
+   "d_min": 2.734,
+   "d_max": 2.74,
+   "nr_fire_conductor": 30,
+   "masa_min_kg_km": 15.89,
+   "masa_max_kg_km": 15.96,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "185 SM 72°/90°/120°",
+   "sectiune": 185,
+   "forme": [
+    "SM72",
+    "SM90",
+    "SM120"
+   ],
+   "filiera": "2.77",
+   "d_nom": 2.75,
+   "d_min": 2.747,
+   "d_max": 2.753,
+   "nr_fire_conductor": 30,
+   "masa_min_kg_km": 16.12,
+   "masa_max_kg_km": 16.19,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "185 SM drept",
+   "sectiune": 185,
+   "forme": [
+    "SMD"
+   ],
+   "filiera": "2.55",
+   "d_nom": 2.52,
+   "d_min": 2.517,
+   "d_max": 2.523,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 13.43,
+   "masa_max_kg_km": 13.5,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "240 RM/SM 72°",
+   "sectiune": 240,
+   "forme": [
+    "RM",
+    "SM72"
+   ],
+   "filiera": "2.84",
+   "d_nom": 2.82,
+   "d_min": 2.817,
+   "d_max": 2.823,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 16.83,
+   "masa_max_kg_km": 16.9,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "240 SM 120°",
+   "sectiune": 240,
+   "forme": [
+    "SM120"
+   ],
+   "filiera": "2.885",
+   "d_nom": 2.86,
+   "d_min": 2.857,
+   "d_max": 2.863,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 17.31,
+   "masa_max_kg_km": 17.38,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "240 SM 90°",
+   "sectiune": 240,
+   "forme": [
+    "SM90"
+   ],
+   "filiera": "2.86",
+   "d_nom": 2.84,
+   "d_min": 2.837,
+   "d_max": 2.843,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 17.07,
+   "masa_max_kg_km": 17.14,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "300 RM/SM 90°/72°/120°",
+   "sectiune": 300,
+   "forme": [
+    "RM",
+    "SM90",
+    "SM72",
+    "SM120"
+   ],
+   "filiera": "3.15",
+   "d_nom": 3.13,
+   "d_min": 3.127,
+   "d_max": 3.133,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 20.74,
+   "masa_max_kg_km": 20.81,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "400 RM/SM 90°/120°",
+   "sectiune": 400,
+   "forme": [
+    "RM",
+    "SM90",
+    "SM120"
+   ],
+   "filiera": "2.79",
+   "d_nom": 2.77,
+   "d_min": 2.768,
+   "d_max": 2.772,
+   "nr_fire_conductor": 61,
+   "masa_min_kg_km": 16.25,
+   "masa_max_kg_km": 16.29,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "500 RM",
+   "sectiune": 500,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.15",
+   "d_nom": 3.12,
+   "d_min": 3.117,
+   "d_max": 3.123,
+   "nr_fire_conductor": 61,
+   "masa_min_kg_km": 20.6,
+   "masa_max_kg_km": 20.68,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "destinatie": null,
+   "denumire": "630 RM",
+   "sectiune": 630,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.57",
+   "d_nom": 3.55,
+   "d_min": 3.547,
+   "d_max": 3.553,
+   "nr_fire_conductor": 61,
+   "masa_min_kg_km": 26.68,
+   "masa_max_kg_km": 26.77,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 2/3 Aluminiu"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "1.5",
+   "sectiune": 1.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.385",
+   "d_nom": 1.355,
+   "d_min": 1.352,
+   "d_max": 1.358,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 12.77,
+   "masa_max_kg_km": 12.88,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "2.5",
+   "sectiune": 2.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.76",
+   "d_nom": 1.732,
+   "d_min": 1.729,
+   "d_max": 1.735,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 20.89,
+   "masa_max_kg_km": 21.03,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "4",
+   "sectiune": 4,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "2.233",
+   "d_nom": 2.192,
+   "d_min": 2.188,
+   "d_max": 2.196,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 33.46,
+   "masa_max_kg_km": 33.71,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "6",
+   "sectiune": 6,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "2.72",
+   "d_nom": 2.68,
+   "d_min": 2.676,
+   "d_max": 2.684,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 50.07,
+   "masa_max_kg_km": 50.37,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "10RE",
+   "sectiune": 10,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "3.52",
+   "d_nom": 3.477,
+   "d_min": 3.477,
+   "d_max": 3.485,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 84.52,
+   "masa_max_kg_km": 84.91,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "10RM",
+   "sectiune": 10,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.345",
+   "d_nom": 1.316,
+   "d_min": 1.316,
+   "d_max": 1.322,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 12.11,
+   "masa_max_kg_km": 12.22,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "16RE",
+   "sectiune": 16,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "4.43",
+   "d_nom": 4.382,
+   "d_min": 4.382,
+   "d_max": 4.39,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 134.23,
+   "masa_max_kg_km": 134.72,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Unifilar",
+   "denumire": "16RM",
+   "sectiune": 16,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.678",
+   "d_nom": 1.643,
+   "d_min": 1.637,
+   "d_max": 1.666,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 19.26,
+   "masa_max_kg_km": 19.4,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "1.5",
+   "sectiune": 1.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.394",
+   "d_nom": 1.37,
+   "d_min": 1.368,
+   "d_max": 1.372,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 13.15,
+   "masa_max_kg_km": 13.27,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Armate",
+   "denumire": "1.5",
+   "sectiune": 1.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.405",
+   "d_nom": 1.38,
+   "d_min": 1.378,
+   "d_max": 1.382,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 13.35,
+   "masa_max_kg_km": 13.46,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "2.5",
+   "sectiune": 2.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.765",
+   "d_nom": 1.735,
+   "d_min": 1.732,
+   "d_max": 1.738,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 21.11,
+   "masa_max_kg_km": 21.26,
+   "modificat": "galben",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Armate",
+   "denumire": "2.5",
+   "sectiune": 2.5,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "1.79",
+   "d_nom": 1.76,
+   "d_min": 1.758,
+   "d_max": 1.762,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 21.69,
+   "masa_max_kg_km": 21.84,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "4",
+   "sectiune": 4,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "2.233",
+   "d_nom": 2.2,
+   "d_min": 2.197,
+   "d_max": 2.203,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 33.97,
+   "masa_max_kg_km": 34.15,
+   "modificat": "galben",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "6",
+   "sectiune": 6,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "2.727",
+   "d_nom": 2.69,
+   "d_min": 2.687,
+   "d_max": 2.693,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 50.81,
+   "masa_max_kg_km": 51.04,
+   "modificat": "galben",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "10RE",
+   "sectiune": 10,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "3.55",
+   "d_nom": 3.5,
+   "d_min": 3.48,
+   "d_max": 3.502,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 85.63,
+   "masa_max_kg_km": 86.02,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "10RM",
+   "sectiune": 10,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.332",
+   "d_nom": 1.31,
+   "d_min": 1.305,
+   "d_max": 1.315,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 12.27,
+   "masa_max_kg_km": 12.38,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "16RE",
+   "sectiune": 16,
+   "forme": [
+    "RE"
+   ],
+   "filiera": "4.472",
+   "d_nom": 4.4,
+   "d_min": 4.4,
+   "d_max": 4.408,
+   "nr_fire_conductor": 1,
+   "masa_min_kg_km": 135.33,
+   "masa_max_kg_km": 135.82,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "16RM",
+   "sectiune": 16,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.697",
+   "d_nom": 1.66,
+   "d_min": 1.658,
+   "d_max": 1.662,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 19.38,
+   "masa_max_kg_km": 19.52,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "25 RM",
+   "sectiune": 25,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.13",
+   "d_nom": 2.09,
+   "d_min": 2.087,
+   "d_max": 2.093,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 30.47,
+   "masa_max_kg_km": 30.71,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "35 RM",
+   "sectiune": 35,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.515",
+   "d_nom": 2.47,
+   "d_min": 2.467,
+   "d_max": 2.473,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 42.61,
+   "masa_max_kg_km": 42.88,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "35 SM",
+   "sectiune": 35,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.575",
+   "d_nom": 2.52,
+   "d_min": 2.517,
+   "d_max": 2.524,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 44.38,
+   "masa_max_kg_km": 44.63,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "50 RM",
+   "sectiune": 50,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.87,
+   "d_min": 2.865,
+   "d_max": 2.875,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 57.99,
+   "masa_max_kg_km": 58.27,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "50 SM",
+   "sectiune": 50,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.985",
+   "d_nom": 2.94,
+   "d_min": 2.937,
+   "d_max": 2.944,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 60.43,
+   "masa_max_kg_km": 60.72,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "70 RM",
+   "sectiune": 70,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.225",
+   "d_nom": 2.18,
+   "d_min": 2.175,
+   "d_max": 2.185,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 33.35,
+   "masa_max_kg_km": 33.54,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "70 SM",
+   "sectiune": 70,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.21",
+   "d_nom": 2.17,
+   "d_min": 2.167,
+   "d_max": 2.174,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 33.05,
+   "masa_max_kg_km": 33.23,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "95 RM",
+   "sectiune": 95,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.55",
+   "d_nom": 2.51,
+   "d_min": 2.507,
+   "d_max": 2.513,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 44.23,
+   "masa_max_kg_km": 44.44,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "95 SM",
+   "sectiune": 95,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.57",
+   "d_nom": 2.52,
+   "d_min": 2.517,
+   "d_max": 2.524,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 44.38,
+   "masa_max_kg_km": 44.63,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "120 RM",
+   "sectiune": 120,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.855",
+   "d_nom": 2.82,
+   "d_min": 2.815,
+   "d_max": 2.825,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 55.99,
+   "masa_max_kg_km": 56.27,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "120 SM",
+   "sectiune": 120,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.88,
+   "d_min": 2.875,
+   "d_max": 2.885,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 57.91,
+   "masa_max_kg_km": 58.31,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "150 RM",
+   "sectiune": 150,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.18",
+   "d_nom": 3.12,
+   "d_min": 3.117,
+   "d_max": 3.124,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 68.07,
+   "masa_max_kg_km": 68.37,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "150 SM",
+   "sectiune": 150,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "3.18",
+   "d_nom": 3.14,
+   "d_min": 3.135,
+   "d_max": 3.145,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 69.38,
+   "masa_max_kg_km": 69.69,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "185 RM",
+   "sectiune": 185,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.556",
+   "d_nom": 2.52,
+   "d_min": 2.517,
+   "d_max": 2.524,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 44.38,
+   "masa_max_kg_km": 44.63,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "185 SM",
+   "sectiune": 185,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.58",
+   "d_nom": 2.54,
+   "d_min": 2.537,
+   "d_max": 2.544,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 45.09,
+   "masa_max_kg_km": 45.34,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "240 RM",
+   "sectiune": 240,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.86,
+   "d_min": 2.857,
+   "d_max": 2.864,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 57.18,
+   "masa_max_kg_km": 57.46,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "240 SM",
+   "sectiune": 240,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.86,
+   "d_min": 2.857,
+   "d_max": 2.864,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 57.18,
+   "masa_max_kg_km": 57.46,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "300 RM",
+   "sectiune": 300,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.25",
+   "d_nom": 3.18,
+   "d_min": 3.177,
+   "d_max": 3.184,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 70.71,
+   "masa_max_kg_km": 71.02,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "300 SM",
+   "sectiune": 300,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "3.25",
+   "d_nom": 3.18,
+   "d_min": 3.177,
+   "d_max": 3.184,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 70.71,
+   "masa_max_kg_km": 71.02,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "400 RM",
+   "sectiune": 400,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.855",
+   "d_nom": 2.81,
+   "d_min": 2.807,
+   "d_max": 2.814,
+   "nr_fire_conductor": 61,
+   "masa_min_kg_km": 55.2,
+   "masa_max_kg_km": 55.48,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Cu",
+   "destinatie": "Multifilar",
+   "denumire": "500 RM",
+   "sectiune": 500,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.25",
+   "d_nom": 3.18,
+   "d_min": 3.177,
+   "d_max": 3.184,
+   "nr_fire_conductor": 61,
+   "masa_min_kg_km": 70.71,
+   "masa_max_kg_km": 71.02,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 1/3 Cupru"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "35/6 RM",
+   "sectiune": 35,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.72",
+   "d_nom": 2.7,
+   "d_min": 2.697,
+   "d_max": 2.703,
+   "nr_fire_conductor": 6,
+   "masa_min_kg_km": 15.43,
+   "masa_max_kg_km": 15.5,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "50/8 RM",
+   "sectiune": 50,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.21 / 3.215",
+   "d_nom": 3.2,
+   "d_min": 3.197,
+   "d_max": 3.203,
+   "nr_fire_conductor": 6,
+   "masa_min_kg_km": 21.68,
+   "masa_max_kg_km": 21.76,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "70/12 RM",
+   "sectiune": 70,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "1.874",
+   "d_nom": 1.85,
+   "d_min": 1.847,
+   "d_max": 1.853,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 7.24,
+   "masa_max_kg_km": 7.29,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "95/15 RM",
+   "sectiune": 95,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.11 / 2.13",
+   "d_nom": 2.1,
+   "d_min": 2.097,
+   "d_max": 2.103,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 9.33,
+   "masa_max_kg_km": 9.38,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "120/21 RM",
+   "sectiune": 120,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.45",
+   "d_nom": 2.43,
+   "d_min": 2.427,
+   "d_max": 2.433,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 12.49,
+   "masa_max_kg_km": 12.55,
+   "modificat": "rosu",
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "150/25 RM",
+   "sectiune": 150,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "2.72",
+   "d_nom": 2.7,
+   "d_min": 2.697,
+   "d_max": 2.703,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 15.43,
+   "masa_max_kg_km": 15.5,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "185/32 RM",
+   "sectiune": 185,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.024",
+   "d_nom": 3.0,
+   "d_min": 2.997,
+   "d_max": 3.003,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 19.05,
+   "masa_max_kg_km": 19.13,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "Purtator",
+   "denumire": "240/40 RM",
+   "sectiune": 240,
+   "forme": [
+    "RM"
+   ],
+   "filiera": "3.425 / 3.43",
+   "d_nom": 3.4,
+   "d_min": 3.397,
+   "d_max": 3.403,
+   "nr_fire_conductor": 26,
+   "masa_min_kg_km": 24.48,
+   "masa_max_kg_km": 24.56,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu purtator"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "35 SM",
+   "sectiune": 35,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.57",
+   "d_nom": 2.54,
+   "d_min": 2.537,
+   "d_max": 2.543,
+   "nr_fire_conductor": 7,
+   "masa_min_kg_km": 13.65,
+   "masa_max_kg_km": 13.71,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "50 SM",
+   "sectiune": 50,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.10",
+   "d_nom": 2.07,
+   "d_min": 2.067,
+   "d_max": 2.073,
+   "nr_fire_conductor": 14,
+   "masa_min_kg_km": 9.06,
+   "masa_max_kg_km": 9.11,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "70 SM",
+   "sectiune": 70,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.57",
+   "d_nom": 2.54,
+   "d_min": 2.537,
+   "d_max": 2.543,
+   "nr_fire_conductor": 14,
+   "masa_min_kg_km": 13.65,
+   "masa_max_kg_km": 13.71,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "95 SM",
+   "sectiune": 95,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.55",
+   "d_nom": 2.52,
+   "d_min": 2.517,
+   "d_max": 2.523,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 13.43,
+   "masa_max_kg_km": 13.5,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "120 SM",
+   "sectiune": 120,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.89",
+   "d_nom": 2.86,
+   "d_min": 2.857,
+   "d_max": 2.863,
+   "nr_fire_conductor": 19,
+   "masa_min_kg_km": 17.31,
+   "masa_max_kg_km": 17.38,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "150 SM",
+   "sectiune": 150,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.70",
+   "d_nom": 2.67,
+   "d_min": 2.667,
+   "d_max": 2.673,
+   "nr_fire_conductor": 27,
+   "masa_min_kg_km": 15.08,
+   "masa_max_kg_km": 15.15,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "185 SM",
+   "sectiune": 185,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.84",
+   "d_nom": 2.81,
+   "d_min": 2.807,
+   "d_max": 2.813,
+   "nr_fire_conductor": 30,
+   "masa_min_kg_km": 16.71,
+   "masa_max_kg_km": 16.78,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  },
+  {
+   "material": "Al",
+   "destinatie": "EVN",
+   "denumire": "240 SM",
+   "sectiune": 240,
+   "forme": [
+    "SM"
+   ],
+   "filiera": "2.93",
+   "d_nom": 2.9,
+   "d_min": 2.897,
+   "d_max": 2.903,
+   "nr_fire_conductor": 37,
+   "masa_min_kg_km": 17.8,
+   "masa_max_kg_km": 17.87,
+   "modificat": null,
+   "sursa": "A6 Ed.33 Rev.7 — Conductori rotunzi clasa I-II Cu si Al (23.09.2026), pag. 3/3 Aluminiu EVN"
+  }
+ ],
+ "funie_rigida": [
+  {
+   "material": "Al",
+   "denumire": "35 RM",
+   "sectiune": 35,
+   "forma": "RM",
+   "nr_fire": 7,
+   "d_fir": 2.47,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "d": 7.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 87.1,
+   "masa_max_g_m": 87.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 RM",
+   "sectiune": 50,
+   "forma": "RM",
+   "nr_fire": 7,
+   "d_fir": 2.84,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "d": 8.4
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 117.9,
+   "masa_max_g_m": 118.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "54.6 RM",
+   "sectiune": 54.6,
+   "forma": "RM",
+   "nr_fire": 7,
+   "d_fir": 3.15,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "d": 9.3
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 142.3,
+   "masa_max_g_m": 143.0,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 RMC",
+   "sectiune": 70,
+   "forma": "RMC",
+   "nr_fire": 12,
+   "d_fir": 2.74,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 190,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "d": 9.6
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 170.9,
+   "masa_max_g_m": 171.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "95 RMC",
+   "sectiune": 95,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 2.48,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 90,
+   "diametru_funie": null,
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 236.6,
+   "masa_max_g_m": 237.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "120 RMC",
+   "sectiune": 120,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 2.78,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 230,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 100,
+   "diametru_funie": {
+    "d": 13.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 299.3,
+   "masa_max_g_m": 300.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "150 RMC",
+   "sectiune": 150,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 3.08,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 110,
+   "diametru_funie": {
+    "d": 14.3
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 367.6,
+   "masa_max_g_m": 369.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "185 RMC",
+   "sectiune": 185,
+   "forma": "RMC",
+   "nr_fire": 30,
+   "d_fir": 2.74,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 120,
+   "diametru_funie": {
+    "d": 16.2
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 462.6,
+   "masa_max_g_m": 464.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "240 RMC",
+   "sectiune": 240,
+   "forma": "RMC",
+   "nr_fire": 37,
+   "d_fir": 2.82,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 140,
+   "diametru_funie": {
+    "d": 18.6
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 607.0,
+   "masa_max_g_m": 609.4,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "300 RMC",
+   "sectiune": 300,
+   "forma": "RMC",
+   "nr_fire": 37,
+   "d_fir": 3.13,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "d": 21.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 758.7,
+   "masa_max_g_m": 761.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "400 RMC",
+   "sectiune": 400,
+   "forma": "RMC",
+   "nr_fire": 61,
+   "d_fir": 2.77,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": null
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": 330,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "d": 23.9
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 978.1,
+   "masa_max_g_m": 982.0,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "500 RMC",
+   "sectiune": 500,
+   "forma": "RMC",
+   "nr_fire": 61,
+   "d_fir": 3.12,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 250,
+     "tensionare": null
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": 380,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "d": 27.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 1257.8,
+   "masa_max_g_m": 1262.9,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "630 RMC",
+   "sectiune": 630,
+   "forma": "RMC",
+   "nr_fire": 61,
+   "d_fir": 3.55,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 260,
+     "tensionare": null
+    },
+    "18": {
+     "pas_mm": 330,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": 380,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "d": 30.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 1622.5,
+   "masa_max_g_m": 1629.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "35 SM 72°",
+   "sectiune": 35,
+   "forma": "SM72",
+   "nr_fire": 7,
+   "d_fir": 2.46,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 6.9,
+    "l": 7.9,
+    "text": "6.9 x 7.9"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 87.1,
+   "masa_max_g_m": 87.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "35 SM 90°",
+   "sectiune": 35,
+   "forma": "SM90",
+   "nr_fire": 7,
+   "d_fir": 2.54,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 6.5,
+    "l": 7.8,
+    "text": "6.5 x 7.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 87.1,
+   "masa_max_g_m": 87.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "35 SM 120°",
+   "sectiune": 35,
+   "forma": "SM120",
+   "nr_fire": 7,
+   "d_fir": 2.54,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 5.8,
+    "l": 8.4,
+    "text": "5.8 x 8.4"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 87.1,
+   "masa_max_g_m": 87.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 SM 72°",
+   "sectiune": 50,
+   "forma": "SM72",
+   "nr_fire": 7,
+   "d_fir": 2.84,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 7.8,
+    "l": 9.5,
+    "text": "7.80 x 9.50"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 117.9,
+   "masa_max_g_m": 118.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 SM 90°",
+   "sectiune": 50,
+   "forma": "SM90",
+   "nr_fire": 7,
+   "d_fir": 2.91,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 7.9,
+    "l": 8.4,
+    "text": "7.9 x 8.4"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 117.9,
+   "masa_max_g_m": 118.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 SM 120°",
+   "sectiune": 50,
+   "forma": "SM120",
+   "nr_fire": 7,
+   "d_fir": 2.91,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "18": null,
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 6.8,
+    "l": 9.8,
+    "text": "6.8 x 9.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 117.9,
+   "masa_max_g_m": 118.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 SM 72°",
+   "sectiune": 70,
+   "forma": "SM72",
+   "nr_fire": 12,
+   "d_fir": 2.68,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 9.5,
+    "l": 12.1,
+    "text": "9.5 x 12.1"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 170.9,
+   "masa_max_g_m": 171.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 SM 90°",
+   "sectiune": 70,
+   "forma": "SM90",
+   "nr_fire": 12,
+   "d_fir": 2.66,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 8.9,
+    "l": 12.3,
+    "text": "8.9 x 12.3"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 170.9,
+   "masa_max_g_m": 171.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 SM 120°",
+   "sectiune": 70,
+   "forma": "SM120",
+   "nr_fire": 12,
+   "d_fir": 2.68,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 70,
+   "diametru_funie": {
+    "h": 8.0,
+    "l": 13.5,
+    "text": "8.0 x 13.5"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 170.9,
+   "masa_max_g_m": 171.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "95 SM 72°",
+   "sectiune": 95,
+   "forma": "SM72",
+   "nr_fire": 19,
+   "d_fir": 2.48,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 90,
+   "diametru_funie": {
+    "h": 11.5,
+    "l": 13.2,
+    "text": "11.5 x 13.2"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 236.6,
+   "masa_max_g_m": 237.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "95 SM 90°",
+   "sectiune": 95,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 2.47,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 90,
+   "diametru_funie": {
+    "h": 11.2,
+    "l": 13.7,
+    "text": "11.2 x 13.7"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 236.6,
+   "masa_max_g_m": 237.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "95 SM 120°",
+   "sectiune": 95,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 2.48,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 90,
+   "diametru_funie": {
+    "h": 10.5,
+    "l": 14.8,
+    "text": "10.5 x 14.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 236.6,
+   "masa_max_g_m": 237.6,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "120 SM 72°",
+   "sectiune": 120,
+   "forma": "SM72",
+   "nr_fire": 19,
+   "d_fir": 2.78,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 230,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 100,
+   "diametru_funie": {
+    "h": 13.2,
+    "l": 14.9,
+    "text": "13.2 x 14.9"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 299.3,
+   "masa_max_g_m": 300.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "120 SM 90°",
+   "sectiune": 120,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 2.77,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 230,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 100,
+   "diametru_funie": {
+    "h": 12.9,
+    "l": 15.2,
+    "text": "12.9 x 15.2"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 299.3,
+   "masa_max_g_m": 300.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "120 SM 120°",
+   "sectiune": 120,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 2.78,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 230,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": null
+   },
+   "tensionare_receptie": 100,
+   "diametru_funie": {
+    "h": 12.0,
+    "l": 16.5,
+    "text": "12 x 16.5"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 299.3,
+   "masa_max_g_m": 300.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "150 SM 72°",
+   "sectiune": 150,
+   "forma": "SM72",
+   "nr_fire": 19,
+   "d_fir": 3.08,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 110,
+   "diametru_funie": {
+    "h": 14.0,
+    "l": 17.3,
+    "text": "14 x 17.3"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 367.6,
+   "masa_max_g_m": 369.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "150 SM 90°",
+   "sectiune": 150,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 3.08,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 110,
+   "diametru_funie": {
+    "h": 13.0,
+    "l": 17.0,
+    "text": "13 x 17"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 367.6,
+   "masa_max_g_m": 369.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "150 SM 120°",
+   "sectiune": 150,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 3.08,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 110,
+   "diametru_funie": {
+    "h": 13.5,
+    "l": 18.5,
+    "text": "13.5 x 18.5"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 367.6,
+   "masa_max_g_m": 369.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "185 SM 72°",
+   "sectiune": 185,
+   "forma": "SM72",
+   "nr_fire": 30,
+   "d_fir": 2.75,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 120,
+   "diametru_funie": {
+    "h": 15.5,
+    "l": 18.7,
+    "text": "15.5 x 18.7"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 462.6,
+   "masa_max_g_m": 464.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "185 SM 90°",
+   "sectiune": 185,
+   "forma": "SM90",
+   "nr_fire": 30,
+   "d_fir": 2.75,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 120,
+   "diametru_funie": {
+    "h": 15.2,
+    "l": 19.9,
+    "text": "15.2 x 19.9"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 462.6,
+   "masa_max_g_m": 464.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "185 SM 120°",
+   "sectiune": 185,
+   "forma": "SM120",
+   "nr_fire": 30,
+   "d_fir": 2.75,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 120,
+   "diametru_funie": {
+    "h": 14.2,
+    "l": 20.4,
+    "text": "14.2 x 20.4"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 462.6,
+   "masa_max_g_m": 464.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "240 SM 72°",
+   "sectiune": 240,
+   "forma": "SM72",
+   "nr_fire": 37,
+   "d_fir": 2.82,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 140,
+   "diametru_funie": {
+    "h": 18.3,
+    "l": 21.6,
+    "text": "18.3 x 21.6"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 607.0,
+   "masa_max_g_m": 609.4,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "240 SM 90°",
+   "sectiune": 240,
+   "forma": "SM90",
+   "nr_fire": 37,
+   "d_fir": 2.84,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 280,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 140,
+   "diametru_funie": {
+    "h": 17.7,
+    "l": 22.6,
+    "text": "17.7 x 22.6"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 607.0,
+   "masa_max_g_m": 609.4,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "240 SM 120°",
+   "sectiune": 240,
+   "forma": "SM120",
+   "nr_fire": 37,
+   "d_fir": 2.86,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 140,
+   "diametru_funie": {
+    "h": 16.4,
+    "l": 24.4,
+    "text": "16.4 x 24.4"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 607.0,
+   "masa_max_g_m": 609.4,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "300 SM 72°",
+   "sectiune": 300,
+   "forma": "SM72",
+   "nr_fire": 37,
+   "d_fir": 3.13,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "h": 20.3,
+    "l": 25.3,
+    "text": "20.3 x 25.30"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 758.7,
+   "masa_max_g_m": 761.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "300 SM 90°",
+   "sectiune": 300,
+   "forma": "SM90",
+   "nr_fire": 37,
+   "d_fir": 3.13,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "h": 20.3,
+    "l": 25.3,
+    "text": "20.3 x 25.30"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 758.7,
+   "masa_max_g_m": 761.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "300 SM 120°",
+   "sectiune": 300,
+   "forma": "SM120",
+   "nr_fire": 37,
+   "d_fir": 3.15,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "3-6"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": null,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "h": 18.0,
+    "l": 28.3,
+    "text": "18 x 28.3"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 758.7,
+   "masa_max_g_m": 761.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "400 SM 90°",
+   "sectiune": 400,
+   "forma": "SM90",
+   "nr_fire": 61,
+   "d_fir": 2.77,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": null
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": 330,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "h": 23.9,
+    "l": 29.8,
+    "text": "23.9 x 29.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 978.1,
+   "masa_max_g_m": 982.0,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "400 SM 120°",
+   "sectiune": 400,
+   "forma": "SM120",
+   "nr_fire": 61,
+   "d_fir": 2.77,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "12": {
+     "pas_mm": 240,
+     "tensionare": null
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "3-6"
+    },
+    "24": {
+     "pas_mm": 330,
+     "tensionare": "3-6"
+    }
+   },
+   "tensionare_receptie": 150,
+   "diametru_funie": {
+    "h": 20.8,
+    "l": 32.7,
+    "text": "20.8 x 32.7"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 978.1,
+   "masa_max_g_m": 982.0,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander 1+6+12+18+24 — Aluminiu"
+  },
+  {
+   "material": "Cu",
+   "denumire": "35 RMC",
+   "sectiune": 35,
+   "forma": "RMC",
+   "nr_fire": 7,
+   "d_fir": 2.47,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 120,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": 140,
+   "diametru_funie": {
+    "d": 7.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 294.3,
+   "masa_max_g_m": 295.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "50 RMC",
+   "sectiune": 50,
+   "forma": "RMC",
+   "nr_fire": 7,
+   "d_fir": 2.87,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 140,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": 160,
+   "diametru_funie": {
+    "d": 8.4
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 398.5,
+   "masa_max_g_m": 400.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "70 RMC",
+   "sectiune": 70,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 2.18,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 180,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 180,
+   "diametru_funie": {
+    "d": 9.6
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 576.5,
+   "masa_max_g_m": 578.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "95 RMC",
+   "sectiune": 95,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 2.51,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 200,
+   "diametru_funie": {
+    "d": 11.55
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 800.6,
+   "masa_max_g_m": 803.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "120 RMC",
+   "sectiune": 120,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 2.82,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 230,
+     "tensionare": "13-14"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 220,
+   "diametru_funie": {
+    "d": 13.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 1009.9,
+   "masa_max_g_m": 1013.9,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "150 RMC",
+   "sectiune": 150,
+   "forma": "RMC",
+   "nr_fire": 19,
+   "d_fir": 3.12,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "14-16"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "14-16"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 240,
+   "diametru_funie": {
+    "d": 14.3
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 1246.0,
+   "masa_max_g_m": 1251.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "185 RMC",
+   "sectiune": 185,
+   "forma": "RMC",
+   "nr_fire": 37,
+   "d_fir": 2.52,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "1.6-2.0"
+    }
+   },
+   "tensionare_receptie": 210,
+   "diametru_funie": {
+    "d": 16.2
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 1562.2,
+   "masa_max_g_m": 1568.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "240 RMC",
+   "sectiune": 240,
+   "forma": "RMC",
+   "nr_fire": 37,
+   "d_fir": 2.86,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "13-14"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "1.8-2.2"
+    }
+   },
+   "tensionare_receptie": 230,
+   "diametru_funie": {
+    "d": 18.6
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 2053.3,
+   "masa_max_g_m": 2061.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "300 RMC",
+   "sectiune": 300,
+   "forma": "RMC",
+   "nr_fire": 37,
+   "d_fir": 3.18,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "14-16"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "14-16"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "2.2-2.8"
+    }
+   },
+   "tensionare_receptie": 250,
+   "diametru_funie": {
+    "d": 21.0
+   },
+   "diametru_funie_toleranta": "informativ",
+   "masa_min_g_m": 2576.0,
+   "masa_max_g_m": 2586.3,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "35 SM 90°",
+   "sectiune": 35,
+   "forma": "SM90",
+   "nr_fire": 7,
+   "d_fir": 2.52,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 120,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": null,
+   "diametru_funie": {
+    "h": 6.5,
+    "l": 8.5,
+    "text": "8.50 x 6.50"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 294.3,
+   "masa_max_g_m": 295.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "35 SM 120°",
+   "sectiune": 35,
+   "forma": "SM120",
+   "nr_fire": 7,
+   "d_fir": 2.52,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 120,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": null,
+   "diametru_funie": {
+    "h": 6.5,
+    "l": 8.5,
+    "text": "8.50 x 6.50"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 294.3,
+   "masa_max_g_m": 295.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "50 SM 90°",
+   "sectiune": 50,
+   "forma": "SM90",
+   "nr_fire": 7,
+   "d_fir": 2.94,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 140,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": 180,
+   "diametru_funie": {
+    "h": 7.6,
+    "l": 10.0,
+    "text": "10.0 x 7.60"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 398.5,
+   "masa_max_g_m": 400.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "50 SM 120°",
+   "sectiune": 50,
+   "forma": "SM120",
+   "nr_fire": 7,
+   "d_fir": 2.94,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 140,
+     "tensionare": "12-13"
+    },
+    "12": null,
+    "18": null
+   },
+   "tensionare_receptie": 180,
+   "diametru_funie": {
+    "h": 7.5,
+    "l": 9.5,
+    "text": "9.50 x 7.50"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 398.5,
+   "masa_max_g_m": 400.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "70 SM 90°",
+   "sectiune": 70,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 2.17,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 180,
+   "diametru_funie": {
+    "h": 9.7,
+    "l": 12.5,
+    "text": "12.5 x 9.70"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 576.5,
+   "masa_max_g_m": 578.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "70 SM 120°",
+   "sectiune": 70,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 2.17,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 180,
+   "diametru_funie": {
+    "h": 9.7,
+    "l": 12.5,
+    "text": "12.5 x 9.70"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 576.5,
+   "masa_max_g_m": 578.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "95 SM 90°",
+   "sectiune": 95,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 2.52,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 200,
+   "diametru_funie": {
+    "h": 11.7,
+    "l": 14.4,
+    "text": "14.4 x 11.7"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 800.6,
+   "masa_max_g_m": 803.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "95 SM 120°",
+   "sectiune": 95,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 2.52,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 200,
+   "diametru_funie": {
+    "h": 11.7,
+    "l": 14.4,
+    "text": "14.4 x 11.7"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 800.6,
+   "masa_max_g_m": 803.8,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "120 SM 90°",
+   "sectiune": 120,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 2.88,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "13-14"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 220,
+   "diametru_funie": {
+    "h": 12.8,
+    "l": 16.1,
+    "text": "16.1 x 12.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1009.9,
+   "masa_max_g_m": 1013.9,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "120 SM 120°",
+   "sectiune": 120,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 2.88,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "13-14"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 220,
+   "diametru_funie": {
+    "h": 12.8,
+    "l": 16.1,
+    "text": "16.1 x 12.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1009.9,
+   "masa_max_g_m": 1013.9,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "150 SM 90°",
+   "sectiune": 150,
+   "forma": "SM90",
+   "nr_fire": 19,
+   "d_fir": 3.14,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "21-23"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "19-21"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 240,
+   "diametru_funie": {
+    "h": 14.2,
+    "l": 18.3,
+    "text": "14.2 x 18.30"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1246.0,
+   "masa_max_g_m": 1251.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "150 SM 120°",
+   "sectiune": 150,
+   "forma": "SM120",
+   "nr_fire": 19,
+   "d_fir": 3.14,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "14-16"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "14-16"
+    },
+    "18": null
+   },
+   "tensionare_receptie": 240,
+   "diametru_funie": {
+    "h": 14.8,
+    "l": 18.0,
+    "text": "18.0 x 14.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1246.0,
+   "masa_max_g_m": 1251.1,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "185 SM 90°",
+   "sectiune": 185,
+   "forma": "SM90",
+   "nr_fire": 37,
+   "d_fir": 2.54,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "1.6-2.0"
+    }
+   },
+   "tensionare_receptie": 210,
+   "diametru_funie": {
+    "h": 16.1,
+    "l": 20.6,
+    "text": "20.6 x 16.1"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1562.2,
+   "masa_max_g_m": 1568.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "185 SM 120°",
+   "sectiune": 185,
+   "forma": "SM120",
+   "nr_fire": 37,
+   "d_fir": 2.54,
+   "d_fir_modificat": false,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "12-13"
+    },
+    "12": {
+     "pas_mm": 200,
+     "tensionare": "12-13"
+    },
+    "18": {
+     "pas_mm": 250,
+     "tensionare": "1.6-2.0"
+    }
+   },
+   "tensionare_receptie": 210,
+   "diametru_funie": {
+    "h": 16.1,
+    "l": 20.6,
+    "text": "20.6 x 16.1"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 1562.2,
+   "masa_max_g_m": 1568.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "240 SM 90°",
+   "sectiune": 240,
+   "forma": "SM90",
+   "nr_fire": 37,
+   "d_fir": 2.86,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "13-14"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "1.8-2.2"
+    }
+   },
+   "tensionare_receptie": 230,
+   "diametru_funie": {
+    "h": 18.2,
+    "l": 23.2,
+    "text": "18.2 x 23.2"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 2053.3,
+   "masa_max_g_m": 2061.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "240 SM 120°",
+   "sectiune": 240,
+   "forma": "SM120",
+   "nr_fire": 37,
+   "d_fir": 2.86,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 190,
+     "tensionare": "13-14"
+    },
+    "12": {
+     "pas_mm": 220,
+     "tensionare": "13-14"
+    },
+    "18": {
+     "pas_mm": 270,
+     "tensionare": "1.8-2.2"
+    }
+   },
+   "tensionare_receptie": 230,
+   "diametru_funie": {
+    "h": 18.8,
+    "l": 23.7,
+    "text": "23.7 x 18.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 2053.3,
+   "masa_max_g_m": 2061.5,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "300 SM 90°",
+   "sectiune": 300,
+   "forma": "SM90",
+   "nr_fire": 37,
+   "d_fir": 3.18,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "14-16"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "14-16"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "2.2-2.8"
+    }
+   },
+   "tensionare_receptie": 250,
+   "diametru_funie": {
+    "h": 20.8,
+    "l": 26.5,
+    "text": "26.5 x 20.8"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 2576.0,
+   "masa_max_g_m": 2586.3,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  },
+  {
+   "material": "Cu",
+   "denumire": "300 SM 120°",
+   "sectiune": 300,
+   "forma": "SM120",
+   "nr_fire": 37,
+   "d_fir": 3.18,
+   "d_fir_modificat": true,
+   "rotoare": {
+    "6": {
+     "pas_mm": 200,
+     "tensionare": "14-16"
+    },
+    "12": {
+     "pas_mm": 240,
+     "tensionare": "14-16"
+    },
+    "18": {
+     "pas_mm": 300,
+     "tensionare": "2.2-2.8"
+    }
+   },
+   "tensionare_receptie": 250,
+   "diametru_funie": {
+    "h": 21.2,
+    "l": 26.8,
+    "text": "26.8 x 21.2"
+   },
+   "diametru_funie_toleranta": "+/-0.1",
+   "masa_min_g_m": 2576.0,
+   "masa_max_g_m": 2586.3,
+   "clasa": 2,
+   "sursa": "Instructiuni cablare rigid — Strander SETIC 1+6+12+18 — Cupru"
+  }
+ ],
+ "conductor_flexibil_cl5": [
+  {
+   "sectiune": 0.5,
+   "nr_fire_lita": 16,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "8 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 1.99,
+   "suvita_max_g_m": 2.01,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 3.97,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 0.5,
+   "nr_fire_lita": 16,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "16 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 3.97,
+   "suvita_max_g_m": 4.02,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 3.97,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 0.75,
+   "nr_fire_lita": 24,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "8 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 1.99,
+   "suvita_max_g_m": 2.01,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 5.96,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 0.75,
+   "nr_fire_lita": 24,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "16 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 3.97,
+   "suvita_max_g_m": 4.02,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 5.96,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 1,
+   "nr_fire_lita": 32,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "8 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 1.99,
+   "suvita_max_g_m": 2.01,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 7.95,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 1,
+   "nr_fire_lita": 32,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "16 x 0.191",
+   "d_sarma": 0.189,
+   "d_sarma_lita": 0.188,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 3.97,
+   "suvita_max_g_m": 4.02,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 7.95,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 1.5,
+   "nr_fire_lita": 28,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "7 x 0.247",
+   "d_sarma": 0.244,
+   "d_sarma_lita": 0.243,
+   "nr_fire_suvita": 7,
+   "suvita_min_g_m": 2.9,
+   "suvita_max_g_m": 2.93,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 11.64,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 1.5,
+   "nr_fire_lita": 28,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "14 x 0.247",
+   "d_sarma": 0.244,
+   "d_sarma_lita": 0.243,
+   "nr_fire_suvita": 14,
+   "suvita_min_g_m": 5.8,
+   "suvita_max_g_m": 5.85,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 11.64,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 2.5,
+   "nr_fire_lita": 48,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "8 x 0.243",
+   "d_sarma": 0.241,
+   "d_sarma_lita": 0.24,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 3.23,
+   "suvita_max_g_m": 3.26,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 19.46,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 2.5,
+   "nr_fire_lita": 48,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "16 x 0.243",
+   "d_sarma": 0.241,
+   "d_sarma_lita": 0.24,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 6.47,
+   "suvita_max_g_m": 6.52,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 19.46,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 4,
+   "nr_fire_lita": 48,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "5 x 0.310 + 3 x 0.305",
+   "d_sarma": 0.304,
+   "d_sarma_lita": 0.303,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 5.15,
+   "suvita_max_g_m": 5.18,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 31.02,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 4,
+   "nr_fire_lita": 48,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "12 x 0.310 + 6 x 0.305",
+   "d_sarma": 0.304,
+   "d_sarma_lita": 0.303,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 10.3,
+   "suvita_max_g_m": 10.36,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 31.02,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 6,
+   "nr_fire_lita": 72,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "5 x 0.310 + 3 x 0.305",
+   "d_sarma": 0.304,
+   "d_sarma_lita": 0.303,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 5.15,
+   "suvita_max_g_m": 5.18,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 46.53,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 6,
+   "nr_fire_lita": 72,
+   "nr_toroane": null,
+   "nr_fire_toron": null,
+   "filiera": "12 x 0.310 + 6 x 0.305",
+   "d_sarma": 0.304,
+   "d_sarma_lita": 0.303,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 10.3,
+   "suvita_max_g_m": 10.36,
+   "toron_min_g_m": null,
+   "toron_max_g_m": null,
+   "lita_aprox_g_m": 46.53,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 10,
+   "nr_fire_lita": 112,
+   "nr_toroane": 7,
+   "nr_fire_toron": 16,
+   "filiera": "8 x 0.328 + 8 x 0.325",
+   "d_sarma": 0.324,
+   "d_sarma_lita": 0.322,
+   "nr_fire_suvita": 16,
+   "suvita_min_g_m": 11.72,
+   "suvita_max_g_m": 11.78,
+   "toron_min_g_m": 11.692,
+   "toron_max_g_m": 11.75,
+   "lita_aprox_g_m": 82.15,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 16,
+   "nr_fire_lita": 112,
+   "nr_toroane": 7,
+   "nr_fire_toron": 16,
+   "filiera": "8 x 0.410",
+   "d_sarma": 0.406,
+   "d_sarma_lita": 0.404,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 9.2,
+   "suvita_max_g_m": 9.24,
+   "toron_min_g_m": 18.381,
+   "toron_max_g_m": 18.473,
+   "lita_aprox_g_m": 129.31,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 25,
+   "nr_fire_lita": 168,
+   "nr_toroane": 7,
+   "nr_fire_toron": 24,
+   "filiera": "4 x 0.412 + 4 x 0.420",
+   "d_sarma": 0.413,
+   "d_sarma_lita": 0.411,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 9.52,
+   "suvita_max_g_m": 9.56,
+   "toron_min_g_m": 28.533,
+   "toron_max_g_m": 28.676,
+   "lita_aprox_g_m": 200.75,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 35,
+   "nr_fire_lita": 280,
+   "nr_toroane": 7,
+   "nr_fire_toron": 40,
+   "filiera": "4 x 0.382 + 4 x 0.384",
+   "d_sarma": 0.379,
+   "d_sarma_lita": 0.377,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.02,
+   "suvita_max_g_m": 8.05,
+   "toron_min_g_m": 40.031,
+   "toron_max_g_m": 40.23,
+   "lita_aprox_g_m": 281.51,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 50,
+   "nr_fire_lita": 392,
+   "nr_toroane": 7,
+   "nr_fire_toron": 56,
+   "filiera": "6 x 0.385 + 2 x 0.389",
+   "d_sarma": 0.383,
+   "d_sarma_lita": 0.381,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.19,
+   "suvita_max_g_m": 8.22,
+   "toron_min_g_m": 57.235,
+   "toron_max_g_m": 57.521,
+   "lita_aprox_g_m": 403.72,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 70,
+   "nr_fire_lita": 576,
+   "nr_toroane": 12,
+   "nr_fire_toron": 48,
+   "filiera": "8 x 0.380",
+   "d_sarma": 0.377,
+   "d_sarma_lita": 0.375,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 7.94,
+   "suvita_max_g_m": 7.97,
+   "toron_min_g_m": 47.53,
+   "toron_max_g_m": 47.767,
+   "lita_aprox_g_m": 574.69,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 95,
+   "nr_fire_lita": 760,
+   "nr_toroane": 19,
+   "nr_fire_toron": 40,
+   "filiera": "8 x 0.380",
+   "d_sarma": 0.377,
+   "d_sarma_lita": 0.375,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 7.94,
+   "suvita_max_g_m": 7.97,
+   "toron_min_g_m": 39.608,
+   "toron_max_g_m": 39.806,
+   "lita_aprox_g_m": 758.27,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 120,
+   "nr_fire_lita": 912,
+   "nr_toroane": 19,
+   "nr_fire_toron": 48,
+   "filiera": "8 x 0.393",
+   "d_sarma": 0.389,
+   "d_sarma_lita": 0.387,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.45,
+   "suvita_max_g_m": 8.48,
+   "toron_min_g_m": 50.612,
+   "toron_max_g_m": 50.864,
+   "lita_aprox_g_m": 969.09,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 150,
+   "nr_fire_lita": 1184,
+   "nr_toroane": 37,
+   "nr_fire_toron": 32,
+   "filiera": "8 x 0.385",
+   "d_sarma": 0.382,
+   "d_sarma_lita": 0.38,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.15,
+   "suvita_max_g_m": 8.18,
+   "toron_min_g_m": 32.535,
+   "toron_max_g_m": 32.697,
+   "lita_aprox_g_m": 1215.4,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 185,
+   "nr_fire_lita": 1480,
+   "nr_toroane": 37,
+   "nr_fire_toron": 40,
+   "filiera": "8 x 0.380",
+   "d_sarma": 0.377,
+   "d_sarma_lita": 0.375,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 7.94,
+   "suvita_max_g_m": 7.97,
+   "toron_min_g_m": 39.608,
+   "toron_max_g_m": 39.806,
+   "lita_aprox_g_m": 1479.53,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 240,
+   "nr_fire_lita": 1776,
+   "nr_toroane": 37,
+   "nr_fire_toron": 48,
+   "filiera": "8 x 0.400",
+   "d_sarma": 0.395,
+   "d_sarma_lita": 0.393,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.71,
+   "suvita_max_g_m": 8.75,
+   "toron_min_g_m": 52.189,
+   "toron_max_g_m": 52.45,
+   "lita_aprox_g_m": 1949.97,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 300,
+   "nr_fire_lita": 2072,
+   "nr_toroane": 37,
+   "nr_fire_toron": 56,
+   "filiera": "8 x 0.412",
+   "d_sarma": 0.409,
+   "d_sarma_lita": 0.407,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 9.34,
+   "suvita_max_g_m": 9.38,
+   "toron_min_g_m": 65.291,
+   "toron_max_g_m": 65.617,
+   "lita_aprox_g_m": 2439.94,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  },
+  {
+   "sectiune": 400,
+   "nr_fire_lita": 2928,
+   "nr_toroane": 61,
+   "nr_fire_toron": 48,
+   "filiera": "8 x 0.398",
+   "d_sarma": 0.394,
+   "d_sarma_lita": 0.392,
+   "nr_fire_suvita": 8,
+   "suvita_min_g_m": 8.69,
+   "suvita_max_g_m": 8.72,
+   "toron_min_g_m": 51.925,
+   "toron_max_g_m": 52.184,
+   "lita_aprox_g_m": 3198.48,
+   "destinatie": "Unifilar / Multifilar",
+   "clasa": 5,
+   "sursa": "A6 Ed.2 Rev.4 — Conductori rotunzi clasa V de cupru (07.09.2026)"
+  }
+ ],
+ "conductor_extrudat_al": [
+  {
+   "material": "Al",
+   "denumire": "25 RE - 5.49",
+   "sectiune": 25,
+   "forma": "RE",
+   "d_nom": 5.49,
+   "d_min": 5.47,
+   "d_max": 5.51,
+   "filiera_trefilare": 5.536,
+   "masa_min_g_m": 63.46,
+   "masa_max_g_m": 64.36,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "35 RE - 6.44",
+   "sectiune": 35,
+   "forma": "RE",
+   "d_nom": 6.44,
+   "d_min": 6.42,
+   "d_max": 6.46,
+   "filiera_trefilare": 6.471,
+   "masa_min_g_m": 87.43,
+   "masa_max_g_m": 88.43,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "35 SE",
+   "sectiune": 35,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 90,
+   "masa_max_g_m": 92,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": "IEC 60228:2023 Tab.3 nota a: Al 10-35 mm2 doar circular; 35 SE pastrat — produs in fabricatie curenta",
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 SE",
+   "sectiune": 50,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 120.5,
+   "masa_max_g_m": 121.5,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "50 RE",
+   "sectiune": 50,
+   "forma": "RE",
+   "d_nom": 7.55,
+   "d_min": 7.53,
+   "d_max": 7.57,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 120.5,
+   "masa_max_g_m": 121.5,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 SE",
+   "sectiune": 70,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 172,
+   "masa_max_g_m": 173.7,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "70 RE",
+   "sectiune": 70,
+   "forma": "RE",
+   "d_nom": 9.04,
+   "d_min": 9.02,
+   "d_max": 9.05,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 172,
+   "masa_max_g_m": 173.7,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "95 SE",
+   "sectiune": 95,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 236.8,
+   "masa_max_g_m": 239,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "120 SE",
+   "sectiune": 120,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 300,
+   "masa_max_g_m": 302.5,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "150 SE",
+   "sectiune": 150,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 368,
+   "masa_max_g_m": 370,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "185 SE",
+   "sectiune": 185,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 460,
+   "masa_max_g_m": 462,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "240 SE",
+   "sectiune": 240,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 600,
+   "masa_max_g_m": 602.9,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  },
+  {
+   "material": "Al",
+   "denumire": "300 SE",
+   "sectiune": 300,
+   "forma": "SE",
+   "d_nom": null,
+   "d_min": null,
+   "d_max": null,
+   "filiera_trefilare": null,
+   "masa_min_g_m": 754,
+   "masa_max_g_m": 757,
+   "h": null,
+   "l": null,
+   "clasa": 1,
+   "exceptie_iec": null,
+   "sursa": "Conductori Sector Clasa 1 Aluminiu"
+  }
+ ],
+ "constante_material": {
+  "Cu": {
+   "calitate": "ETP1",
+   "rho20_ohm_mm2_m": 0.01707,
+   "densitate_g_cm3": 8.89,
+   "alfa20": 0.00393
+  },
+  "Al": {
+   "calitate": "H11",
+   "rho20_ohm_mm2_m": 0.0275,
+   "densitate_g_cm3": 2.703,
+   "alfa20": 0.00403
+  }
+ }
+}
