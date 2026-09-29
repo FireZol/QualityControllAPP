@@ -15,6 +15,12 @@
     form.submit();
   });
 
+  // <button data-print> opens the browser's print dialog
+  document.addEventListener('click', function (e) {
+    const t = e.target;
+    if (t instanceof Element && t.closest('[data-print]')) window.print();
+  });
+
   // <form data-confirm="Sigur?"> asks before submitting
   document.addEventListener('submit', function (e) {
     const form = e.target;

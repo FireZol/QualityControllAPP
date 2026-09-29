@@ -6,7 +6,7 @@ const { displayDateTime } = require('../lib/time');
 
 function quickRow(r) {
   const m = r.resultMap;
-  const dia = r.shape_kind === 'sector' ? html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}` : html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
+  const dia = m.h || m.l ? html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}` : html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
   return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at).slice(-5)}</td><td>${T.shift[r.shift]}</td>
     <td>${r.construction_label} <span class="tag">${r.material_code}</span></td><td>${r.machine_name}</td><td class="nowrap">${dia}</td><td>${valueCell(m.mass_gm, 'mass_gm')}</td>
     <td>${valueCell(m.r20, 'r20')}</td><td>${valueCell(m.r20_theor, 'r20_theor')}</td></tr>`;

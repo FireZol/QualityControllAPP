@@ -154,7 +154,7 @@ function revisionPage(ctx, d) {
     title: `${doc.title} — ${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}`, active: 'specs', wide: true, scripts: [],
     body: html`<p><a href="/fise/${doc.id}">« ${doc.title}</a></p>
 <h1>${doc.title}</h1>
-<p>${statusBadge(rev.status)} <strong>${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}</strong>${doc.code ? html` · ${T.specs.code}: ${doc.code}` : ''}</p>
+<p>${statusBadge(rev.status)} <strong>${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}</strong>${doc.code ? html` · ${T.specs.code}: ${doc.code}` : ''} <a class="btn small" href="${base}/tipar">${T.print.open_print}</a></p>
 <dl class="facts">
   <div><dt>${T.specs.elaborated}</dt><dd>${full.authorName || T.common.none} <span class="muted">${displayDateTime(rev.elaborated_at)}</span></dd></div>
   <div><dt>${T.specs.verified}</dt><dd>${full.verifierName || T.common.none} <span class="muted">${displayDateTime(rev.verified_at)}</span></dd></div>
@@ -163,7 +163,7 @@ function revisionPage(ctx, d) {
   ${rev.rejected_reason && rev.status === 'ciorna' ? html`<div class="wide-fact"><dt>${T.specs.rejected}</dt><dd>${full.rejecterName || ''} ${displayDateTime(rev.rejected_at)}: <em>${rev.rejected_reason}</em></dd></div>` : ''}
 </dl>
 
-${!family.active ? html`<p class="notice">${T.specs.later_stage_notice}</p>` : ''}
+${!family.docActive ? html`<p class="notice">${T.specs.later_stage_notice}</p>` : ''}
 
 ${perms.canSubmit || perms.canVerify || perms.authorWaits || perms.viewerIsAuthor ? html`<section class="card workflow"><h2>${T.specs.workflow}</h2>
   ${perms.canSubmit ? html`<form method="post" action="${base}/trimite" class="inline">${csrf(ctx)}<button class="btn primary" type="submit">${T.specs.submit}</button> <span class="muted">${T.specs.submit_hint}</span></form>` : ''}
@@ -177,7 +177,7 @@ ${perms.canSubmit || perms.canVerify || perms.authorWaits || perms.viewerIsAutho
 ${warnings.length ? html`<section class="card seed-warnings"><h2>${T.specs.data_quality}</h2><p class="muted">${T.specs.data_quality_hint}</p>
   <ul>${warnings.map((w) => html`<li class="lvl-${w.level}"><span class="tag lvl">${w.level}</span> <strong>${w.location}</strong>: ${w.problem}</li>`)}</ul></section>` : ''}
 
-${(rev.status === 'ciorna' || rev.status === 'in_verificare') && family.active ? html`<section class="card"><h2>${T.specs.iec_checks}</h2>${findingsBox(findings, rev.id, doc.id)}</section>` : ''}
+${(rev.status === 'ciorna' || rev.status === 'in_verificare') && family.docActive ? html`<section class="card"><h2>${T.specs.iec_checks}</h2>${findingsBox(findings, rev.id, doc.id)}</section>` : ''}
 
 ${editable ? html`<section class="card"><h2>${T.specs.header_edit}</h2>
 <form method="post" action="${base}/antet" class="row">${csrf(ctx)}
@@ -205,7 +205,7 @@ function limitRows(family) {
         { level: lvl, q: 'mass', unit: 'g/m', cls: '' },
       ];
     case 'SARMA_CL12': case 'SARMA_CL5': return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'sarma', q: 'mass', unit: 'g/m', cls: '' }];
-    default: return [{ level: 'suvita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'toron', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'mass', unit: 'g/m', cls: '' }];
+    default: return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'suvita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'toron', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'mass', unit: 'g/m', cls: '' }];
   }
 }
 

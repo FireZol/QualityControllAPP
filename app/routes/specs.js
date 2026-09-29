@@ -15,17 +15,17 @@ module.exports = function register(app) {
   const { router, db } = app;
 
   function docRow(id) {
-    return db.get(`SELECT d.*, f.name AS family_name, f.active AS family_active FROM spec_documents d JOIN product_families f ON f.id = d.family_id WHERE d.id = ?`, id);
+    return db.get(`SELECT d.*, f.name AS family_name, (f.active = 1 OR EXISTS (SELECT 1 FROM product_families g WHERE g.active = 1 AND json_extract(g.measures, '$.spec_family') = f.code)) AS family_active FROM spec_documents d JOIN product_families f ON f.id = d.family_id WHERE d.id = ?`, id);
   }
 
   function permsFor(user, full) {
     const r = full.rev;
     const engineer = user.role === 'inginer';
-    const canEdit = engineer && r.status === 'ciorna' && full.family.active && (!r.elaborated_by || r.elaborated_by === user.id);
+    const canEdit = engineer && r.status === 'ciorna' && full.family.docActive && (!r.elaborated_by || r.elaborated_by === user.id);
     return {
       canEdit,
       canSubmit: canEdit,
-      canVerify: engineer && r.status === 'in_verificare' && full.family.active && r.elaborated_by !== user.id,
+      canVerify: engineer && r.status === 'in_verificare' && full.family.docActive && r.elaborated_by !== user.id,
       viewerIsAuthor: engineer && r.status === 'in_verificare' && r.elaborated_by === user.id,
       authorWaits: false,
     };
@@ -36,7 +36,7 @@ module.exports = function register(app) {
   // ---------- lists ----------
 
   router.get('/fise', {}, (ctx) => {
-    const docs = db.all(`SELECT d.*, f.name AS family_name, f.active AS family_active FROM spec_documents d JOIN product_families f ON f.id = d.family_id ORDER BY f.sort, d.id`);
+    const docs = db.all(`SELECT d.*, f.name AS family_name, (f.active = 1 OR EXISTS (SELECT 1 FROM product_families g WHERE g.active = 1 AND json_extract(g.measures, '$.spec_family') = f.code)) AS family_active FROM spec_documents d JOIN product_families f ON f.id = d.family_id ORDER BY f.sort, d.id`);
     for (const d of docs) {
       d.active = db.get("SELECT * FROM spec_revisions WHERE document_id = ? AND status = 'activa'", d.id) || null;
       d.open = db.get("SELECT * FROM spec_revisions WHERE document_id = ? AND status IN ('ciorna','in_verificare') ORDER BY id DESC", d.id) || null;
@@ -83,7 +83,7 @@ module.exports = function register(app) {
     let prev = null;
     if (full.rev.based_on_id) prev = rev.loadConstructions(db, full.rev.based_on_id, { onlyActive: true });
     const diff = rev.diffAgainst(full.constructions.filter((c) => c.active), prev);
-    const findings = full.family.active && (full.rev.status === 'ciorna' || full.rev.status === 'in_verificare') ? rev.checkRevision(db, full.rev.id) : [];
+    const findings = full.family.docActive && (full.rev.status === 'ciorna' || full.rev.status === 'in_verificare') ? rev.checkRevision(db, full.rev.id) : [];
     const warnings = db.all('SELECT * FROM seed_warnings WHERE revision_id = ? ORDER BY level, id', full.rev.id);
     return page(views.revisionPage(ctx, { full, diff, findings, warnings, perms: permsFor(ctx.user, full) }));
   });
@@ -94,7 +94,7 @@ module.exports = function register(app) {
       if (!l) return page(errorPage(ctx, 'not_found'), 404);
       const base = `/fise/${l.doc.id}/revizii/${l.full.rev.id}`;
       const perms = permsFor(ctx.user, l.full);
-      if (!l.full.family.active) return fail(base, 'later_stage');
+      if (!l.full.family.docActive) return fail(base, 'later_stage');
       if (need && !perms[need]) {
         const r = l.full.rev;
         if (need === 'canVerify' && r.elaborated_by === ctx.user.id) return fail(base, 'author_cannot_verify');

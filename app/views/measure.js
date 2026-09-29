@@ -16,7 +16,7 @@ function limitsTable(model) {
   const add = (label, l, q) => rows.push(html`<tr><th scope="row">${label}</th><td>${l && l.nominal != null ? calc.formatQuantity(q, l.nominal) : ''}</td>
     <td>${l ? (l.informative ? T.verdict.info : limitText(l.min, l.max, q)) : T.verdict.nedeterminat}</td><td>${l && l.informative ? T.measure.informative_note : T.measure.source_sheet}</td></tr>`);
   if (ctx.shapeKind === 'sector') { add(T.quantity.h, ctx.limits.h, 'h'); add(T.quantity.l, ctx.limits.l, 'l'); } else add(T.quantity.d, ctx.limits.d, 'd1');
-  add(T.quantity.mass_gm, ctx.limits.mass, 'mass_gm');
+  if (ctx.measuresMass) add(T.quantity.mass_gm, ctx.limits.mass, 'mass_gm');
   if (ctx.iec) rows.push(html`<tr><th scope="row">${T.quantity.r_max}</th><td></td><td>≤ ${calc.formatQuantity('r20', ctx.iec.r_max)}</td><td>${ctx.iec.source}</td></tr>`);
   return html`<table class="grid limits"><caption>${T.measure.limits_caption}</caption><thead><tr><th></th><th>${T.measure.nominal}</th><th>${T.measure.limits}</th><th>${T.measure.source}</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -64,10 +64,10 @@ function entryForm(ctx, sel, model, data) {
     ? html`${numInput('h', T.input.h, values, errors, { required: true })}${numInput('l', T.input.l, values, errors, { required: true })}`
     : html`${numInput('d1', T.input.d1, values, errors, { required: true })}${numInput('d2', T.input.d2, values, errors, { required: true })}`}
     </div>
-    <div class="row">
+    ${model.inputs.mass ? html`<div class="row">
       ${numInput('mass_g', T.input.mass_g, values, errors, { required: true })}
       ${numInput('sample_mm', T.input.sample_mm, { sample_mm: values.sample_mm === undefined ? '1000' : values.sample_mm }, errors, { hint: T.measure.sample_mm_hint })}
-    </div>
+    </div>` : ''}
     ${model.inputs.resistance ? html`<div class="row">
       ${numInput('r_value', T.input.r_value, values, errors, { hint: T.measure.r_optional })}
       ${selectField({ label: T.input.r_unit, name: 'r_unit', value: rUnit, options: [['ohm_km', 'Ω/km'], ['ohm', 'Ω']], errors, attrs: 'data-in="r_unit"' })}
@@ -114,7 +114,7 @@ function newPage(ctx, d) {
     ${family_id ? selectField({ label: T.measure.machine, name: 'machine', value: machine_id, options: machines.map((m) => [m.id, m.name + (m.rotor_config ? ` (${m.rotor_config})` : '')]), blank: T.measure.choose, attrs: 'data-autosubmit data-resets="construction"' }) : ''}
     ${family_id && machine_id ? html`<label class="field"><span class="lbl">${T.measure.construction}</span>
       <select name="construction" data-autosubmit><option value="">${T.measure.choose}</option>
-      ${Object.keys(byMat).map((mat) => html`<optgroup label="${materialName(mat)}">${byMat[mat].map((c) => html`<option value="${c.id}"${String(c.id) === String(construction_id) ? raw(' selected') : ''}>${c.label}</option>`)}</optgroup>`)}
+      ${Object.keys(byMat).map((mat) => html`<optgroup label="${materialName(mat)}">${byMat[mat].map((c) => html`<option value="${c.id}"${String(c.id) === String(construction_id) ? raw(' selected') : ''}>${c.label}${c.destination_name ? ' · ' + c.destination_name : ''}${c.die ? ' · ' + c.die : ''}</option>`)}</optgroup>`)}
       </select></label>` : ''}
     <noscript><button class="btn" type="submit">${T.common.continue}</button></noscript>
   </div>
@@ -125,6 +125,7 @@ ${sel && model ? html`
 <section class="card product">
   <h2>${sel.construction.label} <span class="tag">${materialName(sel.construction.material_code)}</span> <span class="tag">${sel.machine.name}</span></h2>
   <p class="muted">${revInfo}</p>
+  ${sel.family.levels[0] === 'sarma' && model.ctx.measuresMass ? html`<p class="muted">${T.measure.wire_mass_hint}</p>` : ''}
   ${limitsTable(model)}
 </section>
 ${entryForm(ctx, sel, model, d.form)}` : ''}`,
@@ -137,10 +138,10 @@ function registerPage(ctx, d) {
   const { data, filters, lists } = d;
   const opt = (rows, key, label) => rows.map((r) => [r[key], r[label]]);
   const qs = new URLSearchParams();
-  for (const [k, v] of Object.entries(filters)) if (v !== '' && v !== null && v !== undefined && v !== false) qs.set(k, String(v));
+  for (const [k, v] of Object.entries(filters)) if (v !== '' && v !== null && v !== undefined && v !== false) qs.set(k, v === true ? '1' : String(v));
   const cellD = (r) => {
     const m = r.resultMap;
-    if (r.shape_kind === 'sector') return html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}`;
+    if (m.h || m.l) return html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}`;
     return html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
   };
   return layout(ctx, {
@@ -166,7 +167,7 @@ function registerPage(ctx, d) {
     <a class="btn" href="/masuratori">${T.common.reset}</a>
   </div>
 </form>
-<p class="muted">${f(T.register.count, { total: data.total })}</p>
+<p class="muted">${f(T.register.count, { total: data.total })} <a class="btn small" href="/masuratori/tipar${qs.toString() ? '?' + qs.toString() : ''}">${T.print.register_print}</a></p>
 <div class="scroll"><table class="grid register">
   <thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.shift}</th><th>${T.register.crew}</th><th>${T.measure.family}</th><th>${T.register.product}</th><th>${T.measure.machine}</th>
     <th>${T.measure.operator}</th><th>${T.measure.client}</th><th>${T.measure.sample_type}</th><th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th><th>${T.common.notes}</th></tr></thead>

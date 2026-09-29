@@ -18,6 +18,18 @@ function familyOf(db, id) {
   return f;
 }
 
+/** Family whose constructions a measuring family reads: measures.spec_family, else itself. */
+function specFamilyOf(db, family) {
+  if (family.measures && family.measures.spec_family) return db.get('SELECT * FROM product_families WHERE code = ?', family.measures.spec_family) || family;
+  return family;
+}
+
+/** A data sheet is editable / usable when its own family is active or an active family measures against it. */
+function docFamilyActive(db, family) {
+  if (family.active) return true;
+  return !!db.get("SELECT 1 FROM product_families WHERE active = 1 AND json_extract(measures, '$.spec_family') = ?", family.code);
+}
+
 function loadConstructions(db, revisionId, { onlyActive }) {
   const rows = db.all(`${CONSTRUCTION_SQL} WHERE c.revision_id = ? ${onlyActive ? 'AND c.active = 1' : ''} ORDER BY c.sort, c.id`, revisionId);
   const limits = db.all('SELECT l.* FROM limits l JOIN constructions c ON c.id = l.construction_id WHERE c.revision_id = ?', revisionId);
@@ -38,6 +50,7 @@ function loadRevision(db, revisionId, opts) {
   if (!rev) return null;
   const doc = db.get('SELECT * FROM spec_documents WHERE id = ?', rev.document_id);
   const family = familyOf(db, doc.family_id);
+  family.docActive = docFamilyActive(db, family);
   const name = (id) => (id ? (db.get('SELECT full_name FROM users WHERE id = ?', id) || {}).full_name || null : null);
   return {
     rev, doc, family,
@@ -298,6 +311,6 @@ function statsForKey(db, stableKey, quantity) {
 }
 
 module.exports = {
-  familyOf, loadRevision, loadConstructions, activeRevisionId, flatten, diffAgainst, checkRevision, hasErrors,
+  familyOf, specFamilyOf, docFamilyActive, loadRevision, loadConstructions, activeRevisionId, flatten, diffAgainst, checkRevision, hasErrors,
   newRevision, updateHeader, saveConstruction, setConstructionActive, submit, verify, reject, statsForKey,
 };

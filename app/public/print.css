@@ -1,0 +1,38 @@
+/* Printed documents: A4 portrait, header and footer repeated on every page through thead / tfoot. */
+@page { size: A4 portrait; margin: 12mm 12mm 16mm 12mm; @bottom-right { content: "Pag. " counter(page) " / " counter(pages); font-size: 9pt; } }
+body.print-page { background: #fff; color: #000; font-size: 10pt; margin: 0; padding: 0 8px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; background: #eef2f7; border-bottom: 1px solid var(--line); padding: 8px 14px; margin: 0 -8px 12px; }
+.toolbar .short { width: 110px; min-height: 32px; display: inline-block; }
+.toolbar label { display: inline-flex; gap: 6px; align-items: center; }
+table.doc { width: 100%; border-collapse: collapse; }
+table.doc > thead > tr > td, table.doc > tfoot > tr > td, table.doc > tbody > tr > td { padding: 0; border: 0; vertical-align: top; }
+table.doc > thead { display: table-header-group; }
+table.doc > tfoot { display: table-footer-group; }
+.doc-head { border: 1px solid #000; padding: 6px 10px; margin-bottom: 8px; display: grid; grid-template-columns: 1fr auto; gap: 2px 20px; align-items: center; }
+.doc-company { font-weight: 700; }
+.doc-title { grid-column: 1; font-size: 13pt; font-weight: 700; }
+.doc-meta { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: 14px; margin: 0; }
+.doc-meta dt { font-size: 8pt; text-transform: uppercase; }
+.doc-meta dd { margin: 0; font-weight: 700; }
+.doc-status { border: 2px solid #000; text-align: center; font-weight: 700; padding: 4px; margin-bottom: 8px; letter-spacing: 0.04em; }
+.doc-foot { border-top: 1px solid #000; margin-top: 10px; padding-top: 6px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 9pt; }
+.doc-foot .k { font-weight: 700; }
+.sigline { display: inline-block; width: 90px; border-bottom: 1px solid #000; }
+.print-page h2 { font-size: 11pt; margin: 10px 0 4px; }
+table.sheet { width: 100%; border-collapse: collapse; margin-bottom: 8px; page-break-inside: auto; }
+table.sheet tr { page-break-inside: avoid; }
+table.sheet th, table.sheet td { border: 1px solid #000; padding: 2px 5px; font-size: 9pt; text-align: left; vertical-align: top; }
+table.sheet thead { display: table-header-group; }
+table.sheet thead th { background: #e6e6e6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.print-page .changed, .print-page td.changed { color: #c00000; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.print-page .val, .print-page .v { background: none !important; padding: 0; border-radius: 0; }
+.print-page .val.v-sub, .print-page .val.v-peste { color: #c00000; font-weight: 700; }
+.print-page .val.v-ok { color: #000; }
+.print-page .val::before { content: none; }
+.small { font-size: 8.5pt; }
+.notes { font-size: 8.5pt; margin-top: 6px; }
+.new { font-size: 7.5pt; border: 1px solid #000; padding: 0 3px; }
+@media print {
+  .noprint { display: none !important; }
+  body.print-page { padding: 0; }
+}

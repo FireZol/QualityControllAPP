@@ -34,7 +34,7 @@ async function createApp(config, opts) {
 
   const router = new Router();
   const app = { config, db, router, state, log, server: null, timer: null, adminPassword };
-  for (const r of ['auth', 'home', 'measure', 'specs', 'lists', 'admin']) {
+  for (const r of ['auth', 'home', 'print', 'measure', 'specs', 'lists', 'admin']) {
     const file = path.join(__dirname, 'routes', r + '.js');
     if (fs.existsSync(file)) require(file)(app);
   }

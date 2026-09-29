@@ -22,9 +22,18 @@ function contextFor(db, construction, family) {
     limits[l.quantity] = { min: l.min, max: l.max, nominal: l.nominal, informative: !!l.informative };
   }
   const shape = db.get('SELECT * FROM shapes WHERE id = ?', construction.shape_id);
-  const r = family.iec_class ? iec.resistanceLimit(db, family.iec_class, material.code, construction.section, construction.coated) : null;
-  const measuresR = (family.measures.resistance_measured || []).includes(material.code);
-  return { shapeKind: shape.kind, material, limits, iec: r, measuresR, level };
+  const dest = construction.destination_id ? db.get('SELECT name FROM destinations WHERE id = ?', construction.destination_id) : null;
+  // drawn wire is always round: the shape on a wire row names the conductor it goes into
+  const shapeKind = family.measures.diam === '2citiri' ? 'rotund' : shape.kind;
+  // a drawn wire has a resistance limit only when it is itself the finished conductor: unifilar RE
+  let iecClass = family.iec_class;
+  if (family.code === 'SARMA_CL12') iecClass = shape.code === 'RE' && dest && dest.name === 'Unifilar' ? 1 : null;
+  const r = iecClass ? iec.resistanceLimit(db, iecClass, material.code, construction.section, construction.coated) : null;
+  const measuresR = (family.measures.resistance_measured || []).includes(material.code) && (family.code !== 'SARMA_CL12' || iecClass === 1);
+  return {
+    shapeKind, material, limits, iec: r, measuresR, level,
+    measuresMass: family.measures.mass !== false, theoretical: family.measures.resistance_theoretical !== false,
+  };
 }
 
 /** What the entry form must show for a family + construction (which inputs, which limits). */
@@ -35,7 +44,7 @@ function formModel(db, construction, family) {
     shape: db.get('SELECT * FROM shapes WHERE id = ?', construction.shape_id),
     inputs: {
       diameter: ctx.shapeKind === 'sector' ? 'hl' : 'd12',
-      mass: !!family.measures.mass,
+      mass: ctx.measuresMass,
       resistance: ctx.measuresR,
     },
   };
@@ -49,15 +58,17 @@ function machineAllowsFamily(db, machineId, familyId) {
 
 /** Constructions of the active revision(s) of a family, filtered by the strander's capacity. */
 function constructionsFor(db, family, machine) {
+  const spec = require('./revisions').specFamilyOf(db, family);
   const rows = db.all(
-    `SELECT c.*, m.code AS material_code, s.code AS shape_code
+    `SELECT c.*, m.code AS material_code, s.code AS shape_code, dn.name AS destination_name
        FROM constructions c
+       LEFT JOIN destinations dn ON dn.id = c.destination_id
        JOIN spec_revisions r ON r.id = c.revision_id AND r.status = 'activa'
        JOIN spec_documents d ON d.id = r.document_id AND d.family_id = ?
        JOIN materials m ON m.id = c.material_id
        JOIN shapes s ON s.id = c.shape_id
       WHERE c.active = 1
-      ORDER BY m.code, c.section, s.id, c.sort`, family.id);
+      ORDER BY m.code, c.section, s.id, c.sort`, spec.id);
   return rows.filter((c) => !machine || !machine.max_wires || !c.wires || c.wires <= machine.max_wires);
 }
 
@@ -150,7 +161,7 @@ function create(db, user, form, now) {
   const machine = db.get('SELECT * FROM machines WHERE id = ?', machineId);
   const construction = constructionId && db.get(
     `SELECT c.* FROM constructions c JOIN spec_revisions r ON r.id = c.revision_id AND r.status = 'activa'
-       JOIN spec_documents d ON d.id = r.document_id WHERE c.id = ? AND c.active = 1 AND d.family_id = ?`, constructionId, familyId);
+       JOIN spec_documents d ON d.id = r.document_id WHERE c.id = ? AND c.active = 1 AND d.family_id = ?`, constructionId, rev.specFamilyOf(db, family).id);
   if (!construction) return { ok: false, errors: { construction_id: 'invalid' } };
   if (machine.max_wires && construction.wires && construction.wires > machine.max_wires) return { ok: false, errors: { machine_id: 'capacity' } };
 
@@ -260,7 +271,8 @@ function attachVersionCounts(db, rows) {
 }
 
 /** @returns {{rows, total, page, pages}} */
-function register(db, f, page) {
+function register(db, f, page, size) {
+  const pageSize = size || PAGE_SIZE;
   const where = [];
   const p = [];
   if (!f.all_versions) where.push('m.is_current = 1');
@@ -274,9 +286,9 @@ function register(db, f, page) {
   if (f.out) where.push("EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub','peste'))");
   const w = where.length ? 'WHERE ' + where.join(' AND ') : '';
   const total = db.value(`SELECT count(*) FROM measurements m JOIN constructions c ON c.id = m.construction_id ${w}`, ...p);
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(total / pageSize));
   const pg = Math.min(Math.max(1, page || 1), pages);
-  const sql = `${SELECT_MEAS} ${w} ORDER BY m.created_at DESC, m.id DESC LIMIT ${PAGE_SIZE} OFFSET ${(pg - 1) * PAGE_SIZE}`;
+  const sql = `${SELECT_MEAS} ${w} ORDER BY m.created_at DESC, m.id DESC LIMIT ${pageSize} OFFSET ${(pg - 1) * pageSize}`;
   const rows = db.all(sql, ...p);
   attachResults(db, rows);
   attachVersionCounts(db, rows);

@@ -128,6 +128,7 @@
    *   limits      { d|h|l|mass : {min,max,informative} }   (from the revision's `limits`)
    *   iec         { r_max, source } | null                 (resistance limit of the finished conductor)
    *   measuresR   true when measured resistance applies to this family + material
+   *   measuresMass / theoretical   false to skip the mass (and derived) rows; default true
    * @returns {{results: object[], warnings: string[], errors: string[]}}
    */
   function evaluate(inputs, ctx) {
@@ -169,25 +170,29 @@
       }
     }
 
-    // mass and theoretical resistance
+    // mass and theoretical resistance (families that do not weigh, e.g. class 5 wire, skip both)
     const massG = num('mass_g');
     let sampleMm = num('sample_mm');
     if (inputs.sample_mm === undefined || inputs.sample_mm === '' || inputs.sample_mm === null) sampleMm = 1000;
-    if (massG === null) errors.push('mass_g');
-    if (sampleMm === null || sampleMm <= 0) errors.push('sample_mm');
-    if (massG !== null && massG <= 0) errors.push('mass_g');
-    if (massG !== null && massG > 0 && sampleMm !== null && sampleMm > 0) {
+    if (ctx.measuresMass !== false) {
+      if (massG === null) errors.push('mass_g');
+      if (sampleMm === null || sampleMm <= 0) errors.push('sample_mm');
+      if (massG !== null && massG <= 0) errors.push('mass_g');
+    }
+    if (ctx.measuresMass !== false && massG !== null && massG > 0 && sampleMm !== null && sampleMm > 0) {
       const gm = massPerMetre(massG, sampleMm);
       push('mass_gm', gm, lim.mass);
-      const area = areaFromMass(gm, ctx.material.density);
-      push('d_ech', equivalentDiameter(area), null, { verdict: 'info' });
-      const rt = theoreticalResistance(ctx.material.rho20, area);
-      const rMax = ctx.iec ? ctx.iec.r_max : null;
-      push('r20_theor', rt, rMax === null || rMax === undefined ? null : { min: null, max: rMax },
-        {
-          source: ctx.iec ? ctx.iec.source : 'calculat',
-          deviation_pct: rMax ? deviationPercent(rt, rMax) : null,
-        });
+      if (ctx.theoretical !== false) {
+        const area = areaFromMass(gm, ctx.material.density);
+        push('d_ech', equivalentDiameter(area), null, { verdict: 'info' });
+        const rt = theoreticalResistance(ctx.material.rho20, area);
+        const rMax = ctx.iec ? ctx.iec.r_max : null;
+        push('r20_theor', rt, rMax === null || rMax === undefined ? null : { min: null, max: rMax },
+          {
+            source: ctx.iec ? ctx.iec.source : 'calculat',
+            deviation_pct: rMax ? deviationPercent(rt, rMax) : null,
+          });
+      }
     }
 
     // measured resistance (optional, copper for now)

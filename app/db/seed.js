@@ -29,8 +29,8 @@ const DESTINATIONS = ['Unifilar', 'Multifilar', 'Armate', 'Purtător', 'EVN'];
 const DEST_FROM_SEED = { Unifilar: 'Unifilar', Multifilar: 'Multifilar', Armate: 'Armate', Purtator: 'Purtător', EVN: 'EVN' };
 
 const FAMILIES = [
-  { code: 'SARMA_CL12', name: 'Sârmă trefilată clasa I–II', iec_class: null, levels: ['sarma'], measures: { diam: '2citiri', mass: true, resistance_measured: ['Cu'], resistance_theoretical: false }, active: 0, sort: 1 },
-  { code: 'SARMA_CL5', name: 'Sârmă trefilată multifilar clasa V', iec_class: null, levels: ['sarma'], measures: { diam: '2citiri', mass: false, resistance_measured: [], resistance_theoretical: false }, active: 0, sort: 2 },
+  { code: 'SARMA_CL12', name: 'Sârmă trefilată clasa I–II', iec_class: null, levels: ['sarma'], measures: { diam: '2citiri', mass: true, resistance_measured: ['Cu'], resistance_theoretical: false }, active: 1, sort: 1 },
+  { code: 'SARMA_CL5', name: 'Sârmă trefilată multifilar clasa V', iec_class: null, levels: ['sarma'], measures: { diam: '2citiri', mass: false, resistance_measured: [], resistance_theoretical: false, spec_family: 'FLEXIBIL_CL5' }, active: 1, sort: 2 },
   { code: 'FUNIE_RIGIDA', name: 'Funie rigidă clasa 2', iec_class: 2, levels: ['funie'], measures: { diam: 'auto', mass: true, resistance_measured: ['Cu'], resistance_theoretical: true }, active: 1, sort: 3 },
   { code: 'EXTRUDAT_AL', name: 'Conductor extrudat Al clasa 1', iec_class: 1, levels: ['conductor'], measures: { diam: 'auto', mass: true, resistance_measured: [], resistance_theoretical: true }, active: 1, sort: 4 },
   { code: 'FLEXIBIL_CL5', name: 'Conductor flexibil clasa 5', iec_class: 5, levels: ['suvita', 'toron', 'lita'], measures: { diam: null, mass: true, resistance_measured: ['Cu'], resistance_theoretical: false }, active: 0, sort: 5 },
@@ -220,6 +220,7 @@ function seedIfEmpty(db, { seedDir, config, log }) {
           d_sarma_lita: c.d_sarma_lita, nr_fire_lita: c.nr_fire_lita, nr_toroane: c.nr_toroane, nr_fire_toron: c.nr_fire_toron,
           nr_fire_suvita: c.nr_fire_suvita, destinatie: c.destinatie, sursa: c.sursa,
         }), null, i + 1).id;
+      db.run(insL, cid, 'sarma', 'd', c.d_sarma, null, null, 'mm', 0, null); // nominal only on paper: min / max undetermined
       db.run(insL, cid, 'suvita', 'mass', null, c.suvita_min_g_m, c.suvita_max_g_m, 'g/m', 0, null);
       if (c.toron_min_g_m != null || c.toron_max_g_m != null) db.run(insL, cid, 'toron', 'mass', null, c.toron_min_g_m, c.toron_max_g_m, 'g/m', 0, null);
       db.run(insL, cid, 'lita', 'mass', c.lita_aprox_g_m, null, null, 'g/m', 1, 'aprox.');

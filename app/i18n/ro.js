@@ -22,6 +22,17 @@ const S = {
     status: 'Stare', open: 'Deschide', from: 'De la', to: 'Până la', user: 'Utilizator', time: 'Ora', notes: 'Observații',
   },
 
+  print: {
+    print: 'Tipărește', apply: 'Aplică', copy: 'Exemplar', code: 'Cod', code_unset: 'de stabilit', signature: 'Semnătura',
+    hint: 'Tipărirea se face din browser, pe hârtie sau în PDF (pentru registre largi alegeți A3 sau orientarea peisaj).',
+    not_in_force: 'Revizie {status} — nu este document în vigoare', red_note: 'Valorile scrise cu roșu s-au modificat față de revizia anterioară.',
+    iec_notes: 'Excepții acceptate de la IEC 60228:', pitch_legend: 'Pe rotor: pas [mm] / tensionare. Tensionarea la recepție conform fișei.',
+    g_cu: 'Cupru', g_al: 'Aluminiu', g_al_carrier: 'Aluminiu purtător', g_al_evn: 'Aluminiu EVN', g_cl5_small: 'Secțiuni 0,5 – 6 mm²', g_cl5_large: 'Secțiuni 10 – 400 mm²',
+    wire_in_strand: 'Ø sârmă în liță [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pas / tens.', g_re: 'Conductori rotunzi (RE)', g_se: 'Conductori sector (SE)',
+    die_drawing: 'Filieră trefilare', no_filters: 'Fără filtre: toate înregistrările curente.', truncated: 'se tipăresc primele {n}; restrângeți filtrele',
+    printed_by: 'Tipărit de {user}, {when}', open_print: 'Tipărește', register_print: 'Tipărește registrul',
+  },
+
   verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ' },
 
   errors: {
@@ -102,6 +113,7 @@ const S = {
     values: 'Valori măsurate', sample_mm_hint: 'Implicit 1000 mm.', r_optional: 'Opțional. Rezistența se măsoară doar la cupru.', r_sample_hint: 'Implicit 5 m, 2 m la secțiuni mari.',
     produced_length: 'Lungime produsă [m]', optional: 'Opțional.', notes: 'Observații',
     live_title: 'Rezultat înainte de salvare', live_hint: 'Rezultatele apar aici pe măsură ce introduceți valorile. Valorile în afara limitelor se marchează, dar nu blochează salvarea.',
+    wire_mass_hint: 'Masa firului: g/m este egal cu kg/km (unitatea din fișă).',
     save: 'Salvează măsurătoarea', cell_empty: 'Completați valorile pentru a vedea rezultatul.', temp_warning: 'Temperatura este în afara intervalului 0–40 °C.',
   },
 

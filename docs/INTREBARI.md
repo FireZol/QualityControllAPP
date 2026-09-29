@@ -1,4 +1,4 @@
-# Open questions and conservative choices (stage 1)
+# Open questions and conservative choices (stages 1–2)
 
 Written while building; each item states what was assumed. Confirm or correct with Zoltan.
 
@@ -16,3 +16,5 @@ Written while building; each item states what was assumed. Confirm or correct wi
 12. **Crew start dates** are seeded from the first-start date (A = today, B = +4, C = +8). The Administrator/Inginer must set the real cycle start in Nomenclatoare → Schimburi.
 13. **Node 22 and `node --test app/test`:** Node 22 does not accept a bare directory; use `npm test` or `node --test "app/test/*.test.js"`.
 14. **Windows scripts are untested** (developed on Linux). `start.bat`, `instalare-serviciu.bat/.ps1` (Scheduled Task as SYSTEM, restart on failure, log in `data\server.log`) must be tried on a clean Windows machine.
+15. **Stage 2:** no Trefilare / Trefilare multifilară machine names were given, so none are seeded. Class V wire has only a nominal Ø on paper: verdicts stay `nedeterminat` until min/max are entered. Which wire rows should get measured resistance beyond Cu unifilar RE? Should class V wire also record the "Ø sârmă în liță" as a second reference?
+16. **Printed page numbers** rely on CSS page margin boxes (Chromium / Edge ≥ 131); please confirm the browser used on the factory PCs.
