@@ -112,3 +112,34 @@ test('XLSX: a valid zip with real numbers, text kept as text, escaped XML', () =
   assert.equal(xp.colName(0), 'A');
   assert.equal(xp.colName(27), 'AB');
 });
+
+test('SPC: individuals chart limits come from the process (MRbar / 1.128), flat data raises no signal', () => {
+  const flat = Array.from({ length: 30 }, (_, i) => 10 + (i % 2 ? 0.1 : -0.1));
+  const ch = A.controlChart(flat);
+  close(ch.cl, 10, 1e-9);
+  close(ch.mrbar, 0.2, 1e-9);
+  close(ch.sigma, 0.2 / 1.128, 1e-9);
+  close(ch.ucl, 10 + 3 * 0.2 / 1.128, 1e-9);
+  close(ch.lcl, 10 - 3 * 0.2 / 1.128, 1e-9);
+  close(ch.mrUcl, 3.267 * 0.2, 1e-9);
+  assert.deepEqual(ch.signals, []);
+  assert.equal(A.controlChart([1, 2]), null);
+});
+
+test('SPC: the five pattern rules', () => {
+  const flat = Array.from({ length: 30 }, (_, i) => 10 + (i % 2 ? 0.1 : -0.1));
+  const rulesAt = (extra, i) => (A.controlChart(flat.concat(extra), 30).signals.find((s) => s.i === i) || { rules: [] }).rules;
+  assert.ok(rulesAt([10.9], 30).includes(1), 'rule 1: beyond 3 sigma');
+  assert.ok(rulesAt([10.9], 30).length === 1);
+  assert.ok(rulesAt([10.5, 10.05, 10.5], 32).includes(2), 'rule 2: 2 of 3 beyond 2 sigma');
+  assert.ok(rulesAt([10.3, 10.3, 10.05, 10.3, 10.3], 34).includes(3), 'rule 3: 4 of 5 beyond 1 sigma');
+  const eight = [10.05, 10.06, 10.04, 10.07, 10.05, 10.06, 10.04, 10.07];
+  assert.ok(rulesAt(eight, 37).includes(4), 'rule 4: 8 on one side of the centre line');
+  const trend = [10.02, 10.04, 10.06, 10.08, 10.1, 10.12];
+  assert.ok(rulesAt(trend, 35).includes(5), 'rule 5: 6 rising in a row');
+  assert.ok(!rulesAt([10.02, 10.04, 10.06, 10.08, 10.1, 10.05], 35).includes(5));
+  // the limits are computed from the baseline only: a fresh drift does not stretch them
+  const drift = flat.concat([10.15, 10.2, 10.25, 10.3, 10.35, 10.4]);
+  assert.ok(A.controlChart(drift, 30).signals.length > 0);
+  assert.ok(svg.controlChartSvg({ points: [{ v: 1, rules: [1], label: 'a' }, { v: 2, rules: [], label: 'b' }], lines: { cl: 1.5, ucl: 2.5, lcl: 0.5, specMin: 0, specMax: 3 }, title: 'c' }).s.includes('ch-spec'));
+});

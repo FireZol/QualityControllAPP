@@ -171,7 +171,7 @@ test('families: switch what is measured and which resistance, per family', async
 
 test('targets: temperature range, default sample lengths and Cpk colours are editable', async () => {
   assert.equal(targets.get(app.db).temp_max, 40);
-  const good = { sample_mm: '500', r_sample_m: '2', temp_min: '10', temp_max: '30', cpk_good: '1,67', cpk_min: '1,33', min_n: '20', mass_ratio_min: '0,9', mass_ratio_max: '1,1' };
+  const good = { sample_mm: '500', r_sample_m: '2', temp_min: '10', temp_max: '30', cpk_good: '1,67', cpk_min: '1,33', min_n: '20', mass_ratio_min: '0,9', mass_ratio_max: '1,1', spc_min_n: '20', spc_window: '100', spc_recent: '10' };
   let r = await engA.postForm('/liste/tinte', '/liste/tinte', { ...good, temp_min: '30', temp_max: '10' });
   assert.equal(r.status, 422);
   r = await engA.postForm('/liste/tinte', '/liste/tinte', { ...good, cpk_min: '2' });

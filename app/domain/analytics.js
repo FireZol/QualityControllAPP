@@ -15,7 +15,7 @@ function parseFilters(q) {
     from: date(q.get('from')), to: date(q.get('to')), family_id: int(q.get('family_id')), stable_key: (q.get('product') || '').slice(0, 120),
     machine_id: int(q.get('machine_id')), shift: ['zi', 'noapte'].includes(q.get('shift')) ? q.get('shift') : '', crew_id: int(q.get('crew_id')),
     operator_id: int(q.get('operator_id')), client_id: int(q.get('client_id')), level: ['suvita', 'toron', 'lita'].includes(q.get('level')) ? q.get('level') : '',
-    quantity, group: GROUPS.includes(q.get('group')) ? q.get('group') : '',
+    quantity, group: GROUPS.includes(q.get('group')) ? q.get('group') : '', base: int(q.get('base')),
   };
 }
 
@@ -162,4 +162,81 @@ function consumption(rows, group) {
   });
 }
 
-module.exports = { QUANTITIES, GROUPS, parseFilters, dataset, products, stats, groupRows, latestLimits, capability, histogram, nonconformity, consumption };
+// ---------- statistical process control: individuals and moving-range chart, Western Electric / Nelson pattern rules ----------
+
+/** Constants of the individuals chart: sigma = MRbar / 1.128; UCL(MR) = 3.267 * MRbar. */
+const D2 = 1.128, D4 = 3.267;
+
+/**
+ * Control limits come from the process itself (not from the specification) and the pattern rules flag drifts before values leave tolerance.
+ * @param values numbers in time order; @param baseN use only the first baseN values for the limits (default all)
+ * @returns {{n, cl, sigma, ucl, lcl, mr, mrbar, mrUcl, signals: {i, rules: number[]}[]}|null}
+ */
+function controlChart(values, baseN) {
+  const n = values.length;
+  if (n < 3) return null;
+  const base = values.slice(0, baseN && baseN >= 3 ? Math.min(baseN, n) : n);
+  const cl = base.reduce((a, b) => a + b, 0) / base.length;
+  const mrBase = base.slice(1).map((v, i) => Math.abs(v - base[i]));
+  const mrbar = mrBase.reduce((a, b) => a + b, 0) / mrBase.length;
+  const sigma = mrbar / D2;
+  const mr = values.slice(1).map((v, i) => Math.abs(v - values[i]));
+  const flags = values.map(() => new Set());
+  if (!(sigma > 1e-9)) return { n, cl, sigma: 0, ucl: cl, lcl: cl, mr, mrbar, mrUcl: 0, signals: [], degenerate: true }; // constant values: no spread, no chart rules
+  {
+    const z = values.map((v) => (v - cl) / sigma);
+    z.forEach((v, i) => { if (Math.abs(v) > 3) flags[i].add(1); });
+    for (let i = 2; i < n; i++) {
+      const w = z.slice(i - 2, i + 1);
+      if (w.filter((v) => v > 2).length >= 2 && z[i] > 2) flags[i].add(2);
+      if (w.filter((v) => v < -2).length >= 2 && z[i] < -2) flags[i].add(2);
+    }
+    for (let i = 4; i < n; i++) {
+      const w = z.slice(i - 4, i + 1);
+      if (w.filter((v) => v > 1).length >= 4 && z[i] > 1) flags[i].add(3);
+      if (w.filter((v) => v < -1).length >= 4 && z[i] < -1) flags[i].add(3);
+    }
+  }
+  for (let i = 7; i < n; i++) {
+    const w = values.slice(i - 7, i + 1);
+    if (w.every((v) => v > cl) || w.every((v) => v < cl)) flags[i].add(4);
+  }
+  for (let i = 5; i < n; i++) {
+    const w = values.slice(i - 5, i + 1);
+    if (w.every((v, k) => k === 0 || v > w[k - 1]) || w.every((v, k) => k === 0 || v < w[k - 1])) flags[i].add(5);
+  }
+  return {
+    n, cl, sigma, ucl: cl + 3 * sigma, lcl: cl - 3 * sigma, mr, mrbar, mrUcl: D4 * mrbar,
+    signals: flags.map((s, i) => ({ i, rules: [...s].sort() })).filter((x) => x.rules.length),
+  };
+}
+
+/**
+ * Alerts for the home page: products / quantities measured in the last days whose latest values break a pattern rule.
+ * Needs at least `minN` values; only signals inside the last `recent` values are reported.
+ */
+function spcAlerts(db, targets, now) {
+  const days = 3;
+  const since = new Date((now || new Date()).getTime() - days * 86400 * 1000);
+  const { isoLocal } = require('../lib/time');
+  const pairs = db.all(`SELECT DISTINCT c.stable_key, m.level, r.quantity
+    FROM measurement_results r JOIN measurements m ON m.id = r.measurement_id AND m.is_current = 1 JOIN constructions c ON c.id = m.construction_id
+    WHERE m.created_at >= ? AND r.verdict IN ('ok','sub','peste') AND r.quantity NOT IN ('d_ech','ovality') LIMIT 300`, isoLocal(since));
+  const alerts = [];
+  for (const p of pairs) {
+    const rows = db.all(`SELECT r.value, r.verdict, m.record_no, m.created_at, c.label, mat.code AS material, mc.name AS machine
+      FROM measurement_results r JOIN measurements m ON m.id = r.measurement_id AND m.is_current = 1 JOIN constructions c ON c.id = m.construction_id
+      JOIN materials mat ON mat.id = c.material_id JOIN machines mc ON mc.id = m.machine_id
+      WHERE c.stable_key = ? AND m.level = ? AND r.quantity = ? ORDER BY m.created_at DESC, m.id DESC LIMIT ?`, p.stable_key, p.level, p.quantity, targets.spc_window).reverse();
+    if (rows.length < targets.spc_min_n) continue;
+    const ch = controlChart(rows.map((r) => r.value), rows.length - targets.spc_recent); // limits from the values before the recent ones, so a fresh drift does not stretch them
+    if (!ch) continue;
+    const recent = ch.signals.filter((s) => s.i >= rows.length - targets.spc_recent);
+    if (!recent.length) continue;
+    const last = recent[recent.length - 1];
+    alerts.push({ stable_key: p.stable_key, quantity: p.quantity, level: p.level, label: rows[0].label, material: rows[0].material, n: rows.length, rules: [...new Set(recent.flatMap((s) => s.rules))], record_no: rows[last.i].record_no, when: rows[last.i].created_at, machine: rows[last.i].machine });
+  }
+  return alerts.slice(0, 20);
+}
+
+module.exports = { controlChart, spcAlerts, QUANTITIES, GROUPS, parseFilters, dataset, products, stats, groupRows, latestLimits, capability, histogram, nonconformity, consumption };

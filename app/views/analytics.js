@@ -6,19 +6,19 @@ const { layout, textField, selectField } = require('./layout');
 const tests = require('../domain/tests');
 const { GROUPS } = require('../domain/analytics');
 
-const TABS = ['tendinta', 'distributie', 'neconformitate', 'consum', 'comparatie'];
+const TABS = ['tendinta', 'control', 'distributie', 'neconformitate', 'consum', 'comparatie'];
 
 function qs(f, extra) {
   const p = new URLSearchParams();
-  const map = { from: f.from, to: f.to, family_id: f.family_id, product: f.stable_key, machine_id: f.machine_id, shift: f.shift, crew_id: f.crew_id, operator_id: f.operator_id, client_id: f.client_id, level: f.level, quantity: f.quantity, group: f.group };
+  const map = { from: f.from, to: f.to, family_id: f.family_id, product: f.stable_key, machine_id: f.machine_id, shift: f.shift, crew_id: f.crew_id, operator_id: f.operator_id, client_id: f.client_id, level: f.level, quantity: f.quantity, group: f.group, base: f.base };
   for (const [k, v] of Object.entries({ ...map, ...(extra || {}) })) if (v !== '' && v !== null && v !== undefined) p.set(k, String(v));
   return p.toString();
 }
 
 function filterForm(tab, filters, lists, quantities) {
   const opt = (rows, key, label) => rows.map((r) => [r[key], r[label]]);
-  const needsGroup = tab !== 'tendinta';
-  const needsQuantity = ['tendinta', 'distributie', 'comparatie'].includes(tab);
+  const needsGroup = tab !== 'tendinta' && tab !== 'control';
+  const needsQuantity = ['tendinta', 'control', 'distributie', 'comparatie'].includes(tab);
   return html`<form method="get" action="/analize/${tab}" class="card filters"><div class="row">
     ${textField({ label: T.common.from, name: 'from', value: filters.from, type: 'date' })}
     ${textField({ label: T.common.to, name: 'to', value: filters.to, type: 'date' })}
@@ -31,6 +31,7 @@ function filterForm(tab, filters, lists, quantities) {
     ${selectField({ label: T.measure.operator, name: 'operator_id', value: filters.operator_id, options: opt(lists.operators, 'id', 'full_name'), blank: T.common.all })}
     ${selectField({ label: T.measure.client, name: 'client_id', value: filters.client_id, options: opt(lists.clients, 'id', 'short_name'), blank: T.common.all })}
     ${needsQuantity ? selectField({ label: T.detail.quantity, name: 'quantity', value: filters.quantity || 'mass_gm', options: quantities.map((q) => [q, tests.label(q)]) }) : ''}
+    ${tab === 'control' ? textField({ label: T.an.base_n, name: 'base', value: filters.base, inputmode: 'numeric', cls: 'num', hint: T.an.base_hint }) : ''}
     ${needsGroup ? selectField({ label: T.an.group_by, name: 'group', value: filters.group, options: GROUPS.map((g) => [g, T.an.groups[g]]), blank: T.an.group_default }) : ''}
     <button class="btn primary" type="submit">${T.common.filter}</button> <a class="btn" href="/analize/${tab}">${T.common.reset}</a>
   </div></form>`;

@@ -131,4 +131,33 @@ function whiskerChart({ items, lsl, usl, title }) {
   return wrap(H, title, `${grid}${lim}${rows}`);
 }
 
-module.exports = { trendChart, histogramChart, barChart, whiskerChart, niceTicks };
+/**
+ * Individuals control chart: centre line, control limits, optional specification limits, points flagged by pattern rules.
+ * points: [{v, rules:[n], label}]  lines: {cl, ucl, lcl, specMin, specMax}
+ */
+function controlChartSvg({ points, lines, title, xLabels, yLabel }) {
+  const H = 380;
+  if (!points.length) return wrap(H, title, '');
+  const vals = points.map((p) => p.v).concat([lines.cl, lines.ucl, lines.lcl, lines.specMin, lines.specMax].filter((v) => v !== null && v !== undefined));
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = (hi - lo || 1) * 0.06; lo -= pad; hi += pad;
+  const { ticks, step } = niceTicks(lo, hi, 7);
+  lo = Math.min(lo, ticks[0]); hi = Math.max(hi, ticks[ticks.length - 1]);
+  const x0 = PAD.l, x1 = W - PAD.r - 46, y0 = H - PAD.b, y1 = PAD.t;
+  const yOf = (v) => y0 - ((v - lo) / (hi - lo)) * (y0 - y1);
+  const n = points.length;
+  const xOf = (i) => (n === 1 ? (x0 + x1) / 2 : x0 + 8 + (i / (n - 1)) * (x1 - x0 - 16));
+  const hline = (v, cls, text) => (v === null || v === undefined ? '' : `<line x1="${x0}" x2="${x1}" y1="${r1(yOf(v))}" y2="${r1(yOf(v))}" class="${cls}"/>${t(x1 + 4, yOf(v) + 4, 'ch-text small', text)}`);
+  const path = points.map((p, i) => `${i ? 'L' : 'M'}${r1(xOf(i))} ${r1(yOf(p.v))}`).join('');
+  const dots = points.map((p, i) => {
+    const x = xOf(i), y = yOf(p.v);
+    const flagged = p.rules && p.rules.length;
+    return `<g>${flagged ? `<circle cx="${r1(x)}" cy="${r1(y)}" r="6" class="ch-pt-out"/>${t(x, y - 9, 'ch-text small mid', p.rules.join(','))}` : `<circle cx="${r1(x)}" cy="${r1(y)}" r="3" class="ch-pt-ok"/>`}<title>${h(p.label)}</title></g>`;
+  }).join('');
+  const xl = (xLabels || []).map(({ i, text }) => t(xOf(i), y0 + 20, `ch-text ${n > 1 && i === 0 ? 'start' : n > 1 && i === n - 1 ? 'end' : 'mid'}`, text)).join('');
+  return wrap(H, title, `${yAxis(ticks, step, yOf, x0, x1)}<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" class="ch-axis"/>
+    ${hline(lines.specMin, 'ch-spec', 'min')}${hline(lines.specMax, 'ch-spec', 'max')}${hline(lines.ucl, 'ch-lim', 'UCL')}${hline(lines.lcl, 'ch-lim', 'LCL')}${hline(lines.cl, 'ch-mean', 'CL')}
+    <path d="${path}" class="ch-line" fill="none"/>${dots}${xl}`);
+}
+
+module.exports = { controlChartSvg, trendChart, histogramChart, barChart, whiskerChart, niceTicks };

@@ -30,6 +30,7 @@ function targetsPage(ctx, d) {
   <h2>${T.cfg.t_group_entry}</h2><div class="row">${field('sample_mm', 'mm')}${field('r_sample_m', 'm')}${field('temp_min', '°C')}${field('temp_max', '°C')}</div>
   <h2>${T.cfg.t_group_analysis}</h2><div class="row">${field('cpk_good')}${field('cpk_min')}${field('min_n')}</div>
   <h2>${T.cfg.t_group_checks}</h2><div class="row">${field('mass_ratio_min')}${field('mass_ratio_max')}</div>
+  <h2>${T.cfg.t_group_spc}</h2><div class="row">${field('spc_min_n')}${field('spc_window')}${field('spc_recent')}</div>
   <div class="actions"><button class="btn primary" type="submit">${T.common.save}</button></div></form>
 <div class="card"><h2>${T.cfg.rule_title}</h2><p>${T.cfg.rule_text}</p><ul>
   <li><span class="val v-ok">${T.verdict.ok}</span> ${T.cfg.rule_green}</li><li><span class="val v-peste">${T.verdict.peste}</span> ${T.cfg.rule_red}</li></ul>

@@ -9,9 +9,10 @@ const xp = require('../lib/export');
 const views = require('../views/analytics');
 const { displayDateTime } = require('../lib/time');
 const { T, f } = require('../i18n/ro');
+const fill = f;
 const tests = require('../domain/tests');
 
-const TABS = ['tendinta', 'distributie', 'neconformitate', 'consum', 'comparatie'];
+const TABS = ['tendinta', 'control', 'distributie', 'neconformitate', 'consum', 'comparatie'];
 const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 const stamp = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
@@ -63,6 +64,39 @@ module.exports = function register(app) {
           { key: 'value', header: qLabel(quantity), type: 'number', fmt, verdict: true }, { key: 'lim_min', header: T.an.lsl, type: 'number', fmt }, { key: 'lim_max', header: T.an.usl, type: 'number', fmt },
           { key: 'verdictText', header: T.detail.verdict },
         ], rows: rows.map((r) => ({ ...r, when: displayDateTime(r.created_at), verdictText: verdictText(r.verdict) })) },
+      ],
+    };
+  }
+
+  function control(f) {
+    const quantity = f.quantity || 'mass_gm';
+    if (!f.stable_key) return { quantity, notes: [T.an.need_product], charts: [], tables: [] };
+    const rows = A.dataset(db, f, { quantity });
+    if (!rows.length) return { quantity, notes: [T.an.no_data], charts: [], tables: [] };
+    if (new Set(rows.map((r) => r.level)).size > 1) return { quantity, notes: [T.an.need_level], charts: [], tables: [] };
+    const ch = A.controlChart(rows.map((r) => r.value), f.base);
+    if (!ch) return { quantity, notes: [T.an.spc_too_few], charts: [], tables: [] };
+    const tg = targets();
+    const notes = [T.an.spc_hint];
+    if ((f.base || rows.length) < tg.spc_min_n) notes.push(fill(T.an.spc_small, { n: tg.spc_min_n }));
+    const byI = new Map(ch.signals.map((s) => [s.i, s.rules]));
+    const fmt = valueFmt(quantity);
+    const lim = A.latestLimits(rows);
+    const idx = rows.length <= 1 ? [0] : [0, Math.floor((rows.length - 1) / 2), rows.length - 1];
+    const xLabels = [...new Set(idx)].map((i) => ({ i, text: displayDateTime(rows[i].created_at) }));
+    const points = rows.map((r, i) => ({ v: r.value, rules: byI.get(i) || [], label: `${displayDateTime(r.created_at)} · #${r.record_no} · ${r.machine} · ${fmt(r.value)}${byI.get(i) ? ' — ' + byI.get(i).map((n) => T.an.rules[n]).join('; ') : ''}` }));
+    const head = `${qLabel(quantity)} — ${rows[0].label} ${rows[0].material}`;
+    const mrPoints = ch.mr.map((v, i) => ({ v, rules: v > ch.mrUcl ? [1] : [], label: `MR ${calc.formatNumber(v, 0, 4)}` }));
+    return {
+      quantity, notes,
+      charts: [svg.controlChartSvg({ points, lines: { cl: ch.cl, ucl: ch.ucl, lcl: ch.lcl, specMin: lim.min, specMax: lim.max }, title: head, xLabels }),
+        svg.controlChartSvg({ points: mrPoints, lines: { cl: ch.mrbar, ucl: ch.mrUcl, lcl: null }, title: `${T.an.mr_chart} — ${head}` })],
+      tables: [
+        { title: T.an.summary, main: false, columns: [{ key: 'n', header: 'n', type: 'number' }, { key: 'cl', header: 'CL', type: 'number', fmt }, { key: 'sigma', header: 'σ (MR̄ / 1,128)', type: 'number', fmt: (v) => calc.formatNumber(v, 0, 5) },
+          { key: 'lcl', header: 'LCL', type: 'number', fmt }, { key: 'ucl', header: 'UCL', type: 'number', fmt }, { key: 'mrbar', header: 'MR̄', type: 'number', fmt: (v) => calc.formatNumber(v, 0, 5) }, { key: 'sig', header: T.an.signals, type: 'number' }],
+          rows: [{ n: ch.n, cl: ch.cl, sigma: ch.sigma, lcl: ch.lcl, ucl: ch.ucl, mrbar: ch.mrbar, sig: ch.signals.length }] },
+        { title: T.an.signals, main: true, columns: [{ key: 'record_no', header: T.register.no, type: 'number', href: (r) => `/masuratori/${r.record_no}` }, { key: 'when', header: T.common.date }, { key: 'machine', header: T.measure.machine }, { key: 'value', header: qLabel(quantity), type: 'number', fmt }, { key: 'rules_text', header: T.an.rule }],
+          rows: ch.signals.map((s) => ({ record_no: rows[s.i].record_no, when: displayDateTime(rows[s.i].created_at), machine: rows[s.i].machine, value: rows[s.i].value, rules_text: s.rules.map((n) => T.an.rules[n]).join('; ') })) },
       ],
     };
   }
@@ -164,7 +198,7 @@ module.exports = function register(app) {
     };
   }
 
-  const RUN = { tendinta: trend, distributie: distribution, neconformitate: nonconf, consum, comparatie: compare };
+  const RUN = { tendinta: trend, control, distributie: distribution, neconformitate: nonconf, consum, comparatie: compare };
 
   router.get('/analize', {}, () => redirect('/analize/tendinta'));
 

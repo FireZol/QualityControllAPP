@@ -46,6 +46,7 @@ function certificatePage(ctx, d) {
     ${snap.conforming ? T.cable.conforming_text : T.cable.nonconforming_text} ${snap.override_reason ? html`<div>${T.cable.override_reason}: <em>${snap.override_reason}</em></div>` : ''}</div>`;
   const content = html`${facts}${drums}${sections(snap.rows, true)}
     ${snap.rows.some((r) => r.external) ? html`<p class="small">† ${T.cable.external_note}</p>` : ''}
+    ${snap.hidden_count ? html`<p class="small muted">${f(T.cable.hidden_note, { n: snap.hidden_count })}</p>` : ''}
     ${preview && snap.missing.length ? html`<div class="notes"><strong>${T.cable.missing}</strong><ul>${snap.missing.map((m) => html`<li>${m.test}${m.drum ? ` — ${T.cable.drum} ${m.drum}` : ''}</li>`)}</ul></div>` : ''}
     ${conclusion}`;
   const statusNote = preview ? T.cable.preview_banner : (cert && cert.superseded_by ? f(T.cable.superseded_banner, { no: cert.superseded_by }) : '');

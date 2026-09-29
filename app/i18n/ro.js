@@ -35,8 +35,9 @@ const S = {
     families_nothing: 'O familie activă trebuie să măsoare cel puțin ceva (masă, rezistență sau diametru).',
     f_active: 'Activă pentru măsurători', f_mass: 'Masă', f_theor: 'R teoretică din masă', f_r_cu: 'R măsurată la Cu', f_r_al: 'R măsurată la Al',
     targets_intro: 'Valorile care înainte erau fixe în aplicație. Se aplică imediat măsurătorilor și analizelor noi.', range: 'Între {min} și {max}',
-    t_group_entry: 'Introducerea măsurătorilor', t_group_analysis: 'Analize', t_group_checks: 'Verificări la revizii',
+    t_group_entry: 'Introducerea măsurătorilor', t_group_analysis: 'Analize', t_group_checks: 'Verificări la revizii', t_group_spc: 'Cărți de control (SPC)',
     t: { sample_mm: 'Lungimea implicită a probei de masă', r_sample_m: 'Lungimea implicită a probei de rezistență', temp_min: 'Temperatura minimă admisă', temp_max: 'Temperatura maximă admisă',
+      spc_min_n: 'Număr minim de valori pentru semnale SPC', spc_window: 'Fereastra de valori analizate (ultimele N)', spc_recent: 'Ultimele N valori care declanșează o alertă',
       cpk_good: 'Cpk bun (verde) de la', cpk_min: 'Cpk acceptabil (galben) de la', min_n: 'Număr minim de valori pentru Cp / Cpk', mass_ratio_min: 'Raport minim masă fișă / (fire × masa firului)', mass_ratio_max: 'Raport maxim masă fișă / (fire × masa firului)' },
     rule_title: 'Regula rezistenței', rule_text: 'La rezistență valoarea mai mică este mai bună; nu există limită inferioară.', rule_green: 'la limită sau sub ea: în limite (cu cât mai mică, cu atât mai bine).', rule_red: 'peste limită: neconform.',
     rule_where: 'Limita este R max din fișa tehnică (câmpul „R max la 20 °C” al construcției), iar dacă acesta lipsește valoarea din tabelul IEC 60228 de mai jos.',
@@ -46,8 +47,9 @@ const S = {
 
   an: {
     title: 'Analize', export: 'Export', group_by: 'Grupează după', group_default: '— implicit —', showing: 'Se afișează ultimele {n} din {total}.',
-    tabs: { tendinta: 'Tendință', distributie: 'Distribuție și capabilitate', neconformitate: 'Rată de neconformitate', consum: 'Consum suplimentar', comparatie: 'Comparație' },
+    tabs: { control: 'Carte de control (SPC)', tendinta: 'Tendință', distributie: 'Distribuție și capabilitate', neconformitate: 'Rată de neconformitate', consum: 'Consum suplimentar', comparatie: 'Comparație' },
     tab_help: {
+      control: 'Carte de control pentru valori individuale (I-MR): limitele de control vin din proces, nu din specificație; regulile Western Electric / Nelson semnalează derivele înainte de ieșirea din toleranță.',
       tendinta: 'Valorile măsurate în timp, cu banda min–max a limitelor față de care a fost judecată fiecare valoare.',
       distributie: 'Histogramă, medie, abatere standard, Cp și Cpk pe produs, utilaj și celelalte grupări.',
       neconformitate: 'Procentul rezultatelor în afara limitelor, cu sub minim și peste maxim separat.',
@@ -55,6 +57,9 @@ const S = {
       comparatie: 'Aceeași mărime, alăturat, pentru utilaje, ture, schimburi, operatori sau clienți, în aceeași perioadă.',
     },
     groups: { product: 'Produs', machine: 'Utilaj', shift: 'Tura', crew: 'Schimb', operator: 'Operator', client: 'Client' },
+    rule: 'Semnal', rules: { 1: 'un punct în afara limitelor de control (±3σ)', 2: '2 din 3 puncte consecutive dincolo de 2σ, de aceeași parte', 3: '4 din 5 puncte consecutive dincolo de 1σ, de aceeași parte', 4: '8 puncte consecutive de aceeași parte a liniei centrale', 5: '6 puncte consecutive crescătoare sau descrescătoare' },
+    signals: 'Semnale', mr_chart: 'Amplitudinea mobilă (MR)', base_n: 'Limitele din primele N valori', base_hint: 'Gol = toate valorile; folosiți o perioadă stabilă ca referință.', spc_too_few: 'Sunt necesare cel puțin 3 valori.',
+    spc_small: 'Sub {n} valori limitele de control sunt orientative.', spc_hint: 'Limitele de control (CL ± 3σ, σ = MR̄ / 1,128) descriu procesul, nu cerința din fișă; liniile punctate galbene sunt limitele fișei. Punctele marcate poartă numărul regulii încălcate.',
     need_product: 'Alegeți un produs (și, dacă este cazul, mărimea) pentru această analiză.', need_level: 'Produsul are măsurători pe mai multe niveluri; alegeți nivelul (suviță, toron sau liță).',
     no_data: 'Nu există măsurători pentru filtrele alese.', limits_changed: 'Limitele s-au schimbat între revizii în perioada aleasă; fiecare punct este judecat față de limitele din momentul măsurării, iar Cp / Cpk folosesc limitele cele mai recente.',
     limits_changed_short: 'limite schimbate', small_n: 'n < {n}: orientativ', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distanța dintre medie și limita cea mai apropiată / 3s. Abaterea standard este cea a eșantionului (n − 1). Rezultatele informative și cele fără limită nu au Cp / Cpk.',
@@ -89,7 +94,7 @@ const S = {
     scopes: { routine: 'Încercări de rutină (pe tobă)', sample: 'Încercări pe probă (pe lot)', type: 'Încercări de tip' },
     external: 'extern', external_title: 'Încercare făcută de un laborator extern; rezultatul provine din raportul lui', external_note: 'Încercare efectuată de un laborator extern; rezultatul provine din raportul acestuia.',
     limit: 'cerință', pass: 'Conform', fail: 'Neconform', not_tested: '— neîncercat —', readings_placeholder: 'valori separate prin spațiu', other_tests: 'Alte încercări ({n}) fără cerință în fișă', none_required: 'Fișa nu cere încercări de acest fel; le găsiți la „Alte încercări”.',
-    pass_fail_req: 'conform / neconform', design_data: 'Date despre cablu', cores: 'Număr de conductoare', rated_voltage: 'Tensiune nominală (U0/U)', rated_voltage_hint: 'De exemplu 0,6/1 kV', conductor_class: 'Clasa conductorului (IEC 60228)',
+    hidden_note: '{n} valori măsurate fără cerință în fișa tehnică nu sunt afișate; ele rămân în înregistrări.', pass_fail_req: 'conform / neconform', design_data: 'Date despre cablu', cores: 'Număr de conductoare', rated_voltage: 'Tensiune nominală (U0/U)', rated_voltage_hint: 'De exemplu 0,6/1 kV', conductor_class: 'Clasa conductorului (IEC 60228)',
     insulation: 'Izolație', sheath: 'Manta', armour: 'Armură / ecran', required_tests: 'Încercări cerute de fișă', required_tests_hint: 'Bifați încercările cerute pentru acest tip de cablu (de rutină, pe probă, de tip). Cele bifate apar în lista principală de la introducerea încercărilor și se verifică la acoperirea lotului; celelalte rămân la „Alte încercări”.',
     tests_count: '{req} cerute, {lim} cu limite', type_report_link: 'Raport de tip', cable_design: 'Conductor', cable_voltage: 'Tensiune', cable_compounds: 'Izolație / manta', cable_standard: 'Standard', cable_tests: 'Încercări', cable_report: 'Raport',
     remarks: 'Observații', nothing_to_test: 'Nu există loturi deschise și nici tipuri de cablu în fișa activă. Creați un lot sau activați fișa tehnică a cablului.', summary: '{n} rezultate, {out} neconforme', suffix: { unit: 'unitate', len: 'lungime probă', temp: 'temperatură' },
@@ -165,6 +170,7 @@ const S = {
   home: {
     title: 'Acasă', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
     today: 'Măsurătorile de azi (tura curentă prima)', today_empty: 'Nicio măsurătoare înregistrată azi.',
+    spc: 'Semnale SPC (deriva procesului)', spc_hint: 'Produse la care ultimele valori încalcă o regulă de control, chiar dacă încă sunt în limite. Limitele de control se calculează din valorile anterioare.',
     out_of_limit: 'Rezultate în afara limitelor — ultimele 24 de ore', out_empty: 'Nicio valoare în afara limitelor în ultimele 24 de ore.', results: 'Valori',
   },
 

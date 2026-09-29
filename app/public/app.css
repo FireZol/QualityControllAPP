@@ -194,3 +194,4 @@ details.others { margin-top: 8px; } details.others summary { cursor: pointer; co
 tr.group-row th { background: #dfe7ef; text-align: left; }
 .checklist { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
 @media (max-width: 720px) { .test-row { grid-template-columns: 1fr; } .res-group { grid-template-columns: 1fr 1fr; } }
+.chart .ch-spec { stroke: #b58900; stroke-width: 1.2; stroke-dasharray: 2 4; }

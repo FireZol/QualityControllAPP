@@ -36,6 +36,7 @@ function homePage(ctx, d) {
 <section class="card"><h2>${T.home.today}</h2>
   <div class="scroll"><table class="grid">${head()}<tbody>${d.today.rows.length ? d.today.rows.map(quickRow) : html`<tr><td colspan="9" class="empty">${T.home.today_empty}</td></tr>`}</tbody></table></div>
 </section>
+${d.spc.length ? html`<section class="card"><h2>${T.home.spc}</h2><p class="muted">${T.home.spc_hint}</p><div class="scroll"><table class="grid"><thead><tr><th>${T.register.product}</th><th>${T.detail.quantity}</th><th>${T.an.rule}</th><th>${T.register.no}</th><th>${T.measure.machine}</th></tr></thead><tbody>${d.spc.map((a) => html`<tr><td>${a.label} <span class="tag">${a.material}</span></td><td>${tests.label(a.quantity)}</td><td>${a.rules.map((n) => T.an.rules[n]).join('; ')}</td><td><a href="/masuratori/${a.record_no}">${a.record_no}</a> · <a href="/analize/control?product=${encodeURIComponent(a.stable_key)}&amp;quantity=${a.quantity}">${T.an.tabs.control}</a></td><td>${a.machine}</td></tr>`)}</tbody></table></div></section>` : ''}
 <section class="card"><h2>${T.home.out_of_limit}</h2>
   <div class="scroll"><table class="grid"><thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.product}</th><th>${T.measure.machine}</th><th>${T.home.results}</th></tr></thead>
   <tbody>${d.out.length ? d.out.map(outRows) : html`<tr><td colspan="5" class="empty">${T.home.out_empty}</td></tr>`}</tbody></table></div>

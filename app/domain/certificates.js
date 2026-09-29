@@ -8,6 +8,7 @@ const tests = require('./tests');
 const batches = require('./batches');
 const settings = require('./settings');
 const { nowIso } = require('../lib/time');
+const { S } = require('../i18n/ro');
 
 const OUT = ['sub', 'peste', 'neconform'];
 
@@ -22,19 +23,23 @@ function limitText(q, min, max) {
 function rowsFrom(db, meas, drumsById) {
   const cat = new Map(tests.catalogue().map((t) => [t.code, t]));
   const out = [];
+  let hidden = 0;
   for (const m of meas) {
     for (const r of m.results || []) {
+      // values without a requirement on the data sheet stay in the records but are not printed on a certificate
+      if (r.verdict === 'nedeterminat') { hidden++; continue; }
       const code = r.quantity.replace(/_(avg|min|max)$/, '');
       const t = cat.get(code) || cat.get(r.quantity);
       out.push({
         scope: t ? t.scope : 'sample', sort: t ? t.sort : 9999, code, test: tests.label(r.quantity), unit: t && t.kind !== 'passfail' ? (t.unit || '') : '',
         drum: m.drum_id ? (drumsById.get(m.drum_id) || {}).drum_no || null : null,
-        value: calc.formatQuantity(r.quantity, r.value), limit: r.verdict === 'info' ? '' : limitText(r.quantity, r.lim_min, r.lim_max), verdict: r.verdict,
+        value: calc.formatQuantity(r.quantity, r.value), limit: t && t.kind === 'passfail' ? S.cable.pass : (r.verdict === 'info' ? '' : limitText(r.quantity, r.lim_min, r.lim_max)), verdict: r.verdict,
         deviation: r.deviation_pct, external: t ? !t.in_house : false, record_no: m.record_no, when: m.created_at, machine: m.machine_name, user: m.user_name,
       });
     }
   }
   const scopeOrder = { routine: 0, sample: 1, type: 2 };
+  out.hidden = hidden;
   out.sort((a, b) => scopeOrder[a.scope] - scopeOrder[b.scope] || String(a.drum || '').localeCompare(String(b.drum || ''), 'ro', { numeric: true }) || a.sort - b.sort || a.record_no - b.record_no);
   return out;
 }
@@ -55,7 +60,7 @@ function build(db, batchId) {
     drums: o.drums.map((d) => ({ drum_no: d.drum_no, length_m: d.length_m })),
     rows,
     missing: o.missing.map((m) => ({ test: m.test.name, scope: m.test.scope, drum: m.drum ? m.drum.drum_no : null })),
-    conforming: rows.length > 0 && !out.length, out_count: out.length, row_count: rows.length,
+    conforming: rows.length > 0 && !out.length, out_count: out.length, row_count: rows.length, hidden_count: rows.hidden || 0,
   };
 }
 

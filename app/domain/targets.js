@@ -10,12 +10,14 @@ const DEFAULTS = {
   cpk_good: 1.33, cpk_min: 1.0,     // Cpk colouring: >= good green, >= min amber, below red
   min_n: 30,                        // below this many values Cp / Cpk are marked indicative
   mass_ratio_min: 0.85, mass_ratio_max: 1.15, // wires x wire mass vs sheet mass: outside this band a warning is raised
+  spc_min_n: 20, spc_window: 100, spc_recent: 10, // control charts: values needed before alerts, how far back, how many latest values raise an alert
 };
 
 /** name -> [label key is in i18n, min, max, integer?] */
 const LIMITS = {
   temp_min: [-50, 100], temp_max: [-50, 150], sample_mm: [10, 100000], r_sample_m: [0.1, 1000],
   cpk_good: [0.1, 10], cpk_min: [0.1, 10], min_n: [2, 1000, true], mass_ratio_min: [0.1, 1], mass_ratio_max: [1, 5],
+  spc_min_n: [8, 1000, true], spc_window: [20, 5000, true], spc_recent: [1, 100, true],
 };
 
 function get(db) {

@@ -8,7 +8,10 @@ Design rule: nothing that engineers may want to change is hard-coded. Everything
 | IEC 60228 reference values: R max at 20 °C, minimum wires, max wire Ø (add rows, edit values) | Nomenclatoare → Tabel IEC 60228 | Inginer |
 | Material constants ρ20, density, α20 (with a check of the formula against IEC Tab. A.1) | Nomenclatoare → Constante material | Inginer |
 | What each product family measures: mass, measured R for Cu / Al, theoretical R, active for measurement | Nomenclatoare → Familii de produs | Inginer |
-| Sample-length defaults, temperature range, Cpk colours, minimum n, mass-vs-wires band | Nomenclatoare → Ținte și praguri | Inginer |
+| Sample-length defaults, temperature range, Cpk colours, minimum n, mass-vs-wires band, SPC minimum values / window / alert horizon | Nomenclatoare → Ținte și praguri | Inginer |
+| Finished-cable tests: catalogue (name, unit, category routine / sample / type, compounds it applies to, internal or external lab, standard reference) | Nomenclatoare → Tipuri de încercări | Inginer |
+| Cable design: required tests, limits per test result, compounds, standard, voltage, conductor class | Fișe tehnice → Cablu de joasă tensiune (two-person rule) | Inginer |
+| Compounds (PVC, XLPE, HFFR …) and cable standards (IEC 60502-1, HD 603, VDE 0276-603 …) | Nomenclatoare | Inginer, Administrator |
 | Machines, machine types (and allowed families), operators, clients, sample types, shapes, destinations, crews and cycle start | Nomenclatoare | Inginer, Administrator |
 | Shift start times, backup, port, sessions | Setări | Administrator |
 
