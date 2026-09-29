@@ -40,7 +40,7 @@
     return 1 / (1 + alpha20 * (tempC - 20));
   }
 
-  const temperatureOutOfRange = (tempC) => tempC < TEMP_MIN || tempC > TEMP_MAX;
+  const temperatureOutOfRange = (tempC, min, max) => tempC < (min === undefined ? TEMP_MIN : min) || tempC > (max === undefined ? TEMP_MAX : max);
 
   /** Resistance per km from what the instrument shows. unit: 'ohm_km' | 'ohm' (then sample length in m). */
   function resistancePerKm(value, unit, sampleM) {
@@ -129,6 +129,7 @@
    *   iec         { r_max, source } | null                 (resistance limit of the finished conductor)
    *   measuresR   true when measured resistance applies to this family + material
    *   measuresMass / theoretical / measuresDiameter   false to skip that part; default true
+   *   targets     {temp_min, temp_max, sample_mm, r_sample_m}: editable thresholds and defaults (domain/targets.js)
    *   rEquivN     number of strands: the measured resistance is a strand's, reported to the finished conductor
    * @returns {{results: object[], warnings: string[], errors: string[]}}
    */
@@ -176,7 +177,7 @@
     // mass and theoretical resistance (families that do not weigh, e.g. class 5 wire, skip both)
     const massG = num('mass_g');
     let sampleMm = num('sample_mm');
-    if (inputs.sample_mm === undefined || inputs.sample_mm === '' || inputs.sample_mm === null) sampleMm = 1000;
+    if (inputs.sample_mm === undefined || inputs.sample_mm === '' || inputs.sample_mm === null) sampleMm = (ctx.targets && ctx.targets.sample_mm) || 1000;
     if (ctx.measuresMass !== false) {
       if (massG === null) errors.push('mass_g');
       if (sampleMm === null || sampleMm <= 0) errors.push('sample_mm');
@@ -205,13 +206,13 @@
       const rv = num('r_value');
       const unit = inputs.r_unit === 'ohm' ? 'ohm' : 'ohm_km';
       let rs = num('r_sample_m');
-      if (unit === 'ohm' && (inputs.r_sample_m === undefined || inputs.r_sample_m === '' || inputs.r_sample_m === null)) rs = 5;
+      if (unit === 'ohm' && (inputs.r_sample_m === undefined || inputs.r_sample_m === '' || inputs.r_sample_m === null)) rs = (ctx.targets && ctx.targets.r_sample_m) || 5;
       const t = num('temp_c');
       if (rv === null || rv <= 0) errors.push('r_value');
       if (unit === 'ohm' && (rs === null || rs <= 0)) errors.push('r_sample_m');
       if (t === null) errors.push('temp_c');
       if (rv !== null && rv > 0 && t !== null && !(unit === 'ohm' && (rs === null || rs <= 0))) {
-        if (temperatureOutOfRange(t)) warnings.push('temp_range');
+        if (temperatureOutOfRange(t, ctx.targets && ctx.targets.temp_min, ctx.targets && ctx.targets.temp_max)) warnings.push('temp_range');
         const perKm = resistancePerKm(rv, unit, rs);
         const r20 = resistanceAt20(perKm, t, ctx.material.alpha20);
         const rMax = ctx.iec ? ctx.iec.r_max : null;

@@ -40,7 +40,7 @@ function cell(col, row) {
   let inner = col.fmt ? col.fmt(v, row) : (v === null || v === undefined ? '' : (col.type === 'number' ? calc.formatNumber(v, 0, 4) : v));
   if (col.verdict) inner = html`<span class="val v-${row.verdict}">${inner}</span>`;
   if (col.href && v !== null && v !== undefined) inner = html`<a href="${col.href(row)}">${inner}</a>`;
-  if (col.cpk && typeof v === 'number') inner = html`<span class="cpk ${v >= 1.33 ? 'cpk-good' : v >= 1 ? 'cpk-warn' : 'cpk-bad'}">${inner}</span>`;
+  if (col.cpk && typeof v === 'number') inner = html`<span class="cpk ${v >= col.cpk.good ? 'cpk-good' : v >= col.cpk.min ? 'cpk-warn' : 'cpk-bad'}">${inner}</span>`;
   return html`<td class="${col.type === 'number' ? 'num' : ''}">${inner}</td>`;
 }
 

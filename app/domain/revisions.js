@@ -114,10 +114,11 @@ function checkRevision(db, revisionId) {
   const findings = [];
   if (!full.constructions.length) findings.push({ level: 'error', code: 'no_constructions', construction: null, params: {} });
   const level = full.family.levels[0];
+  const targets = require('./targets').get(db);
   for (const c of full.constructions) {
     const limits = {};
     for (const l of c.limits) if (l.level === level) limits[l.quantity] = l;
-    for (const f of iec.checkConstruction(db, full.family, c, limits)) findings.push({ ...f, construction: { id: c.id, label: c.label, stable_key: c.stable_key } });
+    for (const f of iec.checkConstruction(db, full.family, c, limits, targets)) findings.push({ ...f, construction: { id: c.id, label: c.label, stable_key: c.stable_key } });
   }
   return findings;
 }

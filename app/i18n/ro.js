@@ -22,6 +22,23 @@ const S = {
     status: 'Stare', open: 'Deschide', from: 'De la', to: 'Până la', user: 'Utilizator', time: 'Ora', notes: 'Observații',
   },
 
+  cfg: {
+    families: 'Familii de produs', families_desc: 'Ce se măsoară pe familie: masă, rezistență măsurată (Cu / Al), rezistență teoretică', targets: 'Ținte și praguri', targets_desc: 'Temperatură, lungimi implicite ale probelor, Cpk, mărimea minimă a eșantionului',
+    iec: 'Tabel IEC 60228', iec_desc: 'Valorile limită de referință: R max, număr minim de fire, Ø maxim fir',
+    families_intro: 'Aici se stabilește ce se măsoară pentru fiecare familie și dacă familia este activă pentru măsurători. Se aplică măsurătorilor noi; înregistrările existente nu se modifică. Fiecare modificare se înregistrează în jurnal.',
+    families_rule: 'Rezistența: mai mic este mai bine. Până la limită (R max din fișă sau, dacă lipsește, din IEC 60228) rezultatul este verde, peste limită roșu — indiferent dacă valoarea este măsurată, calculată teoretic din masă sau un toron raportat la liță.',
+    families_nothing: 'O familie activă trebuie să măsoare cel puțin ceva (masă, rezistență sau diametru).',
+    f_active: 'Activă pentru măsurători', f_mass: 'Masă', f_theor: 'R teoretică din masă', f_r_cu: 'R măsurată la Cu', f_r_al: 'R măsurată la Al',
+    targets_intro: 'Valorile care înainte erau fixe în aplicație. Se aplică imediat măsurătorilor și analizelor noi.', range: 'Între {min} și {max}',
+    t_group_entry: 'Introducerea măsurătorilor', t_group_analysis: 'Analize', t_group_checks: 'Verificări la revizii',
+    t: { sample_mm: 'Lungimea implicită a probei de masă', r_sample_m: 'Lungimea implicită a probei de rezistență', temp_min: 'Temperatura minimă admisă', temp_max: 'Temperatura maximă admisă',
+      cpk_good: 'Cpk bun (verde) de la', cpk_min: 'Cpk acceptabil (galben) de la', min_n: 'Număr minim de valori pentru Cp / Cpk', mass_ratio_min: 'Raport minim masă fișă / (fire × masa firului)', mass_ratio_max: 'Raport maxim masă fișă / (fire × masa firului)' },
+    rule_title: 'Regula rezistenței', rule_text: 'La rezistență valoarea mai mică este mai bună; nu există limită inferioară.', rule_green: 'la limită sau sub ea: în limite (cu cât mai mică, cu atât mai bine).', rule_red: 'peste limită: neconform.',
+    rule_where: 'Limita este R max din fișa tehnică (câmpul „R max la 20 °C” al construcției), iar dacă acesta lipsește valoarea din tabelul IEC 60228 de mai jos.',
+    iec_licence: 'Se păstrează doar valorile limită numerice; textul standardului nu se stochează (licență ASRO). Modificările se înregistrează în jurnal și se aplică măsurătorilor și verificărilor noi.',
+    iec_table: 'Tabel', iec_rmax: 'R max [Ω/km]', iec_w_circ: 'Fire min. circular', iec_w_comp: 'Fire min. compactat', iec_w_shaped: 'Fire min. profilat', iec_dmax: 'Ø max fir [mm]',
+  },
+
   an: {
     title: 'Analize', export: 'Export', group_by: 'Grupează după', group_default: '— implicit —', showing: 'Se afișează ultimele {n} din {total}.',
     tabs: { tendinta: 'Tendință', distributie: 'Distribuție și capabilitate', neconformitate: 'Rată de neconformitate', consum: 'Consum suplimentar', comparatie: 'Comparație' },
@@ -35,7 +52,7 @@ const S = {
     groups: { product: 'Produs', machine: 'Utilaj', shift: 'Tura', crew: 'Schimb', operator: 'Operator', client: 'Client' },
     need_product: 'Alegeți un produs (și, dacă este cazul, mărimea) pentru această analiză.', need_level: 'Produsul are măsurători pe mai multe niveluri; alegeți nivelul (suviță, toron sau liță).',
     no_data: 'Nu există măsurători pentru filtrele alese.', limits_changed: 'Limitele s-au schimbat între revizii în perioada aleasă; fiecare punct este judecat față de limitele din momentul măsurării, iar Cp / Cpk folosesc limitele cele mai recente.',
-    limits_changed_short: 'limite schimbate', small_n: 'n < 30: orientativ', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distanța dintre medie și limita cea mai apropiată / 3s. Abaterea standard este cea a eșantionului (n − 1). Rezultatele informative și cele fără limită nu au Cp / Cpk.',
+    limits_changed_short: 'limite schimbate', small_n: 'n < {n}: orientativ', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distanța dintre medie și limita cea mai apropiată / 3s. Abaterea standard este cea a eșantionului (n − 1). Rezultatele informative și cele fără limită nu au Cp / Cpk.',
     pick_product_for_histogram: 'Alegeți un produs pentru a vedea histograma.', summary: 'Rezumat', points: 'Valorile măsurate', mean: 'Media', sd: 'Abatere standard', lsl: 'Limita min', usl: 'Limita max',
     out_count: 'În afara limitelor', capability: 'Capabilitate', note: 'Observații', nonconf: 'Neconformitate', nonconf_chart: 'Rezultate în afara limitelor [%]', nonconf_hint: 'Se numără doar rezultatele cu verdict (în limite, sub minim, peste maxim); cele informative și nedeterminate nu intră.',
     evaluated: 'Rezultate evaluate', pct_out: '% în afara limitelor', pct_sub: '% sub minim', pct_peste: '% peste maxim',
@@ -74,7 +91,7 @@ const S = {
   flash: {
     saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
     measurement_saved: 'Măsurătoarea a fost salvată.',
-    measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului 0–40 °C; corecția a fost calculată, dar verificați valoarea.',
+    measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului admis (Nomenclatoare → Ținte și praguri); corecția a fost calculată, dar verificați valoarea.',
     measurement_corrected: 'Corecția a fost salvată ca versiune nouă; versiunea anterioară rămâne în istoric.',
     rev_created: 'Revizia nouă (ciornă) a fost creată din cea activă.', rev_submitted: 'Revizia a fost trimisă la verificare.',
     rev_verified: 'Revizia a fost verificată și activată; revizia anterioară a fost arhivată.', rev_rejected: 'Revizia a fost respinsă și a revenit la ciornă.',
@@ -139,11 +156,11 @@ const S = {
     limits_caption: 'Limite din fișa tehnică activă', nominal: 'Nominal', limits: 'Limite', source: 'Sursă', source_sheet: 'fișa tehnică', informative_note: 'informativ, fără verdict',
     sample_data: 'Datele probei', operator: 'Operator', client: 'Client', sample_type: 'Tip de probă', none_selected: '— nespecificat —',
     length_no: 'Nr. lungime', length_no_hint: 'Se propune automat pentru probele numerotate.',
-    values: 'Valori măsurate', sample_mm_hint: 'Implicit 1000 mm.', r_optional: 'Opțional. Rezistența se măsoară doar la cupru.', r_sample_hint: 'Implicit 5 m, 2 m la secțiuni mari.',
+    values: 'Valori măsurate', sample_mm_hint: 'Implicit {n} mm.', r_optional: 'Opțional. Rezistența se măsoară la materialele activate pentru familie (Nomenclatoare → Familii de produs).', r_sample_hint: 'Implicit {n} m, 2 m la secțiuni mari.',
     produced_length: 'Lungime produsă [m]', optional: 'Opțional.', notes: 'Observații',
     live_title: 'Rezultat înainte de salvare', live_hint: 'Rezultatele apar aici pe măsură ce introduceți valorile. Valorile în afara limitelor se marchează, dar nu blochează salvarea.',
     wire_mass_hint: 'Masa firului: g/m este egal cu kg/km (unitatea din fișă).',
-    save: 'Salvează măsurătoarea', cell_empty: 'Completați valorile pentru a vedea rezultatul.', temp_warning: 'Temperatura este în afara intervalului 0–40 °C.',
+    save: 'Salvează măsurătoarea', cell_empty: 'Completați valorile pentru a vedea rezultatul.', temp_warning: 'Temperatura este în afara intervalului admis ({min} … {max} °C).',
   },
 
   register: {
@@ -184,6 +201,7 @@ const S = {
     shape: 'Formă', destination: 'Destinație', coated_label: 'Cositorit', printed_label: 'Denumire (ca în fișă)', printed_label_hint: 'Dacă rămâne gol se generează din secțiune și formă.',
     wires: 'Număr de fire', wire_d: 'Ø fir [mm]', die: 'Filieră', die_hint: 'Text liber, de exemplu 3.21 / 3.215.',
     iec_exception_reason: 'Motivul excepției de la IEC 60228', iec_exception_hint: 'Dacă este completat, abaterile de la IEC devin avertizări și motivul se tipărește pe fișă.',
+    r20_hint: 'R max la 20 °C: ținta rezistenței conductorului finit. Dacă rămâne gol se folosește valoarea din IEC 60228. Mai mic este mai bine: până la limită verde, peste limită roșu — indiferent cum s-a obținut valoarea (măsurată, teoretică din masă sau toron raportat la liță).',
     limits: 'Limite', tolerance: 'Toleranță ±', limits_hint: 'Dacă se completează nominalul și toleranța, iar min / max rămân goale, acestea se calculează. Rândurile goale rămân „nedeterminat”.',
     process_params: 'Parametri de cablare', strander: 'Strander', rotor: 'Rotor', pitch: 'Pas [mm]', tension: 'Tensionare',
     params_hint: 'Pe rotor: 6, 12, 18, 24 sau „receptie” pentru tensionarea la recepție. Rândurile goale se ignoră.',
@@ -192,10 +210,11 @@ const S = {
   sheet: {
     construction: 'Construcție', wires_x_d: 'Fire × Ø fir [mm]', rope_d: 'Ø funie / Î × L [mm]', mass: 'Masă [g/m]', stranding: 'Cablare: pas / tensionare pe rotor',
     reception: 'Tensionare recepție', die: 'Filieră', d_nominal: 'Ø nominal [mm]', d_range: 'Ø min … max [mm]', h_l: 'Î × L [mm]', destination: 'Destinație', wires: 'Nr. fire',
-    mass_kgkm: 'Masă [kg/km]', wires_lita: 'Fire în liță', strands: 'Toroane × fire', wire_d5: 'Ø sârmă [mm]', suvita: 'Masă suviță [g/m]', toron: 'Masă toron [g/m]', lita: 'Masă liță [g/m]',
+    r_max: 'R max [Ω/km]', mass_kgkm: 'Masă [kg/km]', wires_lita: 'Fire în liță', strands: 'Toroane × fire', wire_d5: 'Ø sârmă [mm]', suvita: 'Masă suviță [g/m]', toron: 'Masă toron [g/m]', lita: 'Masă liță [g/m]',
   },
 
   limitq: {
+    r20: 'R max la 20 °C', funie_r20: 'R max la 20 °C', conductor_r20: 'R max la 20 °C', sarma_r20: 'R max la 20 °C', lita_r20: 'R max la 20 °C (conductor finit)',
     d: 'Ø', h: 'Înălțime Î', l: 'Lățime L', mass: 'Masă', suvita_mass: 'Masă suviță', toron_mass: 'Masă toron', lita_mass: 'Masă liță (aprox.)', sarma_d: 'Ø sârmă', sarma_mass: 'Masă sârmă',
   },
 
@@ -237,7 +256,9 @@ const S = {
     },
     families: 'Familii de produs permise', crews_hint: 'Fiecare schimb are un ciclu de 12 zile: 4 zile de zi, 2 libere, 4 nopți, 2 libere. Introduceți prima zi de tură de zi a fiecărui schimb; schimburile A, B, C pornesc la 4 zile distanță.',
     machines_hint: 'Configurația rotoarelor (de exemplu 1+6+12+18) limitează construcțiile la cele cu suficiente fire; dacă rămâne goală nu se aplică nicio limită de capacitate.',
-    materials_hint: 'Modificările se înregistrează în jurnal și se aplică măsurătorilor noi.', materials_check: 'Verificare: corecția de temperatură la 27 °C pentru cupru este {kt}.',
+    materials_hint: 'Modificările se înregistrează în jurnal și se aplică măsurătorilor noi. Toate valorile de referință (R max, ρ20) sunt la 20 °C, ca în standard.',
+    kt_title: 'Corecția de temperatură (IEC 60228, Anexa B)', kt_rule: 'Punctul de referință este 20 °C: o rezistență măsurată la temperatura t se aduce la 20 °C cu R20 = Rt × kt, kt = 1 / (1 + α20 · (t − 20)), cu α20 al materialului. Rezistența teoretică din masă se calculează direct la 20 °C (R20 = ρ20 / A). Celelalte mărimi derivate folosesc formulele din standard.',
+    kt_a1: 'kt din Tab. A.1 (α = 0,004)', kt_ref: 'referință', kt_match: 'Verificare: formula aplicației cu α = 0,004 reproduce toate cele 41 de valori din Tab. A.1 (diferență maximă {diff}).', kt_mismatch: 'Atenție: formula nu reproduce Tab. A.1 (diferență maximă {diff}).', materials_check: 'Verificare: corecția de temperatură la 27 °C pentru cupru este {kt}.',
   },
 
   users: {
@@ -267,6 +288,7 @@ const S = {
       revision_new: 'revizie nouă', revision_header: 'antet revizie', revision_submit: 'revizie trimisă', revision_verify: 'revizie verificată', revision_reject: 'revizie respinsă',
       construction_add: 'construcție adăugată', construction_edit: 'construcție modificată', construction_deactivate: 'construcție dezactivată', construction_activate: 'construcție activată',
       setting_change: 'setare modificată', backup: 'backup', backup_failed: 'backup eșuat', restore: 'restaurare', material_change: 'constantă material',
+      targets_change: 'ținte modificate', family_change: 'familie modificată', iec_add: 'IEC: valoare adăugată', iec_change: 'IEC: valoare modificată',
       list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
     },
   },

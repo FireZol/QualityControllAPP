@@ -15,7 +15,20 @@ module.exports = function register(app) {
 
   function materialRows() { return db.all('SELECT * FROM materials ORDER BY id'); }
 
-  router.get('/liste/materiale', { roles: ['inginer'] }, (ctx) => page(views.materialsPage(ctx, { rows: materialRows() })));
+  /** kt from the material constants next to IEC 60228 Table A.1 (alpha = 0.004), to show the formula is the standard's. */
+  function ktTable() {
+    const mats = Object.fromEntries(materialRows().map((m) => [m.code, m]));
+    const a1 = require('../domain/settings').get(db, 'iec.kt_a1') || null;
+    const temps = [0, 5, 10, 15, 20, 25, 30, 35, 40];
+    let maxDiff = null;
+    if (a1) {
+      maxDiff = 0;
+      for (const [t, v] of Object.entries(a1)) maxDiff = Math.max(maxDiff, Math.abs(Math.round(calc.kt(Number(t), 0.004) * 1000) / 1000 - v));
+    }
+    return { rows: temps.map((t) => ({ t, cu: calc.kt(t, mats.Cu.alpha20), al: calc.kt(t, mats.Al.alpha20), a1: a1 ? a1[String(t)] : null })), maxDiff, has: !!a1 };
+  }
+
+  router.get('/liste/materiale', { roles: ['inginer'] }, (ctx) => page(views.materialsPage(ctx, { rows: materialRows(), kt: ktTable() })));
 
   router.post('/liste/materiale/:id', { roles: ['inginer'] }, (ctx) => {
     const id = idOf(ctx.params.id);
@@ -28,7 +41,7 @@ module.exports = function register(app) {
       if (n === null || n <= 0) errors[k] = 'invalid'; else parsed[k] = n;
     }
     if (parsed.alpha20 !== undefined && parsed.alpha20 > 0.01) errors.alpha20 = 'invalid';
-    if (Object.keys(errors).length) return page(views.materialsPage(ctx, { rows: materialRows(), err: { id, errors, values } }), 422);
+    if (Object.keys(errors).length) return page(views.materialsPage(ctx, { rows: materialRows(), kt: ktTable(), err: { id, errors, values } }), 422);
     lists.updateMaterial(db, ctx.user.id, id, parsed);
     return redirect('/liste/materiale', { flash: { key: 'saved' } });
   });

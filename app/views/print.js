@@ -77,6 +77,7 @@ function td(diff, c, keys, content) {
 
 const range = (l, d) => (l && (l.min !== null || l.max !== null) ? `${num(l.min, d)} … ${num(l.max, d)}` : '');
 const lim = (c, level, q) => c.limitMap[`${level}.${q}`];
+const rmax = (c, level) => { const l = lim(c, level, 'r20'); return l && l.max !== null && l.max !== undefined ? `≤ ${calc.formatQuantity('r20', l.max)}` : ''; };
 
 function nameCell(c, diff) {
   return html`<td class="${changed(diff, c, ['label', 'shape', 'coated']) ? 'changed' : ''}"><strong>${c.label}</strong>${c.iec_exception_reason ? ' *' : ''}${c.coated ? ` (${T.specs.coated})` : ''}${diff.added.has(c.stable_key) ? html` <span class="new">${T.specs.new_row}</span>` : ''}</td>`;
@@ -125,9 +126,11 @@ function rigidSections(full, diff) {
   const configs = [...new Set(full.constructions.flatMap((c) => c.params.map((p) => p.strander_config)))];
   if (!configs.length) configs.push('');
   return configs.map((cfg) => {
-    const rows = full.constructions.filter((c) => !cfg || c.params.some((p) => p.strander_config === cfg));
+    // a row without any process parameters still prints (in every table); it must never disappear from the sheet
+    const rows = full.constructions.filter((c) => !cfg || !c.params.length || c.params.some((p) => p.strander_config === cfg));
     const rotors = [...new Set(rows.flatMap((c) => c.params.filter((p) => p.strander_config === cfg && p.rotor !== 'receptie').map((p) => p.rotor)))].sort((a, b) => Number(a) - Number(b));
-    const head = [T.sheet.construction, T.sheet.wires_x_d, T.sheet.rope_d, T.sheet.mass, ...rotors.map((r) => f(T.print.rotor_col, { rotor: r })), T.sheet.reception];
+    const anyR = rows.some((c) => rmax(c, 'funie'));
+    const head = [T.sheet.construction, T.sheet.wires_x_d, T.sheet.rope_d, T.sheet.mass, ...(anyR ? [T.sheet.r_max] : []), ...rotors.map((r) => f(T.print.rotor_col, { rotor: r })), T.sheet.reception];
     return html`<h2>${f(T.print.g_strander, { config: cfg || '—' })}</h2>${table(head, rows.map((c) => {
       const p = (rot) => c.params.find((x) => x.strander_config === cfg && x.rotor === rot);
       const rec = p('receptie');
@@ -136,6 +139,7 @@ function rigidSections(full, diff) {
         : html`Î ${num(lim(c, 'funie', 'h') && lim(c, 'funie', 'h').nominal, 2)} × L ${num(lim(c, 'funie', 'l') && lim(c, 'funie', 'l').nominal, 2)} <span class="muted">${(lim(c, 'funie', 'h') && lim(c, 'funie', 'h').tolerance_text) || ''}</span>`;
       return html`<tr>${nameCell(c, diff)}${td(diff, c, ['wires', 'wire_d'], c.wires ? `${c.wires} × ${num(c.wire_d, 3)}` : '')}${td(diff, c, ['funie.d', 'funie.h', 'funie.l'], rope)}
         ${td(diff, c, ['funie.mass'], range(lim(c, 'funie', 'mass'), 1))}
+        ${anyR ? td(diff, c, ['funie.r20'], rmax(c, 'funie')) : ''}
         ${rotors.map((r) => td(diff, c, [`p.${cfg}.${r}`], p(r) ? `${p(r).pitch_mm == null ? '–' : num(p(r).pitch_mm, 1)} / ${p(r).tension || '–'}` : ''))}
         ${td(diff, c, [`p.${cfg}.receptie`], rec ? rec.tension : '')}</tr>`;
     }))}<p class="small">${T.print.pitch_legend}</p>`;
@@ -146,11 +150,11 @@ function extrudedSections(full, diff) {
   const groups = groupBy(full.constructions, (c) => c.shape_code, ['RE', 'SE']);
   const titles = { RE: T.print.g_re, SE: T.print.g_se };
   return groups.map((g) => html`<h2>${titles[g.key] || g.key}</h2>${table(
-    [T.sheet.construction, T.print.die_drawing, T.sheet.d_nominal, T.sheet.d_range, T.sheet.h_l, T.sheet.mass],
+    [T.sheet.construction, T.print.die_drawing, T.sheet.d_nominal, T.sheet.d_range, T.sheet.h_l, T.sheet.mass, T.sheet.r_max],
     g.rows.map((c) => html`<tr>${nameCell(c, diff)}${td(diff, c, ['die'], c.die || '')}
       ${td(diff, c, ['conductor.d.nominal'], num(lim(c, 'conductor', 'd') && lim(c, 'conductor', 'd').nominal, 2))}${td(diff, c, ['conductor.d.min', 'conductor.d.max'], range(lim(c, 'conductor', 'd'), 2))}
       ${td(diff, c, ['conductor.h', 'conductor.l'], lim(c, 'conductor', 'h') || lim(c, 'conductor', 'l') ? (range(lim(c, 'conductor', 'h'), 2) || '–') + ' × ' + (range(lim(c, 'conductor', 'l'), 2) || '–') : '')}
-      ${td(diff, c, ['conductor.mass'], range(lim(c, 'conductor', 'mass'), 2))}</tr>`))}`);
+      ${td(diff, c, ['conductor.mass'], range(lim(c, 'conductor', 'mass'), 2))}${td(diff, c, ['conductor.r20'], rmax(c, 'conductor'))}</tr>`))}`);
 }
 
 const BUILDERS = {

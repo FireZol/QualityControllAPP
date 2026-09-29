@@ -26,7 +26,8 @@ const MIN_WIRES_FIELD = { circular: 'min_wires_circular', compactat: 'min_wires_
  * @param c   construction row joined with: material_code, shape_kind, shape_group, shape_code
  * @param limits  {quantity: {min,max,nominal}} for the construction
  */
-function checkConstruction(db, family, c, limits) {
+function checkConstruction(db, family, c, limits, targets) {
+  const band = targets || { mass_ratio_min: 0.85, mass_ratio_max: 1.15 };
   const out = [];
   const exception = !!(c.iec_exception_reason && String(c.iec_exception_reason).trim());
   const iecFinding = (code, params) => {
@@ -63,7 +64,7 @@ function checkConstruction(db, family, c, limits) {
   if (m && m.min != null && m.max != null && c.wires && c.wire_d && c.density) {
     const wireMass = (Math.PI / 4) * c.wire_d * c.wire_d * c.density; // g/m
     const ratio = ((m.min + m.max) / 2) / (c.wires * wireMass);
-    if (ratio < 0.85 || ratio > 1.15) out.push({ level: 'warn', code: 'mass_vs_wires', params: { ratio } });
+    if (ratio < band.mass_ratio_min || ratio > band.mass_ratio_max) out.push({ level: 'warn', code: 'mass_vs_wires', params: { ratio } });
   }
   return out;
 }

@@ -430,7 +430,7 @@ test('copper funie: measured resistance corrected to 20 °C, verdict on measured
   });
   assert.equal(r2.status, 303);
   const shown = await ctc.follow('GET', r2.location);
-  assert.match(shown.text, /în afara intervalului 0–40/);
+  assert.match(shown.text, /în afara intervalului admis/);
 });
 
 test('numbered sample types: the next length number is proposed per shift, machine and construction', async () => {
@@ -722,14 +722,14 @@ test('24. seeding is idempotent and 25. a new migration backs up first, then app
   assert.deepEqual(Object.fromEntries(Object.entries(before).map(([k]) => [k, app2.db.value(`SELECT count(*) FROM ${k}`)])), before);
   assert.ok(!logs.join('\n').includes('parolă unică'));
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore);
-  // restart 2: a pending 004 migration
+  // restart 2: a pending 005 migration
   await app2.stop();
-  fs.writeFileSync(path.join(migDir, '004_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
+  fs.writeFileSync(path.join(migDir, '005_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
   const logs2 = [];
   app2 = await createApp(cfg, { listen: { port: 0, host: '127.0.0.1' }, log: (m) => logs2.push(m), noScheduler: true, migrationsDir: migDir });
   assert.match(logs2.join('\n'), /Backup înainte de migrare/);
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore + 1);
-  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 4);
+  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 5);
   assert.equal(app2.db.value("SELECT count(*) FROM sqlite_master WHERE name = 'test_added'"), 1);
   // the backup taken is the pre-migration state (no test_added table)
   const newest = backup.listBackups(backup.backupDir(app2.db, cfg))[0];

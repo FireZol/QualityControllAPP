@@ -182,3 +182,4 @@ svg.chart { width: 100%; height: auto; display: block; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .cpk { font-weight: 700; padding: 1px 6px; border-radius: 8px; }
 .cpk-good { background: var(--ok-bg); color: var(--ok); } .cpk-warn { background: var(--warn-bg); color: var(--warn); } .cpk-bad { background: var(--bad-bg); color: var(--bad); }
+tr.ref th, tr.ref td { background: #eef6f0; }

@@ -4,7 +4,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { Db, migrate } = require('./db/db');
-const { seedIfEmpty, ensureAdmin } = require('./db/seed');
+const { seedIfEmpty, ensureReference, ensureAdmin } = require('./db/seed');
 const { Router } = require('./lib/router');
 const H = require('./lib/http');
 const auth = require('./lib/auth');
@@ -30,11 +30,12 @@ async function createApp(config, opts) {
   if (mig.backup) log(`Backup înainte de migrare: ${mig.backup}`);
   if (mig.applied.length) log(`Migrări aplicate: ${mig.applied.join(', ')}`);
   seedIfEmpty(db, { seedDir: config.seedDir, config, log });
+  ensureReference(db, config.seedDir);
   const adminPassword = await ensureAdmin(db, log);
 
   const router = new Router();
   const app = { config, db, router, state, log, server: null, timer: null, adminPassword };
-  for (const r of ['auth', 'home', 'print', 'analytics', 'measure', 'specs', 'lists', 'admin']) {
+  for (const r of ['auth', 'home', 'print', 'analytics', 'measure', 'specs', 'config', 'lists', 'admin']) {
     const file = path.join(__dirname, 'routes', r + '.js');
     if (fs.existsSync(file)) require(file)(app);
   }

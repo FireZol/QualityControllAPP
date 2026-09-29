@@ -17,7 +17,7 @@ function limitsTable(model) {
     <td>${l ? (l.informative ? T.verdict.info : limitText(l.min, l.max, q)) : T.verdict.nedeterminat}</td><td>${l && l.informative ? T.measure.informative_note : T.measure.source_sheet}</td></tr>`);
   if (ctx.measuresDiameter && ctx.shapeKind === 'sector') { add(T.quantity.h, ctx.limits.h, 'h'); add(T.quantity.l, ctx.limits.l, 'l'); } else if (ctx.measuresDiameter) add(T.quantity.d, ctx.limits.d, 'd1');
   if (ctx.measuresMass) add(T.quantity.mass_gm, ctx.limits.mass, 'mass_gm');
-  if (ctx.iec && (ctx.measuresR || ctx.theoretical)) rows.push(html`<tr><th scope="row">${ctx.rEquivN ? T.quantity.r_max_finished : T.quantity.r_max}</th><td></td><td>≤ ${calc.formatQuantity('r20', ctx.iec.r_max)}</td><td>${ctx.iec.source}</td></tr>`);
+  if (ctx.iec && (ctx.measuresR || ctx.theoretical)) rows.push(html`<tr><th scope="row">${ctx.rEquivN ? T.quantity.r_max_finished : T.quantity.r_max}</th><td></td><td>≤ ${calc.formatQuantity('r20', ctx.iec.r_max)}</td><td>${ctx.iec.source === 'fisa' ? T.measure.source_sheet : ctx.iec.source}</td></tr>`);
   return html`<table class="grid limits"><caption>${T.measure.limits_caption}</caption><thead><tr><th></th><th>${T.measure.nominal}</th><th>${T.measure.limits}</th><th>${T.measure.source}</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
@@ -45,7 +45,7 @@ function entryForm(ctx, sel, model, data) {
   <input type="hidden" name="construction_id" value="${sel.construction.id}">
   <input type="hidden" name="level" value="${sel.level}">
   ${data.correction ? '' : html`<input type="hidden" name="machine_id" value="${sel.machine.id}">`}
-  <script type="application/json" id="live-ctx">${jsonBlock({ ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: T.measure.temp_warning } })}</script>
+  <script type="application/json" id="live-ctx">${jsonBlock({ ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(model.ctx.targets.temp_min, 0, 1), max: calc.formatNumber(model.ctx.targets.temp_max, 0, 1) }) } })}</script>
 
   <fieldset class="card">
     <legend>${T.measure.sample_data}</legend>
@@ -67,12 +67,12 @@ function entryForm(ctx, sel, model, data) {
     </div>`}
     ${model.inputs.mass ? html`<div class="row">
       ${numInput('mass_g', T.input.mass_g, values, errors, { required: true })}
-      ${numInput('sample_mm', T.input.sample_mm, { sample_mm: values.sample_mm === undefined ? '1000' : values.sample_mm }, errors, { hint: T.measure.sample_mm_hint })}
+      ${numInput('sample_mm', T.input.sample_mm, { sample_mm: values.sample_mm === undefined ? String(model.ctx.targets.sample_mm) : values.sample_mm }, errors, { hint: f(T.measure.sample_mm_hint, { n: calc.formatNumber(model.ctx.targets.sample_mm, 0, 2) }) })}
     </div>` : ''}
     ${model.inputs.resistance ? html`<div class="row">
       ${numInput('r_value', T.input.r_value, values, errors, { hint: T.measure.r_optional })}
       ${selectField({ label: T.input.r_unit, name: 'r_unit', value: rUnit, options: [['ohm_km', 'Ω/km'], ['ohm', 'Ω']], errors, attrs: 'data-in="r_unit"' })}
-      ${numInput('r_sample_m', T.input.r_sample_m, { r_sample_m: values.r_sample_m === undefined ? '5' : values.r_sample_m }, errors, { hint: T.measure.r_sample_hint })}
+      ${numInput('r_sample_m', T.input.r_sample_m, { r_sample_m: values.r_sample_m === undefined ? String(model.ctx.targets.r_sample_m) : values.r_sample_m }, errors, { hint: f(T.measure.r_sample_hint, { n: calc.formatNumber(model.ctx.targets.r_sample_m, 0, 2) }) })}
       ${numInput('temp_c', T.input.temp_c, values, errors, {})}
     </div>` : ''}
     <div class="row">

@@ -84,12 +84,16 @@ function receptie(c) {
   return p ? p.tension : '';
 }
 
+/** The sheet's own resistance target (lower is better); empty when the IEC 60228 value applies. */
+const rMax = (c, level) => { const l = c.limitMap[`${level}.r20`]; return l && l.max !== null && l.max !== undefined ? `≤ ${fmt(l.max, 'r20')}` : ''; };
+
 const COLUMNS = {
   FUNIE_RIGIDA: [
     { h: 'construction', keys: ['label', 'shape', 'coated'], r: (c, d) => label(c, d) },
     { h: 'wires_x_d', keys: ['wires', 'wire_d'], r: (c) => (c.wires ? `${c.wires} × ${num(c.wire_d, 3)}` : '') },
     { h: 'rope_d', keys: ['funie.d', 'funie.h', 'funie.l'], r: (c) => (c.limitMap['funie.d'] ? limRange(c, 'funie', 'd', 'd1') : html`Î ${limRange(c, 'funie', 'h')}<br>L ${limRange(c, 'funie', 'l')}`) },
     { h: 'mass', keys: ['funie.mass'], r: (c) => limRange(c, 'funie', 'mass', 'mass_gm') },
+    { h: 'r_max', keys: ['funie.r20'], r: (c) => rMax(c, 'funie') },
     { h: 'stranding', keys: ['p.'], r: (c) => paramsCell(c) },
     { h: 'reception', keys: ['p.'], r: (c) => receptie(c) },
   ],
@@ -100,6 +104,7 @@ const COLUMNS = {
     { h: 'd_range', keys: ['conductor.d.min', 'conductor.d.max'], r: (c) => limRange(c, 'conductor', 'd', 'd1') },
     { h: 'h_l', keys: ['conductor.h', 'conductor.l'], r: (c) => (c.limitMap['conductor.h'] || c.limitMap['conductor.l'] ? html`Î ${limRange(c, 'conductor', 'h')} · L ${limRange(c, 'conductor', 'l')}` : '') },
     { h: 'mass', keys: ['conductor.mass'], r: (c) => limRange(c, 'conductor', 'mass', 'mass_gm') },
+    { h: 'r_max', keys: ['conductor.r20'], r: (c) => rMax(c, 'conductor') },
   ],
   SARMA_CL12: [
     { h: 'construction', keys: ['label', 'shape'], r: (c, d) => label(c, d) },
@@ -119,6 +124,7 @@ const COLUMNS = {
     { h: 'suvita', keys: ['suvita.mass'], r: (c) => limRange(c, 'suvita', 'mass', 'mass_gm') },
     { h: 'toron', keys: ['toron.mass'], r: (c) => limRange(c, 'toron', 'mass', 'mass_gm') },
     { h: 'lita', keys: ['lita.mass'], r: (c) => (c.limitMap['lita.mass'] ? '≈ ' + fmt(c.limitMap['lita.mass'].nominal, 'mass_gm') : '') },
+    { h: 'r_max', keys: ['lita.r20'], r: (c) => rMax(c, 'lita') },
   ],
 };
 COLUMNS.SARMA_CL5 = COLUMNS.SARMA_CL12;
@@ -202,10 +208,10 @@ function limitRows(family) {
     case 'FUNIE_RIGIDA': case 'EXTRUDAT_AL':
       return [
         { level: lvl, q: 'd', unit: 'mm', cls: 'only-round', inf: true }, { level: lvl, q: 'h', unit: 'mm', cls: 'only-sector', tol: true }, { level: lvl, q: 'l', unit: 'mm', cls: 'only-sector', tol: true },
-        { level: lvl, q: 'mass', unit: 'g/m', cls: '' },
+        { level: lvl, q: 'mass', unit: 'g/m', cls: '' }, { level: lvl, q: 'r20', unit: 'Ω/km', cls: '' },
       ];
-    case 'SARMA_CL12': case 'SARMA_CL5': return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'sarma', q: 'mass', unit: 'g/m', cls: '' }];
-    default: return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'suvita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'toron', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'mass', unit: 'g/m', cls: '' }];
+    case 'SARMA_CL12': case 'SARMA_CL5': return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'sarma', q: 'mass', unit: 'g/m', cls: '' }, { level: 'sarma', q: 'r20', unit: 'Ω/km', cls: '' }];
+    default: return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'suvita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'toron', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'r20', unit: 'Ω/km', cls: '' }];
   }
 }
 
@@ -251,7 +257,7 @@ ${rows.map((r) => {
     <td>${r.tol ? html`<input name="${k}_tol" value="${v[k + '_tol'] || ''}" inputmode="decimal" placeholder="±" autocomplete="off">` : ''}</td>
     <td>${r.inf ? html`<input type="checkbox" name="${k}_inf" value="1"${v[k + '_inf'] ? raw(' checked') : ''}>` : ''}</td></tr>${errors[k] ? html`<tr><td colspan="6"><span class="field-error">${opt('errors', errors[k], T.errors.invalid)}</span></td></tr>` : ''}`;
   })}</tbody></table>
-<p class="muted">${T.specs.limits_hint}</p></fieldset>
+<p class="muted">${T.specs.limits_hint}</p><p class="muted">${T.specs.r20_hint}</p></fieldset>
 
 ${showParams ? html`<fieldset class="card"><legend>${T.specs.process_params}</legend>
 <table class="grid limits-edit"><thead><tr><th>${T.specs.strander}</th><th>${T.specs.rotor}</th><th>${T.specs.pitch}</th><th>${T.specs.tension}</th></tr></thead><tbody>

@@ -246,6 +246,18 @@ function seedIfEmpty(db, { seedDir, config, log }) {
 }
 
 /**
+ * Reference values that must exist on every installation, including databases seeded by an earlier version:
+ * IEC 60228 Table A.1 (kt at alpha = 0.004, 0..40 C), used to show that the temperature formula is the standard's.
+ */
+function ensureReference(db, seedDir) {
+  if (db.get("SELECT 1 FROM settings WHERE key = 'iec.kt_a1'")) return;
+  try {
+    const iec = readJson(seedDir, 'iec60228_2023.json');
+    if (iec.kt_table_A1) settings.set(db, 'iec.kt_a1', iec.kt_table_A1);
+  } catch (_) { /* seed folder absent: the check table is simply not shown */ }
+}
+
+/**
  * Create the first administrator when the database has no user at all (async because scrypt is).
  * The one-time password is printed to the console once and never stored in clear.
  * @returns {Promise<string|null>} the password, or null when a user already exists
@@ -275,4 +287,4 @@ async function ensureAdmin(db, log) {
   return password;
 }
 
-module.exports = { seedIfEmpty, ensureAdmin, SHAPES, FAMILIES };
+module.exports = { seedIfEmpty, ensureReference, ensureAdmin, SHAPES, FAMILIES };

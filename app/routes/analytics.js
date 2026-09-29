@@ -8,7 +8,7 @@ const svg = require('../lib/svg');
 const xp = require('../lib/export');
 const views = require('../views/analytics');
 const { displayDateTime } = require('../lib/time');
-const { T } = require('../i18n/ro');
+const { T, f } = require('../i18n/ro');
 
 const TABS = ['tendinta', 'distributie', 'neconformitate', 'consum', 'comparatie'];
 const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -17,6 +17,7 @@ const stamp = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
 module.exports = function register(app) {
   const { router, db } = app;
 
+  const targets = () => require('../domain/targets').get(db);
   const qLabel = (q) => T.quantity[q] || q;
   const verdictText = (v) => T.verdict[v] || v;
   const pct = (v) => (v === null || v === undefined ? '' : calc.formatNumber(v, 1, 1) + ' %');
@@ -67,6 +68,7 @@ module.exports = function register(app) {
 
   function capTable(caps, quantity, groupName) {
     const fmt = valueFmt(quantity);
+    const tg = targets();
     return {
       title: `${T.an.capability} — ${groupLabel(groupName)}`, main: true,
       columns: [
@@ -74,12 +76,12 @@ module.exports = function register(app) {
         { key: 'mean', header: T.an.mean, type: 'number', fmt }, { key: 'sd', header: T.an.sd, type: 'number', fmt: (v) => (v === null ? '' : calc.formatNumber(v, 0, 4)) },
         { key: 'min', header: 'min', type: 'number', fmt }, { key: 'max', header: 'max', type: 'number', fmt },
         { key: 'lsl', header: T.an.lsl, type: 'number', fmt }, { key: 'usl', header: T.an.usl, type: 'number', fmt },
-        { key: 'cp', header: 'Cp', type: 'number', fmt: f2 }, { key: 'cpk', header: 'Cpk', type: 'number', fmt: f2, cpk: true },
+        { key: 'cp', header: 'Cp', type: 'number', fmt: f2 }, { key: 'cpk', header: 'Cpk', type: 'number', fmt: f2, cpk: { good: tg.cpk_good, min: tg.cpk_min } },
         { key: 'note', header: T.an.note },
       ],
       rows: caps.map((c) => ({
         ...c, label: c.label === null ? T.common.none : (c.level && groupName === 'product' && c.level !== 'sarma' && c.level !== 'funie' && c.level !== 'conductor' ? `${c.label} · ${T.level[c.level]}` : c.label),
-        note: [c.informative ? T.verdict.info : '', c.n < 30 ? T.an.small_n : '', c.limitsChanged ? T.an.limits_changed_short : ''].filter(Boolean).join('; '),
+        note: [c.informative ? T.verdict.info : '', c.n < tg.min_n ? f(T.an.small_n, { n: tg.min_n }) : '', c.limitsChanged ? T.an.limits_changed_short : ''].filter(Boolean).join('; '),
       })),
     };
   }

@@ -12,7 +12,7 @@ function indexPage(ctx, d) {
     title: T.lists.title, active: 'lists',
     body: html`<h1>${T.lists.title}</h1><p class="muted">${T.lists.intro}</p>
 <div class="tiles">${Object.entries(LISTS).map(([key, def]) => html`<a class="tile" href="/liste/${key}"><strong>${T.lists.names[def.title]}</strong><span class="muted">${T.lists.descriptions[def.title]}</span></a>`)}
-${ctx.user.role === 'inginer' ? html`<a class="tile" href="/liste/materiale"><strong>${T.lists.names.materials}</strong><span class="muted">${T.lists.descriptions.materials}</span></a>` : ''}</div>`,
+${ctx.user.role === 'inginer' ? html`<a class="tile" href="/liste/familii"><strong>${T.cfg.families}</strong><span class="muted">${T.cfg.families_desc}</span></a><a class="tile" href="/liste/tinte"><strong>${T.cfg.targets}</strong><span class="muted">${T.cfg.targets_desc}</span></a><a class="tile" href="/liste/iec"><strong>${T.cfg.iec}</strong><span class="muted">${T.cfg.iec_desc}</span></a><a class="tile" href="/liste/materiale"><strong>${T.lists.names.materials}</strong><span class="muted">${T.lists.descriptions.materials}</span></a>` : ''}</div>`,
   });
 }
 
@@ -75,7 +75,11 @@ function materialsPage(ctx, d) {
   <td><input name="alpha20" value="${val('alpha20')}" form="m${r.id}" inputmode="decimal">${e ? errText(e.errors, 'alpha20') : ''}</td>
   <td><form method="post" action="/liste/materiale/${r.id}" id="m${r.id}" class="inline">${csrf(ctx)}<button class="btn small" type="submit">${T.common.save}</button></form></td></tr>`;
   })}</tbody></table></div>
-<p class="muted">${f(T.lists.materials_check, { kt: calc.formatNumber(calc.kt(27, 0.00393), 4, 4) })}</p>`,
+<p class="muted">${f(T.lists.materials_check, { kt: calc.formatNumber(calc.kt(27, 0.00393), 4, 4) })}</p>
+<section class="card"><h2>${T.lists.kt_title}</h2><p>${T.lists.kt_rule}</p>
+<div class="scroll"><table class="grid"><thead><tr><th>t [°C]</th><th>kt Cu</th><th>kt Al</th>${d.kt.has ? html`<th>${T.lists.kt_a1}</th>` : ''}</tr></thead>
+<tbody>${d.kt.rows.map((r) => html`<tr class="${r.t === 20 ? 'ref' : ''}"><th scope="row">${r.t}${r.t === 20 ? html` <span class="tag ok">${T.lists.kt_ref}</span>` : ''}</th><td class="num">${calc.formatNumber(r.cu, 4, 4)}</td><td class="num">${calc.formatNumber(r.al, 4, 4)}</td>${d.kt.has ? html`<td class="num">${calc.formatNumber(r.a1, 3, 3)}</td>` : ''}</tr>`)}</tbody></table></div>
+${d.kt.has ? html`<p class="${d.kt.maxDiff < 0.0005 ? 'ok-note' : 'notice'}">${f(d.kt.maxDiff < 0.0005 ? T.lists.kt_match : T.lists.kt_mismatch, { diff: calc.formatNumber(d.kt.maxDiff, 0, 4) })}</p>` : ''}</section>`,
   });
 }
 
