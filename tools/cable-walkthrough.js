@@ -21,7 +21,7 @@ const { startApp, adminClient, makeUser } = require('../app/test/helpers');
  await c.postForm('/masuratori/nou','/masuratori/nou',{family_id:fam,machine_id:mach,batch_id:bid,drum_id:dr[1],construction_id:design,sample_type_id:st,t_cond_res:'1,20',t_cond_res_unit:'ohm_km',t_cond_res_temp:'20',t_ins_thick:'0,9 0,95 0,92',t_marking:'pass',t_hv_test:'fail'});
  const b1=await pw.chromium.launch(); const p=await (await b1.newContext({viewport:{width:1300,height:900}})).newPage();
  await p.goto(app.base+'/login'); await p.fill('input[name=username]','ing.a'); await p.fill('input[name=password]',a.password); await p.click('main button[type=submit]');
- const out='(process.argv[2] || '/tmp') + '/'';
+const out = (process.argv[2] || '/tmp') + '/';
  await p.goto(`${app.base}/masuratori/nou?family=${fam}&batch=${bid}&drum=${dr[2]}&machine=${mach}`); 
  await p.fill('input[name=t_cond_res]','1,08'); await p.fill('input[name=t_cond_res_temp]','20'); await p.fill('input[name=t_ins_thick]','1,0 1,05 1,1'); await p.selectOption('select[name=t_hv_test]','pass');
  await p.screenshot({path:out+'cab-entry.png',fullPage:true});
