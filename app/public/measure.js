@@ -8,6 +8,7 @@
   const C = window.CTC_CALC;
   const cfg = JSON.parse(dataEl.textContent);
   const out = document.getElementById('live-out');
+  if (cfg.formats && C.registerQuantities) C.registerQuantities(cfg.formats);
 
   function inputs() {
     const o = {};
@@ -29,13 +30,14 @@
     if (r.verdict === 'info') return '';
     if (r.lim_min === null && r.lim_max === null) return cfg.verdicts.nedeterminat;
     const q = r.quantity === 'r20_theor' ? 'r20' : r.quantity;
+    if (r.lim_min !== null && r.lim_max === null && cfg.mode === 'tests') return '≥ ' + C.formatQuantity(q, r.lim_min);
     const a = r.lim_min === null ? '–' : C.formatQuantity(q, r.lim_min);
     const b = r.lim_max === null ? '–' : C.formatQuantity(q, r.lim_max);
     return r.lim_min === null && r.lim_max !== null ? '≤ ' + b : a + ' … ' + b;
   }
 
   function render() {
-    const ev = C.evaluate(inputs(), cfg.ctx);
+    const ev = cfg.mode === 'tests' ? C.evaluateTests(inputs(), cfg.ctx) : C.evaluate(inputs(), cfg.ctx);
     out.textContent = '';
     if (ev.warnings.indexOf('temp_range') !== -1) out.appendChild(el('p', 'warn-line', cfg.messages.temp_warning));
     if (!ev.results.length) { out.appendChild(el('p', 'muted', cfg.messages.empty)); return; }
@@ -43,7 +45,7 @@
     const tbody = el('tbody');
     ev.results.forEach(function (r) {
       const tr = el('tr');
-      tr.appendChild(el('th', '', cfg.quantities[r.quantity]));
+      tr.appendChild(el('th', '', cfg.quantities[r.quantity] || r.quantity));
       const td = el('td');
       td.appendChild(el('span', 'val v-' + r.verdict, C.formatQuantity(r.quantity, r.value)));
       tr.appendChild(td);

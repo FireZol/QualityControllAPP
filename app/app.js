@@ -30,12 +30,13 @@ async function createApp(config, opts) {
   if (mig.backup) log(`Backup înainte de migrare: ${mig.backup}`);
   if (mig.applied.length) log(`Migrări aplicate: ${mig.applied.join(', ')}`);
   seedIfEmpty(db, { seedDir: config.seedDir, config, log });
+  require('./domain/tests').refresh(db);
   ensureReference(db, config.seedDir);
   const adminPassword = await ensureAdmin(db, log);
 
   const router = new Router();
-  const app = { config, db, router, state, log, server: null, timer: null, adminPassword };
-  for (const r of ['auth', 'home', 'print', 'analytics', 'measure', 'specs', 'config', 'lists', 'admin']) {
+  const app = { config, db, router, state, log, server: null, timer: null, adminPassword, afterRestore: () => require('./domain/tests').refresh(db) };
+  for (const r of ['auth', 'home', 'print', 'analytics', 'cable', 'measure', 'specs', 'config', 'lists', 'admin']) {
     const file = path.join(__dirname, 'routes', r + '.js');
     if (fs.existsSync(file)) require(file)(app);
   }

@@ -10,7 +10,7 @@ const int = (v) => (/^\d+$/.test(v || '') ? Number(v) : null);
 const date = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(v || '') ? v : '');
 
 function parseFilters(q) {
-  const quantity = QUANTITIES.includes(q.get('quantity')) ? q.get('quantity') : '';
+  const quantity = /^[a-z][a-z0-9_]{0,60}$/.test(q.get('quantity') || '') ? q.get('quantity') : '';
   return {
     from: date(q.get('from')), to: date(q.get('to')), family_id: int(q.get('family_id')), stable_key: (q.get('product') || '').slice(0, 120),
     machine_id: int(q.get('machine_id')), shift: ['zi', 'noapte'].includes(q.get('shift')) ? q.get('shift') : '', crew_id: int(q.get('crew_id')),
@@ -139,10 +139,10 @@ function histogram(values, lsl, usl) {
 
 /** Non-conformity per group: results with a verdict (ok / sub / peste) only. */
 function nonconformity(rows, group) {
-  return groupRows(rows.filter((r) => ['ok', 'sub', 'peste'].includes(r.verdict)), group).map((g) => {
+  return groupRows(rows.filter((r) => ['ok', 'sub', 'peste', 'neconform'].includes(r.verdict)), group).map((g) => {
     const n = g.rows.length;
-    const sub = g.rows.filter((r) => r.verdict === 'sub').length, peste = g.rows.filter((r) => r.verdict === 'peste').length;
-    return { ...g, n, ok: n - sub - peste, sub, peste, pctOut: n ? ((sub + peste) / n) * 100 : 0, pctSub: n ? (sub / n) * 100 : 0, pctPeste: n ? (peste / n) * 100 : 0 };
+    const sub = g.rows.filter((r) => r.verdict === 'sub').length, peste = g.rows.filter((r) => r.verdict === 'peste').length, neconform = g.rows.filter((r) => r.verdict === 'neconform').length;
+    return { ...g, n, ok: n - sub - peste - neconform, sub, peste, neconform, pctOut: n ? ((sub + peste + neconform) / n) * 100 : 0, pctSub: n ? (sub / n) * 100 : 0, pctPeste: n ? (peste / n) * 100 : 0 };
   });
 }
 

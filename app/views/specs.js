@@ -1,7 +1,9 @@
 'use strict';
 const { html, raw } = require('../lib/html');
-const { T, f, opt } = require('../i18n/ro');
+const { T, f, opt, S } = require('../i18n/ro');
+const { designLine } = require('./cable');
 const calc = require('../domain/calc');
+const tests = require('../domain/tests');
 const { displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, checkField, textArea } = require('./layout');
 const { materialName } = require('./measure');
@@ -128,6 +130,15 @@ const COLUMNS = {
   ],
 };
 COLUMNS.SARMA_CL5 = COLUMNS.SARMA_CL12;
+COLUMNS.CABLE_LV = [
+  { h: 'construction', keys: ['label'], r: (c, d) => label(c, d) },
+  { h: 'cable_design', keys: ['data.cores', 'data.conductor_class'], r: (c) => designLine(c) },
+  { h: 'cable_voltage', keys: ['data.rated_voltage'], r: (c) => (c.data && c.data.rated_voltage) || '' },
+  { h: 'cable_compounds', keys: ['data.insulation', 'data.sheath'], r: (c) => [c.data && c.data.insulation, c.data && c.data.sheath].filter(Boolean).join(' / ') },
+  { h: 'cable_standard', keys: ['data.standard'], r: (c) => (c.data && c.data.standard) || '' },
+  { h: 'cable_report', keys: [], r: (c) => html`<a href="/proiecte-cablu/${c.id}/raport-tip">${T.cable.type_report_link}</a>` },
+  { h: 'cable_tests', keys: ['data.tests'], r: (c) => f(T.cable.tests_count, { req: Array.isArray(c.data && c.data.tests) ? c.data.tests.length : 0, lim: c.limits.filter((l) => l.min !== null || l.max !== null).length }) },
+];
 
 function constructionTable(ctx, full, diff, editable, backBase) {
   const cols = COLUMNS[full.family.code] || COLUMNS.FUNIE_RIGIDA;
@@ -205,6 +216,15 @@ ${constructionTable(ctx, full, diff, editable, base)}`,
 function limitRows(family) {
   const lvl = family.levels[0];
   switch (family.code) {
+    case 'CABLE_LV': {
+      const rows = [];
+      for (const scope of ['routine', 'sample', 'type']) {
+        for (const t of tests.active().filter((x) => x.scope === scope)) {
+          for (const [q, part] of tests.quantitiesOf(t)) rows.push({ level: 'cablu', q, unit: t.unit || '', cls: '', inf: true, group: scope, label: part ? `${t.name} — ${S.tests.parts[part]}` : t.name });
+        }
+      }
+      return rows;
+    }
     case 'FUNIE_RIGIDA': case 'EXTRUDAT_AL':
       return [
         { level: lvl, q: 'd', unit: 'mm', cls: 'only-round', inf: true }, { level: lvl, q: 'h', unit: 'mm', cls: 'only-sector', tol: true }, { level: lvl, q: 'l', unit: 'mm', cls: 'only-sector', tol: true },
@@ -215,6 +235,24 @@ function limitRows(family) {
   }
 }
 
+/** Cable design data: voltage, cores, compounds, standard and the tests its data sheet requires. */
+function cableFields(v, errors, lists) {
+  const sel = (v.cab_tests_all || v.cab_tests_list || []);
+  const compounds = lists.compounds.map((c) => [c.code, c.name]);
+  return html`<fieldset class="card"><legend>${T.cable.design_data}</legend><div class="row">
+    ${textField({ label: T.cable.cores, name: 'cab_cores', value: v.cab_cores, errors, inputmode: 'numeric', cls: 'num' })}
+    ${textField({ label: T.cable.rated_voltage, name: 'cab_voltage', value: v.cab_voltage, errors, hint: T.cable.rated_voltage_hint })}
+    ${selectField({ label: T.cable.conductor_class, name: 'cab_class', value: v.cab_class || '2', options: [['1', '1'], ['2', '2'], ['5', '5']], errors })}
+    ${selectField({ label: T.cable.insulation, name: 'cab_insulation', value: v.cab_insulation, options: compounds, blank: T.common.none, errors })}
+    ${selectField({ label: T.cable.sheath, name: 'cab_sheath', value: v.cab_sheath, options: compounds, blank: T.common.none, errors })}
+    ${selectField({ label: T.cable.standard, name: 'cab_standard', value: v.cab_standard, options: lists.standards.map((s) => [s.name, s.name]), blank: T.common.none, errors })}
+    ${textField({ label: T.cable.armour, name: 'cab_armour', value: v.cab_armour, errors })}
+  </div><h3>${T.cable.required_tests}</h3><p class="muted">${T.cable.required_tests_hint}</p>
+  ${['routine', 'sample', 'type'].map((scope) => html`<div class="checklist"><strong>${T.cable.scopes[scope]}</strong>
+    ${tests.active().filter((t) => t.scope === scope).map((t) => html`<label class="check"><input type="checkbox" name="cab_tests" value="${t.code}"${sel.includes(t.code) ? raw(' checked') : ''}> <span>${t.name}${t.applies_to ? html` <span class="tag">${t.applies_to}</span>` : ''}${!t.in_house ? html` <span class="tag warn">${T.cable.external}</span>` : ''}</span></label>`)}</div>`)}
+  </fieldset>`;
+}
+
 function constructionForm(ctx, d) {
   const { full, cons, values, errors, lists, base } = d;
   const { family } = full;
@@ -222,6 +260,7 @@ function constructionForm(ctx, d) {
   const rows = limitRows(family);
   const rot = (i, k) => (v.params && v.params[i] ? v.params[i][k] : '');
   const showParams = family.code === 'FUNIE_RIGIDA';
+  const cab = family.code === 'CABLE_LV';
   const heading = cons ? f(T.specs.edit_construction, { label: cons.label }) : T.specs.add_construction;
   return layout(ctx, {
     title: heading, active: 'specs', wide: true, scripts: ['/static/specs.js'],
@@ -238,19 +277,21 @@ function constructionForm(ctx, d) {
 </div>
 <div class="row">
   ${textField({ label: T.specs.printed_label, name: 'label', value: v.label, errors, hint: T.specs.printed_label_hint })}
-  ${textField({ label: T.specs.wires, name: 'wires', value: v.wires, errors, inputmode: 'numeric', cls: 'num' })}
+  ${cab ? '' : html`${textField({ label: T.specs.wires, name: 'wires', value: v.wires, errors, inputmode: 'numeric', cls: 'num' })}
   ${textField({ label: T.specs.wire_d, name: 'wire_d', value: v.wire_d, errors, inputmode: 'decimal', cls: 'num' })}
-  ${textField({ label: T.specs.die, name: 'die', value: v.die, errors, hint: T.specs.die_hint })}
+  ${textField({ label: T.specs.die, name: 'die', value: v.die, errors, hint: T.specs.die_hint })}`}
 </div>
 ${textArea({ label: T.specs.iec_exception_reason, name: 'iec_exception_reason', value: v.iec_exception_reason, errors, rows: 2 })}
 <p class="muted">${T.specs.iec_exception_hint}</p>
 </fieldset>
 
+${cab ? cableFields(v, errors, lists, tests) : ''}
 <fieldset class="card"><legend>${T.specs.limits}</legend>
 <table class="grid limits-edit"><thead><tr><th></th><th>${T.measure.nominal}</th><th>min</th><th>max</th><th>${T.specs.tolerance}</th><th>${T.verdict.info}</th></tr></thead><tbody>
-${rows.map((r) => {
+${rows.map((r, i) => {
     const k = `lim_${r.level}_${r.q}`;
-    return html`<tr class="${r.cls}"><th scope="row">${opt('limitq', `${r.level}_${r.q}`, opt('limitq', r.q, r.q))} <span class="muted">[${r.unit}]</span></th>
+    const head = r.group && (i === 0 || rows[i - 1].group !== r.group) ? html`<tr class="group-row"><th colspan="6">${T.cable.scopes[r.group]}</th></tr>` : '';
+    return html`${head}<tr class="${r.cls}"><th scope="row">${r.label || opt('limitq', `${r.level}_${r.q}`, opt('limitq', r.q, r.q))} <span class="muted">[${r.unit}]</span></th>
     <td><input name="${k}_nominal" value="${v[k + '_nominal'] || ''}" inputmode="decimal" autocomplete="off"></td>
     <td><input name="${k}_min" value="${v[k + '_min'] || ''}" inputmode="decimal" autocomplete="off"></td>
     <td><input name="${k}_max" value="${v[k + '_max'] || ''}" inputmode="decimal" autocomplete="off"></td>
@@ -281,7 +322,7 @@ function statsPage(ctx, d) {
     title: T.stats.title, active: 'specs',
     body: html`<p><a href="${base}">« ${T.common.back}</a></p><h1>${f(T.stats.heading, { label: cons.label })}</h1><p class="muted">${T.stats.hint}</p>
 <table class="grid"><thead><tr><th>${T.detail.quantity}</th><th>n</th><th>${T.stats.mean}</th><th>min</th><th>max</th><th>${T.stats.sd}</th></tr></thead>
-<tbody>${rows.length ? rows.map((r) => html`<tr><th scope="row">${T.quantity[r.quantity]}</th><td>${r.n}</td><td>${calc.formatQuantity(r.quantity, r.mean)}</td><td>${calc.formatQuantity(r.quantity, r.min)}</td><td>${calc.formatQuantity(r.quantity, r.max)}</td><td>${r.sd === null ? '' : calc.formatNumber(r.sd, 0, 4)}</td></tr>`) : html`<tr><td colspan="6" class="empty">${T.stats.empty}</td></tr>`}</tbody></table>`,
+<tbody>${rows.length ? rows.map((r) => html`<tr><th scope="row">${tests.label(r.quantity)}</th><td>${r.n}</td><td>${calc.formatQuantity(r.quantity, r.mean)}</td><td>${calc.formatQuantity(r.quantity, r.min)}</td><td>${calc.formatQuantity(r.quantity, r.max)}</td><td>${r.sd === null ? '' : calc.formatNumber(r.sd, 0, 4)}</td></tr>`) : html`<tr><td colspan="6" class="empty">${T.stats.empty}</td></tr>`}</tbody></table>`,
   });
 }
 

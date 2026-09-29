@@ -58,6 +58,14 @@ const LISTS = {
       { name: 'iec_group', type: 'select', required: true, options: () => [['solid', 'solid'], ['circular', 'circular'], ['compactat', 'compactat'], ['profilat', 'profilat']] },
     ],
   },
+  compusi: {
+    table: 'compounds', title: 'compounds', nameField: 'code', order: 'id',
+    fields: [{ name: 'code', type: 'text', required: true, max: 20, upper: true }, { name: 'name', type: 'text', required: true, max: 80 }],
+  },
+  standarde: {
+    table: 'cable_standards', title: 'cable_standards', nameField: 'name', order: 'id',
+    fields: [{ name: 'name', type: 'text', required: true, max: 60 }],
+  },
   destinatii: {
     table: 'destinations', title: 'destinations', nameField: 'name', order: 'id',
     fields: [{ name: 'name', type: 'text', required: true, max: 60 }],

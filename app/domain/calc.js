@@ -72,7 +72,7 @@
   /** (R20 − Rmax) / Rmax in %, positive = above the limit. */
   const deviationPercent = (r20, rMax) => ((r20 - rMax) / rMax) * 100;
 
-  const isOut = (v) => v === 'sub' || v === 'peste';
+  const isOut = (v) => v === 'sub' || v === 'peste' || v === 'neconform';
 
   // ---------- formatting (display only, Romanian decimal comma) ----------
 
@@ -102,9 +102,20 @@
 
   const SIGNED = (v, dec) => (v > 0 ? '+' : '') + formatNumber(v, dec, dec);
 
+  // display rules of the finished-cable tests (from the editable catalogue): {code: {kind, decimals}}
+  let REGISTRY = {};
+  function registerQuantities(map) { REGISTRY = map || {}; }
+  const baseCode = (q) => q.replace(/_(avg|min|max)$/, '');
+
   /** How each derived quantity is displayed (ADR-014). */
   function formatQuantity(quantity, v) {
     if (v === null || v === undefined) return '';
+    const reg = REGISTRY[quantity] || REGISTRY[baseCode(quantity)];
+    if (reg) {
+      if (reg.kind === 'resistance') return formatSignificant(v, 4);
+      if (reg.kind === 'passfail') return v === 1 ? 'Conform' : 'Neconform';
+      return formatNumber(v, 0, reg.decimals === undefined ? 2 : reg.decimals);
+    }
     switch (quantity) {
       case 'd1': case 'd2': case 'd_avg': case 'ovality': case 'h': case 'l': case 'd_ech':
         return formatNumber(v, 1, 2);
@@ -230,7 +241,74 @@
     return { results, warnings, errors };
   }
 
+  // ---------- finished-cable tests: driven by the catalogue, limits from the cable data sheet ----------
+
+  /** Numbers separated by spaces or ';' (comma is the decimal separator): "0,82 0,85; 0,84". Null when any is invalid. */
+  function parseReadings(text) {
+    if (text === null || text === undefined) return [];
+    const parts = String(text).split(/[\s;]+/).filter(Boolean);
+    const out = [];
+    for (const p of parts) { const n = parseDecimal(p); if (n === null) return null; out.push(n); }
+    return out;
+  }
+
+  /**
+   * @param inputs {t_<code>: text, t_<code>_unit / _len / _temp for resistance tests}
+   * @param ctx {tests:[{code,kind}], limits:{quantity:{min,max,nominal,informative}}, material:{alpha20}, iec:{r_max,source}|null, targets}
+   */
+  function evaluateTests(inputs, ctx) {
+    const results = [], warnings = [], errors = [];
+    const lim = ctx.limits || {};
+    const push = (quantity, value, limit, o) => {
+      const opts = o || {};
+      const min = limit ? limit.min : null, max = limit ? limit.max : null;
+      results.push({
+        quantity, value, lim_min: min === undefined ? null : min, lim_max: max === undefined ? null : max,
+        verdict: opts.verdict || verdict(value, min, max, limit ? !!limit.informative : false),
+        deviation_pct: opts.deviation_pct === undefined ? null : opts.deviation_pct, source: opts.source || (limit ? 'fisa' : 'calculat'),
+      });
+    };
+    const has = (k) => inputs[k] !== undefined && inputs[k] !== null && String(inputs[k]).trim() !== '';
+    for (const t of ctx.tests || []) {
+      const key = 't_' + t.code;
+      if (!has(key)) continue;
+      if (t.kind === 'numeric') {
+        const v = parseDecimal(inputs[key]);
+        if (v === null) errors.push(key); else push(t.code, v, lim[t.code]);
+      } else if (t.kind === 'readings') {
+        const vals = parseReadings(inputs[key]);
+        if (vals === null || !vals.length) { errors.push(key); continue; }
+        push(t.code + '_avg', vals.reduce((a, b) => a + b, 0) / vals.length, lim[t.code + '_avg']);
+        push(t.code + '_min', Math.min(...vals), lim[t.code + '_min']);
+        if (vals.length > 1 || lim[t.code + '_max']) push(t.code + '_max', Math.max(...vals), lim[t.code + '_max']);
+      } else if (t.kind === 'passfail') {
+        const v = String(inputs[key]);
+        if (v !== 'pass' && v !== 'fail') { errors.push(key); continue; }
+        push(t.code, v === 'pass' ? 1 : 0, null, { verdict: v === 'pass' ? 'ok' : 'neconform', source: 'incercare' });
+      } else if (t.kind === 'resistance') {
+        const rv = parseDecimal(inputs[key]);
+        const unit = inputs[key + '_unit'] === 'ohm' ? 'ohm' : 'ohm_km';
+        let len = has(key + '_len') ? parseDecimal(inputs[key + '_len']) : ((ctx.targets && ctx.targets.r_sample_m) || 5);
+        const temp = parseDecimal(inputs[key + '_temp']);
+        if (rv === null || rv <= 0) errors.push(key);
+        if (unit === 'ohm' && (len === null || len <= 0)) errors.push(key + '_len');
+        if (temp === null) errors.push(key + '_temp');
+        if (rv !== null && rv > 0 && temp !== null && !(unit === 'ohm' && (len === null || len <= 0))) {
+          const tg = ctx.targets || {};
+          if (temperatureOutOfRange(temp, tg.temp_min, tg.temp_max)) warnings.push('temp_range');
+          const r20 = resistanceAt20(resistancePerKm(rv, unit, len), temp, ctx.material.alpha20);
+          const own = lim[t.code] && lim[t.code].max !== null && lim[t.code].max !== undefined ? { r_max: lim[t.code].max, source: 'fisa' } : ctx.iec;
+          const rMax = own ? own.r_max : null;
+          push(t.code, r20, rMax === null || rMax === undefined ? null : { min: null, max: rMax }, { source: own ? own.source : 'calculat', deviation_pct: rMax ? deviationPercent(r20, rMax) : null });
+        }
+      }
+    }
+    if (!results.length && !errors.length) errors.push('_tests');
+    return { results, warnings, errors };
+  }
+
   return {
+    registerQuantities, parseReadings, evaluateTests,
     TEMP_MIN, TEMP_MAX,
     parseDecimal, massPerMetre, diameterAverage, ovality, kt, temperatureOutOfRange,
     resistancePerKm, resistanceAt20, resistanceEquivalent,

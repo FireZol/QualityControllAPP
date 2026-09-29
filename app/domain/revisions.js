@@ -71,6 +71,8 @@ function flatten(c) {
     label: c.label, shape: c.shape_code, destination: c.destination_name || '', coated: c.coated,
     wires: c.wires, wire_d: c.wire_d, die: c.die,
   };
+  for (const k of ['rated_voltage', 'cores', 'conductor_class', 'insulation', 'sheath', 'standard', 'armour']) if (c.data && c.data[k] !== undefined) o[`data.${k}`] = c.data[k];
+  if (c.data && Array.isArray(c.data.tests)) o['data.tests'] = [...c.data.tests].sort().join(',');
   for (const l of c.limits) {
     const k = `${l.level}.${l.quantity}`;
     o[`${k}.nominal`] = l.nominal; o[`${k}.min`] = l.min; o[`${k}.max`] = l.max; o[`${k}.informative`] = l.informative;
@@ -184,7 +186,7 @@ function updateHeader(db, user, revisionId, { edition, revision, change_note, co
 }
 
 function stableKeyFor(db, revisionId, family, matCode, section, shapeCode, coated, destName) {
-  const prefix = { FUNIE_RIGIDA: 'FUNIE', EXTRUDAT_AL: 'EXTR', SARMA_CL12: 'SARMA', SARMA_CL5: 'SARMA5', FLEXIBIL_CL5: 'FLEX' }[family.code] || family.code;
+  const prefix = { FUNIE_RIGIDA: 'FUNIE', EXTRUDAT_AL: 'EXTR', SARMA_CL12: 'SARMA', SARMA_CL5: 'SARMA5', FLEXIBIL_CL5: 'FLEX', CABLE_LV: 'CABLU' }[family.code] || family.code;
   let key = `${prefix}|${matCode}|${section}|${shapeCode}${coated ? '|coated' : ''}${destName ? '|' + destName : ''}`;
   let n = 1, candidate = key;
   while (db.get('SELECT 1 FROM constructions WHERE revision_id = ? AND stable_key = ?', revisionId, candidate)) candidate = `${key}#${++n}`;
@@ -213,14 +215,14 @@ function saveConstruction(db, user, revisionId, constructionId, data) {
       const ex = db.get('SELECT * FROM constructions WHERE id = ? AND revision_id = ?', id, revisionId);
       if (!ex) return refuse('not_found');
       db.run(
-        'UPDATE constructions SET material_id=?, section=?, shape_id=?, destination_id=?, coated=?, label=?, wires=?, wire_d=?, die=?, iec_exception_reason=? WHERE id = ?',
-        data.material_id, data.section, data.shape_id, data.destination_id || null, data.coated ? 1 : 0, data.label, data.wires, data.wire_d, data.die, data.iec_exception_reason || null, id);
+        'UPDATE constructions SET material_id=?, section=?, shape_id=?, destination_id=?, coated=?, label=?, wires=?, wire_d=?, die=?, iec_exception_reason=?, data=COALESCE(?, data) WHERE id = ?',
+        data.material_id, data.section, data.shape_id, data.destination_id || null, data.coated ? 1 : 0, data.label, data.wires, data.wire_d, data.die, data.iec_exception_reason || null, data.data ? JSON.stringify(data.data) : null, id);
     } else {
       const key = stableKeyFor(db, revisionId, family, mat.code, data.section, shape.code, data.coated, dest && dest.name);
       const sort = (db.value('SELECT max(sort) FROM constructions WHERE revision_id = ?', revisionId) || 0) + 1;
       id = db.run(
         'INSERT INTO constructions(revision_id, stable_key, family_id, material_id, section, shape_id, destination_id, coated, label, wires, wire_d, die, data, iec_exception_reason, active, sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)',
-        revisionId, key, family.id, data.material_id, data.section, data.shape_id, data.destination_id || null, data.coated ? 1 : 0, data.label, data.wires, data.wire_d, data.die, '{}', data.iec_exception_reason || null, sort).id;
+        revisionId, key, family.id, data.material_id, data.section, data.shape_id, data.destination_id || null, data.coated ? 1 : 0, data.label, data.wires, data.wire_d, data.die, data.data ? JSON.stringify(data.data) : '{}', data.iec_exception_reason || null, sort).id;
     }
     db.run('DELETE FROM limits WHERE construction_id = ?', id);
     for (const l of data.limits || []) {

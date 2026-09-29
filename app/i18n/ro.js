@@ -6,7 +6,7 @@ const S = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
 
   nav: {
-    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', analyses: 'Analize', specs: 'Fișe tehnice',
+    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
     lists: 'Nomenclatoare', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
@@ -24,6 +24,11 @@ const S = {
 
   cfg: {
     families: 'Familii de produs', families_desc: 'Ce se măsoară pe familie: masă, rezistență măsurată (Cu / Al), rezistență teoretică', targets: 'Ținte și praguri', targets_desc: 'Temperatură, lungimi implicite ale probelor, Cpk, mărimea minimă a eșantionului',
+    tests: 'Tipuri de încercări (cablu finit)', tests_desc: 'Catalogul încercărilor: rutină, pe probă, de tip; pe compuși; interne sau externe',
+    tests_intro: 'Catalogul încercărilor pentru cablul finit (IEC 60502-1, HD 603, VDE 0276-603). Limitele se stabilesc pe fișa tehnică a fiecărui tip de cablu; aici se definește ce încercări există, în ce unități, dacă se aplică doar anumitor compuși (PVC, XLPE, HFFR …) și dacă se fac în laborator sau extern. Încercările pot fi dezactivate sau adăugate oricând.',
+    tests_note: 'Codul nu se mai schimbă după creare (rezultatele salvate îl folosesc). Tipul (valoare, citiri multiple, conform/neconform, rezistență) se alege la creare. „Citiri multiple” dă media, minimul și maximul citirilor.',
+    test_code: 'Cod', test_code_hint: 'litere mici, cifre, _', test_kind: 'Tip', test_unit: 'U.M.', test_decimals: 'Zecimale', test_scope: 'Categorie', test_applies: 'Se aplică la compuși', test_ref: 'Referință standard', test_inhouse: 'În laborator', test_sort: 'Ordine',
+    kinds: { numeric: 'valoare', readings: 'citiri multiple', passfail: 'conform / neconform', resistance: 'rezistență (corectată la 20 °C)' },
     iec: 'Tabel IEC 60228', iec_desc: 'Valorile limită de referință: R max, număr minim de fire, Ø maxim fir',
     families_intro: 'Aici se stabilește ce se măsoară pentru fiecare familie și dacă familia este activă pentru măsurători. Se aplică măsurătorilor noi; înregistrările existente nu se modifică. Fiecare modificare se înregistrează în jurnal.',
     families_rule: 'Rezistența: mai mic este mai bine. Până la limită (R max din fișă sau, dacă lipsește, din IEC 60228) rezultatul este verde, peste limită roșu — indiferent dacă valoarea este măsurată, calculată teoretic din masă sau un toron raportat la liță.',
@@ -66,8 +71,32 @@ const S = {
     lim_min: 'Limita min', lim_max: 'Limita max', sheet_register: 'Registru', sheet_results: 'Rezultate', sheet_inputs: 'Valori introduse',
   },
 
+  cable: {
+    batch: 'Lot', batches: 'Loturi', batch_no: 'Număr lot', new_batch: 'Lot nou', order: 'Comandă', design: 'Tip de cablu', drum: 'Toba', drums: 'Tobe', length_m: 'Lungime [m]', standard: 'Standard',
+    produced_length: 'Lungime produsă [m]', produced_on: 'Data producției', created: 'Creat', sheet: 'Fișa tehnică', search: 'Caută (lot sau comandă)', session: 'Tip încercare',
+    st: { deschis: 'deschis', inchis: 'închis' }, tests_done: 'Încercări', certificates: 'Certificate', no_batches: 'Niciun lot.', no_drums: 'Nicio tobă adăugată încă.',
+    no_designs: 'Nu există tipuri de cablu în fișa tehnică activă a cablului finit. Un inginer trebuie să adauge tipurile în Fișe tehnice → Cablu de joasă tensiune și să activeze revizia.',
+    edit_batch: 'Modifică datele lotului', add_tests: 'Adaugă încercări', close: 'Închide lotul', close_confirm: 'Închideți lotul? După închidere nu se mai pot adăuga încercări sau tobe (un inginer îl poate redeschide).', reopen: 'Redeschide lotul',
+    batch_level_tests: 'Încercări pe întreg lotul', coverage: 'Încercări cerute', none_required_batch: 'Fișa tehnică nu listează încercările cerute pentru acest tip de cablu; se verifică doar ce s-a introdus.',
+    missing: 'Încercări cerute încă lipsă:', all_done: 'Toate încercările cerute sunt înregistrate.', out_count: '{n} rezultate în afara cerințelor.',
+    preview_cert: 'Previzualizează certificatul', issue: 'Emite certificatul', issue_confirm: 'Emiteți certificatul? Conținutul se îngheață și primește un număr; o corectură ulterioară necesită un certificat nou.',
+    issue_hint: 'Doar un inginer poate emite; conținutul emis nu se mai schimbă.', no_certificates: 'Niciun certificat emis.', no_results_yet: 'Nu există încă încercări pentru acest lot.',
+    override_needed: 'Lotul are rezultate neconforme. Certificatul se poate emite doar cu un motiv, care se tipărește pe certificat.', override_reason: 'Motivul emiterii cu abateri', nonconforming: 'neconform',
+    superseded_by: 'înlocuit de {no}', superseded_banner: 'Certificat înlocuit de {no}', certificate: 'Certificat', certificate_title: 'Certificat de încercări pe lot', cert_no: 'Nr. certificat', draft: 'ciornă',
+    preview_banner: 'PREVIZUALIZARE — nu este un certificat emis', conclusion: 'Concluzie', conforming_text: 'Lotul este conform cu cerințele fișei tehnice și ale standardului indicat, pe baza încercărilor de mai sus.',
+    nonconforming_text: 'Lotul NU este conform cu toate cerințele.', test: 'Încercarea', unit: 'U.M.', requirement: 'Cerință', result: 'Rezultat', whole_batch: 'întreg lotul', no_batch_type: '— încercări de tip pe un tip de cablu —',
+    type_tests: 'Încercări de tip', type_report: 'Raport de încercări de tip', type_conforming: 'Toate încercările de tip înregistrate sunt conforme.', type_nonconforming: 'Există încercări de tip neconforme.', no_type_results: 'Nu există încă încercări de tip înregistrate pentru acest tip de cablu.',
+    scopes: { routine: 'Încercări de rutină (pe tobă)', sample: 'Încercări pe probă (pe lot)', type: 'Încercări de tip' },
+    external: 'extern', external_title: 'Încercare făcută de un laborator extern; rezultatul provine din raportul lui', external_note: 'Încercare efectuată de un laborator extern; rezultatul provine din raportul acestuia.',
+    limit: 'cerință', pass: 'Conform', fail: 'Neconform', not_tested: '— neîncercat —', readings_placeholder: 'valori separate prin spațiu', other_tests: 'Alte încercări ({n}) fără cerință în fișă', none_required: 'Fișa nu cere încercări de acest fel; le găsiți la „Alte încercări”.',
+    pass_fail_req: 'conform / neconform', design_data: 'Date despre cablu', cores: 'Număr de conductoare', rated_voltage: 'Tensiune nominală (U0/U)', rated_voltage_hint: 'De exemplu 0,6/1 kV', conductor_class: 'Clasa conductorului (IEC 60228)',
+    insulation: 'Izolație', sheath: 'Manta', armour: 'Armură / ecran', required_tests: 'Încercări cerute de fișă', required_tests_hint: 'Bifați încercările cerute pentru acest tip de cablu (de rutină, pe probă, de tip). Cele bifate apar în lista principală de la introducerea încercărilor și se verifică la acoperirea lotului; celelalte rămân la „Alte încercări”.',
+    tests_count: '{req} cerute, {lim} cu limite', type_report_link: 'Raport de tip', cable_design: 'Conductor', cable_voltage: 'Tensiune', cable_compounds: 'Izolație / manta', cable_standard: 'Standard', cable_tests: 'Încercări', cable_report: 'Raport',
+    remarks: 'Observații', nothing_to_test: 'Nu există loturi deschise și nici tipuri de cablu în fișa activă. Creați un lot sau activați fișa tehnică a cablului.', summary: '{n} rezultate, {out} neconforme', suffix: { unit: 'unitate', len: 'lungime probă', temp: 'temperatură' },
+  },
+
   print: {
-    page: 'Pag.', print: 'Tipărește', apply: 'Aplică', copy: 'Exemplar', code: 'Cod', code_unset: 'de stabilit', signature: 'Semnătura',
+    cable_required: 'Cerută', cable_scope: 'Categorie', elaborated: 'Elaborat', page: 'Pag.', print: 'Tipărește', apply: 'Aplică', copy: 'Exemplar', code: 'Cod', code_unset: 'de stabilit', signature: 'Semnătura',
     hint: 'Tipărirea se face din browser, pe hârtie sau în PDF (pentru registre largi alegeți A3 sau orientarea peisaj).',
     not_in_force: 'Revizie {status} — nu este document în vigoare', red_note: 'Valorile scrise cu roșu s-au modificat față de revizia anterioară.',
     iec_notes: 'Excepții acceptate de la IEC 60228:', pitch_legend: 'Pe rotor: pas [mm] / tensionare. Tensionarea la recepție conform fișei.',
@@ -77,13 +106,14 @@ const S = {
     printed_by: 'Tipărit de {user}, {when}', open_print: 'Tipărește', register_print: 'Tipărește registrul',
   },
 
-  verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ' },
+  verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ', neconform: 'Neconform' },
 
   errors: {
     required: 'Câmp obligatoriu.', invalid: 'Valoare nevalidă.', too_long: 'Textul este prea lung.', duplicate: 'Există deja o intrare cu această valoare.',
     rotor_format: 'Format așteptat: numere separate prin +, de exemplu 1+6+12+18.', capacity: 'Utilajul nu are suficiente straturi pentru această construcție.',
     password_short: 'Parola trebuie să aibă cel puțin 8 caractere.', password_username: 'Parola nu poate fi identică cu numele de utilizator.',
     password_mismatch: 'Cele două parole nu coincid.', password_same: 'Parola nouă trebuie să difere de cea actuală.', password_wrong: 'Parola actuală nu este corectă.',
+    no_tests: 'Introduceți cel puțin o încercare.', batch_closed: 'Lotul este închis.',
     own_account: 'Nu vă puteți dezactiva propriul cont.', last_admin: 'Trebuie să rămână cel puțin un administrator activ.',
     restore_mismatch: 'Numele scris nu coincide cu numele fișierului.',
   },
@@ -98,6 +128,8 @@ const S = {
     header_saved: 'Antetul reviziei a fost salvat.', construction_saved: 'Construcția a fost salvată.', construction_toggled: 'Starea construcției a fost schimbată.',
     settings_saved_restart: 'Setările au fost salvate. Modificările de port, adresă sau nume public se aplică după repornirea serviciului.',
     backup_done: 'Backup-ul a fost creat.', restore_done: 'Baza de date a fost restaurată. Dacă sesiunea a expirat, autentificați-vă din nou.',
+    batch_created: 'Lotul a fost creat. Adăugați tobele și încercările.', batch_closed: 'Lotul a fost închis.', batch_reopened: 'Lotul a fost redeschis.', cert_issued: 'Certificatul a fost emis.',
+    e_batch_closed: 'Lotul este închis.', e_no_results: 'Nu există încercări pentru acest lot.',
     e_generic: 'Acțiunea nu a putut fi efectuată.', e_invalid: 'Datele introduse nu sunt valide.',
     e_open_revision_exists: 'Există deja o revizie în lucru pentru acest document.', e_no_active_revision: 'Documentul nu are o revizie activă din care să se pornească.',
     e_later_stage: 'Această familie de produse se activează într-o etapă următoare.',
@@ -146,6 +178,8 @@ const S = {
     sample_mm: 'Lungimea probei [mm]', r_value: 'Rezistență măsurată', r_unit: 'Unitate', r_sample_m: 'Lungimea probei de rezistență [m]', temp_c: 'Temperatura [°C]',
   },
 
+  tests: { parts: { avg: 'medie', min: 'minim', max: 'maxim' } },
+
   level: { suvita: 'Suviță', toron: 'Toron', lita: 'Liță' },
 
   measure: {
@@ -189,7 +223,7 @@ const S = {
     edition: 'Ediție', revision: 'Revizie', elaborated: 'Elaborat', verified: 'Verificat', activated: 'Activată', change_note: 'Modificări', rejected: 'Respinsă',
     workflow: 'Flux de verificare', submit: 'Trimite la verificare', submit_hint: 'Un alt inginer trebuie să verifice și să activeze revizia.',
     verify: 'Verifică și activează', verify_confirm: 'Verificați și activați această revizie? Revizia activă curentă va fi arhivată.',
-    reject: 'Respinge', reject_reason: 'Motivul respingerii', author_cannot_verify: 'Elaboratorul nu poate verifica propria revizie; așteptați verificarea unui alt inginer.',
+    waiting_verification: 'În așteptarea verificării.', reject: 'Respinge', reject_reason: 'Motivul respingerii', author_cannot_verify: 'Elaboratorul nu poate verifica propria revizie; așteptați verificarea unui alt inginer.',
     data_quality: 'Valori de verificat față de documentul original', data_quality_hint: 'Aceste valori au părut inconsistente la transcrierea din documentele scanate. Nu au fost corectate automat: confirmați-le pe hârtie.',
     iec_checks: 'Verificări IEC 60228', checks_ok: 'Toate verificările au trecut.', blocking: 'Blochează:', warning: 'Avertizare:',
     header_edit: 'Antetul reviziei', code_hint: 'Codul documentului (definit în aplicație).', constructions: 'Construcții',
@@ -210,6 +244,7 @@ const S = {
   sheet: {
     construction: 'Construcție', wires_x_d: 'Fire × Ø fir [mm]', rope_d: 'Ø funie / Î × L [mm]', mass: 'Masă [g/m]', stranding: 'Cablare: pas / tensionare pe rotor',
     reception: 'Tensionare recepție', die: 'Filieră', d_nominal: 'Ø nominal [mm]', d_range: 'Ø min … max [mm]', h_l: 'Î × L [mm]', destination: 'Destinație', wires: 'Nr. fire',
+    cable_design: 'Conductor', cable_voltage: 'Tensiune', cable_compounds: 'Izolație / manta', cable_standard: 'Standard', cable_tests: 'Încercări', cable_report: 'Raport',
     r_max: 'R max [Ω/km]', mass_kgkm: 'Masă [kg/km]', wires_lita: 'Fire în liță', strands: 'Toroane × fire', wire_d5: 'Ø sârmă [mm]', suvita: 'Masă suviță [g/m]', toron: 'Masă toron [g/m]', lita: 'Masă liță [g/m]',
   },
 
@@ -242,17 +277,17 @@ const S = {
     title: 'Nomenclatoare', intro: 'Listele se pot completa, redenumi și dezactiva. O intrare folosită în măsurători nu se șterge, doar se dezactivează.',
     names: {
       machine_types: 'Tipuri de utilaj', machines: 'Utilaje', operators: 'Operatori', clients: 'Clienți', sample_types: 'Tipuri de probă', crews: 'Schimburi',
-      shapes: 'Forme', destinations: 'Destinații', materials: 'Constante material',
+      shapes: 'Forme', destinations: 'Destinații', materials: 'Constante material', compounds: 'Compuși (izolație / manta)', cable_standards: 'Standarde cablu',
     },
     descriptions: {
       machine_types: 'Procesul și familiile de produs permise', machines: 'Nume, tip și configurația rotoarelor', operators: 'Nume și prenume', clients: 'Nume scurt',
       sample_types: 'Lista tipurilor de probă', crews: 'Schimburile A / B / C și data de start a ciclului', shapes: 'RE, RM, RMC, SM …', destinations: 'Unifilar, Multifilar, Armate …',
-      materials: 'Rezistivitate, densitate, coeficient de temperatură',
+      materials: 'Rezistivitate, densitate, coeficient de temperatură', compounds: 'PVC, XLPE, HFFR … folosiți la fișele cablurilor', cable_standards: 'IEC 60502-1, HD 603, VDE 0276-603 …',
     },
     fields: {
       name: 'Nume', machine_type_id: 'Tip utilaj', rotor_config: 'Configurație rotoare', full_name: 'Nume și prenume', short_name: 'Nume scurt', numbered: 'Numerotată', sort: 'Ordine',
       cycle_start: 'Prima zi de tură de zi a ciclului', code: 'Cod', kind: 'Tip', iec_group: 'Grup IEC', material: 'Material', grade: 'Calitate', rho20: 'ρ20 [Ω·mm²/m]',
-      density: 'Densitate δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Denumire completă', crews_name: 'Schimb',
+      compounds_code: 'Cod', compounds_name: 'Denumire', density: 'Densitate δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Denumire completă', crews_name: 'Schimb',
     },
     families: 'Familii de produs permise', crews_hint: 'Fiecare schimb are un ciclu de 12 zile: 4 zile de zi, 2 libere, 4 nopți, 2 libere. Introduceți prima zi de tură de zi a fiecărui schimb; schimburile A, B, C pornesc la 4 zile distanță.',
     machines_hint: 'Configurația rotoarelor (de exemplu 1+6+12+18) limitează construcțiile la cele cu suficiente fire; dacă rămâne goală nu se aplică nicio limită de capacitate.',

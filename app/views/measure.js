@@ -2,6 +2,7 @@
 const { html, h, raw, jsonBlock } = require('../lib/html');
 const { T, f, opt } = require('../i18n/ro');
 const calc = require('../domain/calc');
+const tests = require('../domain/tests');
 const { displayDateTime, displayDate } = require('../lib/time');
 const L = require('./layout');
 const { layout, csrf, textField, selectField, textArea, valueCell, limitText, verdictBadge, pager } = L;
@@ -136,6 +137,12 @@ ${entryForm(ctx, sel, model, d.form)}` : ''}`,
 
 // ---------- register ----------
 
+/** A finished-cable record has many results: show how many and how many are out. */
+function cableSummary(r) {
+  const out = r.results.filter((x) => ['sub', 'peste', 'neconform'].includes(x.verdict)).length;
+  return html`<span class="val ${out ? 'v-neconform' : 'v-ok'}">${f(T.cable.summary, { n: r.results.length, out })}</span>`;
+}
+
 function registerPage(ctx, d) {
   const { data, filters, lists } = d;
   const opt = (rows, key, label) => rows.map((r) => [r[key], r[label]]);
@@ -143,6 +150,7 @@ function registerPage(ctx, d) {
   for (const [k, v] of Object.entries(filters)) if (v !== '' && v !== null && v !== undefined && v !== false) qs.set(k, v === true ? '1' : String(v));
   const cellD = (r) => {
     const m = r.resultMap;
+    if (r.family_code === 'CABLE_LV') return cableSummary(r);
     if (m.h || m.l) return html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}`;
     return html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
   };
@@ -177,7 +185,7 @@ function registerPage(ctx, d) {
   <tbody>${data.rows.length ? data.rows.map((r) => html`<tr class="${r.is_current ? '' : 'old'}">
     <td><a href="/masuratori/${r.record_no}">${r.record_no}</a>${r.versions > 1 ? html` <span class="badge" title="${T.register.versions_title}">${f(T.register.versions, { n: r.versions })}${r.is_current ? '' : ` (v${r.version})`}</span>` : ''}</td>
     <td>${displayDateTime(r.created_at)}</td><td>${T.shift[r.shift]}<br><span class="muted">${displayDate(r.shift_date)}</span></td><td>${r.crew_name || ''}</td>
-    <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td>
+    <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}${r.drum_no ? ' / ' + r.drum_no : ''}</a>` : ''}${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td>
     <td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
     <td class="nowrap">${cellD(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
     <td class="notes">${r.notes || ''}</td></tr>`) : html`<tr><td colspan="15" class="empty">${T.register.empty}</td></tr>`}</tbody>
@@ -190,13 +198,21 @@ ${pager('/masuratori', data.page, data.pages, Object.fromEntries(qs))}`,
 
 function resultsTable(r) {
   return html`<table class="grid results"><thead><tr><th>${T.detail.quantity}</th><th>${T.detail.value}</th><th>${T.detail.limits}</th><th>${T.detail.verdict}</th><th>${T.detail.deviation}</th><th>${T.detail.source}</th></tr></thead>
-  <tbody>${r.results.map((x) => html`<tr><th scope="row">${T.quantity[x.quantity]}</th>
-    <td>${valueCell(x, x.quantity)}</td><td>${x.verdict === 'info' ? '' : limitText(x.lim_min, x.lim_max, x.quantity === 'r20' || x.quantity === 'r20_theor' ? 'r20' : x.quantity)}</td>
+  <tbody>${r.results.map((x) => html`<tr><th scope="row">${tests.label(x.quantity)}</th>
+    <td>${valueCell(x, x.quantity)}</td><td>${x.verdict === 'info' || x.verdict === 'neconform' ? '' : limitText(x.lim_min, x.lim_max, x.quantity === 'r20' || x.quantity === 'r20_theor' ? 'r20' : x.quantity)}</td>
     <td>${verdictBadge(x.verdict)}</td><td>${x.deviation_pct === null || x.deviation_pct === undefined ? '' : calc.signed(x.deviation_pct, 2) + ' %'}</td><td>${x.source === 'fisa' ? T.measure.source_sheet : x.source === 'calculat' ? T.detail.calculated : x.source}</td></tr>`)}</tbody></table>`;
 }
 
 function inputsLine(v) {
   const parts = [];
+  const cat = new Map(tests.catalogue().map((t) => [t.code, t]));
+  for (const k of Object.keys(v.inputs).filter((x) => x.startsWith('t_'))) {
+    const code = k.slice(2).replace(/_(unit|len|temp)$/, '');
+    const t = cat.get(code);
+    const suffix = k.slice(2).slice(code.length + 1);
+    const val = v.inputs[k] === 'pass' ? T.cable.pass : v.inputs[k] === 'fail' ? T.cable.fail : suffix === 'unit' ? (v.inputs[k] === 'ohm' ? 'Ω' : 'Ω/km') : String(v.inputs[k]).replace('.', ',');
+    parts.push(html`<span class="in"><span class="muted">${(t ? t.name : code) + (suffix ? ` (${T.cable.suffix[suffix]})` : '')}:</span> ${val}</span>`);
+  }
   for (const k of ['d1', 'd2', 'h', 'l', 'mass_g', 'sample_mm', 'r_value', 'r_unit', 'r_sample_m', 'temp_c']) {
     if (v.inputs[k] === undefined) continue;
     const val = k === 'r_unit' ? (v.inputs[k] === 'ohm' ? 'Ω' : 'Ω/km') : String(v.inputs[k]).replace('.', ',');
@@ -216,6 +232,7 @@ function detailPage(ctx, d) {
     <div><dt>${T.measure.family}</dt><dd>${cur.family_name}</dd></div>
     <div><dt>${T.register.product}</dt><dd>${cur.construction_label} <span class="tag">${materialName(cur.material_code)}</span>${cur.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[cur.level]}</span>` : ''}</dd></div>
     <div><dt>${T.measure.machine}</dt><dd>${cur.machine_name}</dd></div>
+    ${cur.batch_no ? html`<div><dt>${T.cable.batch}</dt><dd><a href="/loturi/${cur.batch_id}">${cur.batch_no}</a>${cur.drum_no ? ` · ${T.cable.drum} ${cur.drum_no}` : ''}</dd></div>` : (cur.family_code === 'CABLE_LV' ? html`<div><dt>${T.cable.session}</dt><dd>${T.cable.type_tests}</dd></div>` : '')}
     <div><dt>${T.register.shift}</dt><dd>${T.shift[cur.shift]} · ${displayDate(cur.shift_date)}${cur.crew_name ? ` · ${T.register.crew} ${cur.crew_name}` : ''}</dd></div>
     <div><dt>${T.measure.operator}</dt><dd>${cur.operator_name || T.common.none}</dd></div>
     <div><dt>${T.measure.client}</dt><dd>${cur.client_name || T.common.none}</dd></div>

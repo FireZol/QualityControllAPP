@@ -71,4 +71,33 @@ function iecPage(ctx, d) {
   });
 }
 
-module.exports = { familiesPage, targetsPage, iecPage };
+function testsPage(ctx, d) {
+  const { rows, err } = d;
+  const e = (id) => (err && err.id === id ? err : null);
+  const inp = (r, name, val, cls) => html`<td><input name="${name}" value="${val === null || val === undefined ? '' : val}" form="tt${r.id}" class="${cls || ''}" autocomplete="off"></td>`;
+  return layout(ctx, {
+    title: T.cfg.tests, active: 'lists', wide: true,
+    body: html`<p><a href="/liste">« ${T.lists.title}</a></p><h1>${T.cfg.tests}</h1><p class="muted">${T.cfg.tests_intro}</p>
+<section class="card"><h2>${T.common.add}</h2><form method="post" action="/liste/incercari/adauga" class="row addrow">${csrf(ctx)}
+  ${textField({ label: T.cfg.test_code, name: 'code', value: e('new') ? e('new').values.code : '', errors: e('new') && e('new').errors, hint: T.cfg.test_code_hint, required: true })}
+  ${textField({ label: T.common.name, name: 'name', value: e('new') ? e('new').values.name : '', errors: e('new') && e('new').errors, required: true, cls: 'grow' })}
+  ${selectField({ label: T.cfg.test_kind, name: 'kind', value: e('new') ? e('new').values.kind : 'numeric', options: ['numeric', 'readings', 'passfail', 'resistance'].map((k) => [k, T.cfg.kinds[k]]) })}
+  ${textField({ label: T.cfg.test_unit, name: 'unit', value: e('new') ? e('new').values.unit : '', cls: 'num' })}
+  ${selectField({ label: T.cfg.test_scope, name: 'scope', value: e('new') ? e('new').values.scope : 'sample', options: ['routine', 'sample', 'type'].map((s) => [s, T.cable.scopes[s]]) })}
+  <input type="hidden" name="active" value="1"><input type="hidden" name="in_house" value="1">
+  <button class="btn primary" type="submit">${T.common.add}</button></form></section>
+<div class="scroll"><table class="grid"><thead><tr><th>${T.cfg.test_code}</th><th>${T.common.name}</th><th>${T.cfg.test_kind}</th><th>${T.cfg.test_unit}</th><th>${T.cfg.test_decimals}</th><th>${T.cfg.test_scope}</th><th>${T.cfg.test_applies}</th><th>${T.cfg.test_ref}</th><th>${T.cfg.test_inhouse}</th><th>${T.common.active}</th><th>${T.cfg.test_sort}</th><th></th></tr></thead>
+<tbody>${rows.map((r) => {
+    const x = e(r.id);
+    const v = (k) => (x ? x.values[k] : r[k]);
+    return html`<tr class="${r.active ? '' : 'inactive'}"><th scope="row"><code>${r.code}</code></th>${inp(r, 'name', v('name'), 'wide-in')}<td>${T.cfg.kinds[r.kind]}</td>${inp(r, 'unit', v('unit'), 'short')}${inp(r, 'decimals', v('decimals'), 'short')}
+    <td><select name="scope" form="tt${r.id}">${['routine', 'sample', 'type'].map((s) => html`<option value="${s}"${v('scope') === s ? raw(' selected') : ''}>${T.cable.scopes[s]}</option>`)}</select></td>
+    ${inp(r, 'applies_to', v('applies_to'), 'short')}${inp(r, 'standard_ref', v('standard_ref'), 'wide-in')}
+    <td><input type="checkbox" name="in_house" value="1" form="tt${r.id}" aria-label="${T.cfg.test_inhouse}"${(x ? x.values.in_house : r.in_house) ? raw(' checked') : ''}></td>
+    <td><input type="checkbox" name="active" value="1" form="tt${r.id}" aria-label="${T.common.active}"${(x ? x.values.active : r.active) ? raw(' checked') : ''}></td>${inp(r, 'sort', v('sort'), 'short')}
+    <td><form method="post" action="/liste/incercari/${r.id}" id="tt${r.id}" class="inline">${csrf(ctx)}<button class="btn small" type="submit">${T.common.save}</button></form>${x ? Object.keys(x.errors).map((k) => errText(x.errors, k)) : ''}</td></tr>`;
+  })}</tbody></table></div><p class="muted">${T.cfg.tests_note}</p>`,
+  });
+}
+
+module.exports = { familiesPage, targetsPage, iecPage, testsPage };

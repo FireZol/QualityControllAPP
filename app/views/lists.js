@@ -12,7 +12,7 @@ function indexPage(ctx, d) {
     title: T.lists.title, active: 'lists',
     body: html`<h1>${T.lists.title}</h1><p class="muted">${T.lists.intro}</p>
 <div class="tiles">${Object.entries(LISTS).map(([key, def]) => html`<a class="tile" href="/liste/${key}"><strong>${T.lists.names[def.title]}</strong><span class="muted">${T.lists.descriptions[def.title]}</span></a>`)}
-${ctx.user.role === 'inginer' ? html`<a class="tile" href="/liste/familii"><strong>${T.cfg.families}</strong><span class="muted">${T.cfg.families_desc}</span></a><a class="tile" href="/liste/tinte"><strong>${T.cfg.targets}</strong><span class="muted">${T.cfg.targets_desc}</span></a><a class="tile" href="/liste/iec"><strong>${T.cfg.iec}</strong><span class="muted">${T.cfg.iec_desc}</span></a><a class="tile" href="/liste/materiale"><strong>${T.lists.names.materials}</strong><span class="muted">${T.lists.descriptions.materials}</span></a>` : ''}</div>`,
+${ctx.user.role === 'inginer' ? html`<a class="tile" href="/liste/familii"><strong>${T.cfg.families}</strong><span class="muted">${T.cfg.families_desc}</span></a><a class="tile" href="/liste/tinte"><strong>${T.cfg.targets}</strong><span class="muted">${T.cfg.targets_desc}</span></a><a class="tile" href="/liste/incercari"><strong>${T.cfg.tests}</strong><span class="muted">${T.cfg.tests_desc}</span></a><a class="tile" href="/liste/iec"><strong>${T.cfg.iec}</strong><span class="muted">${T.cfg.iec_desc}</span></a><a class="tile" href="/liste/materiale"><strong>${T.lists.names.materials}</strong><span class="muted">${T.lists.descriptions.materials}</span></a>` : ''}</div>`,
   });
 }
 

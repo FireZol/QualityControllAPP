@@ -60,7 +60,7 @@ function trendChart({ points, title, xLabels }) {
   };
   const path = points.map((p, i) => `${i ? 'L' : 'M'}${r1(xOf(i))} ${r1(yOf(p.v))}`).join('');
   const dots = points.map((p, i) => {
-    const out = p.verdict === 'sub' || p.verdict === 'peste';
+    const out = p.verdict === 'sub' || p.verdict === 'peste' || p.verdict === 'neconform';
     const x = xOf(i), y = yOf(p.v);
     const shape = out ? `<path d="M${r1(x)} ${r1(y - 6)} L${r1(x + 6)} ${r1(y + 5)} L${r1(x - 6)} ${r1(y + 5)} Z" class="ch-pt-out"/>` : `<circle cx="${r1(x)}" cy="${r1(y)}" r="3.2" class="ch-pt-${p.verdict === 'ok' ? 'ok' : 'na'}"/>`;
     return `<g>${shape}<title>${h(p.label)}</title></g>`;

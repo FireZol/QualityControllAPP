@@ -147,6 +147,9 @@ module.exports = function register(app) {
       const k = `lim_${l.level}_${l.quantity}`;
       v[k + '_nominal'] = num(l.nominal); v[k + '_min'] = num(l.min); v[k + '_max'] = num(l.max); v[k + '_inf'] = !!l.informative;
     }
+    if (c.data && (c.data.rated_voltage !== undefined || Array.isArray(c.data.tests) || c.data.insulation !== undefined)) {
+      Object.assign(v, { cab_cores: c.data.cores || '', cab_voltage: c.data.rated_voltage || '', cab_class: String(c.data.conductor_class || 2), cab_insulation: c.data.insulation || '', cab_sheath: c.data.sheath || '', cab_standard: c.data.standard || '', cab_armour: c.data.armour || '', cab_tests_list: c.data.tests || [] });
+    }
     v.params = c.params.map((p) => ({ strander_config: p.strander_config, rotor: p.rotor, pitch_mm: num(p.pitch_mm), tension: p.tension || '' }));
     return v;
   }
@@ -156,6 +159,8 @@ module.exports = function register(app) {
       materials: db.all('SELECT * FROM materials ORDER BY id'),
       shapes: db.all('SELECT * FROM shapes WHERE active = 1 ORDER BY id'),
       destinations: db.all('SELECT * FROM destinations WHERE active = 1 ORDER BY id'),
+      compounds: db.all('SELECT * FROM compounds WHERE active = 1 ORDER BY id'),
+      standards: db.all('SELECT * FROM cable_standards WHERE active = 1 ORDER BY id'),
     };
   }
 
@@ -186,6 +191,20 @@ module.exports = function register(app) {
     if (!d.label && shape && d.section !== null) d.label = `${calc.formatNumber(d.section, 0, 3)} ${shape.name}`;
     if (!d.label) errors.label = 'required';
 
+    if (family.code === 'CABLE_LV') {
+      const cores = form.get('cab_cores').trim();
+      if (cores !== '' && !/^\d{1,3}$/.test(cores)) errors.cab_cores = 'invalid';
+      const okCode = (list, code) => code === '' || list.some((x) => x.code === code);
+      const insulation = form.get('cab_insulation'), sheath = form.get('cab_sheath');
+      if (!okCode(lists.compounds, insulation)) errors.cab_insulation = 'invalid';
+      if (!okCode(lists.compounds, sheath)) errors.cab_sheath = 'invalid';
+      const std = form.get('cab_standard');
+      if (std !== '' && !lists.standards.some((x) => x.name === std)) errors.cab_standard = 'invalid';
+      const codes = form.all('cab_tests').filter((c, i, a) => a.indexOf(c) === i && require('../domain/tests').active().some((t) => t.code === c));
+      d.data = { cores: cores === '' ? null : Number(cores), rated_voltage: form.get('cab_voltage').trim().slice(0, 30) || null, conductor_class: [1, 2, 5].includes(Number(form.get('cab_class'))) ? Number(form.get('cab_class')) : 2,
+        insulation: insulation || null, sheath: sheath || null, standard: std || null, armour: form.get('cab_armour').trim().slice(0, 60) || null, tests: codes };
+      values.cab_tests_all = form.all('cab_tests');
+    }
     d.limits = [];
     const kind = shape ? shape.kind : 'rotund';
     for (const r of views.limitRows(family)) {

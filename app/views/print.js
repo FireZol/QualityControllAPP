@@ -6,6 +6,8 @@ const { T, f } = require('../i18n/ro');
 const calc = require('../domain/calc');
 const { displayDateTime, displayDate } = require('../lib/time');
 const { valueCell } = require('./layout');
+const tests = require('../domain/tests');
+const { designLine } = require('./cable');
 
 const num = (v, d) => (v === null || v === undefined ? '' : calc.formatNumber(v, 0, d === undefined ? 3 : d));
 const matName = (code) => (code === 'Cu' ? T.material.Cu : T.material.Al);
@@ -51,7 +53,7 @@ function frame(d) {
     <div class="doc-head">
       <div class="doc-company">${company}</div>
       <div class="doc-title">${title}</div>
-      ${noMeta ? '' : html`<dl class="doc-meta">
+      ${d.metaHtml ? d.metaHtml : noMeta ? '' : html`<dl class="doc-meta">
         <div><dt>${T.print.code}</dt><dd>${code || T.print.code_unset}</dd></div>
         <div><dt>${T.specs.edition}</dt><dd>${edition}</dd></div>
         <div><dt>${T.specs.revision}</dt><dd>${revision}</dd></div>
@@ -157,7 +159,30 @@ function extrudedSections(full, diff) {
       ${td(diff, c, ['conductor.mass'], range(lim(c, 'conductor', 'mass'), 2))}${td(diff, c, ['conductor.r20'], rmax(c, 'conductor'))}</tr>`))}`);
 }
 
+/** Finished cable data sheet: one block per cable design with its required tests and limits. */
+function cableSections(full, diff) {
+  const cat = tests.catalogue();
+  return full.constructions.map((c) => {
+    const req = new Set(Array.isArray(c.data.tests) ? c.data.tests : []);
+    const rows = [];
+    for (const t of cat) {
+      const quantities = t.kind === 'passfail' ? [[t.code, null]] : tests.quantitiesOf(t);
+      const limited = quantities.some(([q]) => c.limitMap[`cablu.${q}`] && (c.limitMap[`cablu.${q}`].min !== null || c.limitMap[`cablu.${q}`].max !== null));
+      if (!req.has(t.code) && !limited) continue;
+      for (const [q, part] of quantities) {
+        const l = c.limitMap[`cablu.${q}`];
+        const cell = (k, v) => td(diff, c, [`cablu.${q}.${k}`], v === null || v === undefined ? '' : calc.formatQuantity(q, v));
+        rows.push(html`<tr><td>${t.name}${part ? ` — ${T.tests.parts[part]}` : ''}${!t.in_house ? html` <sup>†</sup>` : ''}</td><td>${t.kind === 'passfail' ? '' : t.unit || ''}</td>
+          ${t.kind === 'passfail' ? html`<td colspan="3" class="muted">${T.cable.pass_fail_req}</td>` : html`${cell('min', l && l.min)}${cell('nominal', l && l.nominal)}${cell('max', l && l.max)}`}
+          ${td(diff, c, ['data.tests'], req.has(t.code) ? T.common.yes : '')}<td>${T.cable.scopes[t.scope]}</td></tr>`);
+      }
+    }
+    return html`<h2>${c.label} <span class="small muted">${designLine(c)}</span></h2>${table([T.cable.test, T.cable.unit, 'min', T.measure.nominal, 'max', T.print.cable_required, T.print.cable_scope], rows)}`;
+  });
+}
+
 const BUILDERS = {
+  CABLU_LV: cableSections,
   A6_TREFILARE_CL12: wireSections,
   A6_TREFILARE_CL5: class5Sections,
   CABLARE_RIGIDA_AL: rigidSections,
@@ -220,4 +245,4 @@ function registerPrint(ctx, d) {
   });
 }
 
-module.exports = { revisionPrint, registerPrint };
+module.exports = { revisionPrint, registerPrint, page, toolbar, frame, table };

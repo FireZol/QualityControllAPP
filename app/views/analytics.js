@@ -3,7 +3,8 @@ const { html, raw } = require('../lib/html');
 const { T, f } = require('../i18n/ro');
 const calc = require('../domain/calc');
 const { layout, textField, selectField } = require('./layout');
-const { QUANTITIES, GROUPS } = require('../domain/analytics');
+const tests = require('../domain/tests');
+const { GROUPS } = require('../domain/analytics');
 
 const TABS = ['tendinta', 'distributie', 'neconformitate', 'consum', 'comparatie'];
 
@@ -14,7 +15,7 @@ function qs(f, extra) {
   return p.toString();
 }
 
-function filterForm(tab, filters, lists) {
+function filterForm(tab, filters, lists, quantities) {
   const opt = (rows, key, label) => rows.map((r) => [r[key], r[label]]);
   const needsGroup = tab !== 'tendinta';
   const needsQuantity = ['tendinta', 'distributie', 'comparatie'].includes(tab);
@@ -29,7 +30,7 @@ function filterForm(tab, filters, lists) {
     ${selectField({ label: T.register.crew, name: 'crew_id', value: filters.crew_id, options: opt(lists.crews, 'id', 'name'), blank: T.common.all })}
     ${selectField({ label: T.measure.operator, name: 'operator_id', value: filters.operator_id, options: opt(lists.operators, 'id', 'full_name'), blank: T.common.all })}
     ${selectField({ label: T.measure.client, name: 'client_id', value: filters.client_id, options: opt(lists.clients, 'id', 'short_name'), blank: T.common.all })}
-    ${needsQuantity ? selectField({ label: T.detail.quantity, name: 'quantity', value: filters.quantity || 'mass_gm', options: QUANTITIES.map((q) => [q, T.quantity[q]]) }) : ''}
+    ${needsQuantity ? selectField({ label: T.detail.quantity, name: 'quantity', value: filters.quantity || 'mass_gm', options: quantities.map((q) => [q, tests.label(q)]) }) : ''}
     ${needsGroup ? selectField({ label: T.an.group_by, name: 'group', value: filters.group, options: GROUPS.map((g) => [g, T.an.groups[g]]), blank: T.an.group_default }) : ''}
     <button class="btn primary" type="submit">${T.common.filter}</button> <a class="btn" href="/analize/${tab}">${T.common.reset}</a>
   </div></form>`;
@@ -60,7 +61,7 @@ function analysisPage(ctx, d) {
     body: html`<h1>${T.an.title}</h1>
 <nav class="tabs" aria-label="${T.an.title}">${TABS.map((t) => html`<a href="/analize/${t}?${qs(filters)}" class="${t === tab ? 'active' : ''}"${t === tab ? raw(' aria-current="page"') : ''}>${T.an.tabs[t]}</a>`)}</nav>
 <p class="muted">${T.an.tab_help[tab]}</p>
-${filterForm(tab, filters, lists)}
+${filterForm(tab, filters, lists, d.quantities)}
 ${res.notes.map((n) => html`<p class="notice">${n}</p>`)}
 ${hasTable ? html`<p class="export">${T.an.export}: <a class="btn small" href="/analize/${tab}?${qs(filters, { format: 'csv' })}">CSV</a>
   <a class="btn small" href="/analize/${tab}?${qs(filters, { format: 'xlsx' })}">Excel (.xlsx)</a></p>` : ''}

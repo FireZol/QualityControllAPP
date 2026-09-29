@@ -98,11 +98,12 @@ td.details { max-width: 520px; word-break: break-word; font-size: 0.82rem; }
 /* verdicts: colour never the only signal — the text label is always there */
 .v, .val { display: inline-block; padding: 1px 8px; border-radius: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .v-ok { background: var(--ok-bg); color: var(--ok); }
-.v-sub, .v-peste { background: var(--bad-bg); color: var(--bad); }
+.v-sub, .v-peste, .v-neconform { background: var(--bad-bg); color: var(--bad); }
 .v-nedeterminat { background: var(--undef-bg); color: var(--undef); }
 .v-info { background: var(--info-bg); color: var(--info); }
 .val.v-sub::before { content: "▼ "; }
 .val.v-peste::before { content: "▲ "; }
+.val.v-neconform::before { content: "✗ "; }
 .val.v-ok::before { content: "✓ "; }
 
 .tag { display: inline-block; font-size: 0.75rem; padding: 0 7px; border-radius: 9px; background: var(--undef-bg); color: #33414f; border: 1px solid var(--line); vertical-align: middle; }
@@ -183,3 +184,13 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .cpk { font-weight: 700; padding: 1px 6px; border-radius: 8px; }
 .cpk-good { background: var(--ok-bg); color: var(--ok); } .cpk-warn { background: var(--warn-bg); color: var(--warn); } .cpk-bad { background: var(--bad-bg); color: var(--bad); }
 tr.ref th, tr.ref td { background: #eef6f0; }
+
+/* finished cable: test entry */
+.test-row { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(220px, 1.2fr); gap: 8px 16px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.test-row:last-child { border-bottom: 0; }
+.test-input input, .test-input select { width: 100%; }
+.res-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 6px; }
+details.others { margin-top: 8px; } details.others summary { cursor: pointer; color: var(--brand); font-weight: 600; padding: 6px 0; }
+tr.group-row th { background: #dfe7ef; text-align: left; }
+.checklist { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+@media (max-width: 720px) { .test-row { grid-template-columns: 1fr; } .res-group { grid-template-columns: 1fr 1fr; } }

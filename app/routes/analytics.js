@@ -9,6 +9,7 @@ const xp = require('../lib/export');
 const views = require('../views/analytics');
 const { displayDateTime } = require('../lib/time');
 const { T, f } = require('../i18n/ro');
+const tests = require('../domain/tests');
 
 const TABS = ['tendinta', 'distributie', 'neconformitate', 'consum', 'comparatie'];
 const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -18,7 +19,7 @@ module.exports = function register(app) {
   const { router, db } = app;
 
   const targets = () => require('../domain/targets').get(db);
-  const qLabel = (q) => T.quantity[q] || q;
+  const qLabel = (q) => tests.label(q);
   const verdictText = (v) => T.verdict[v] || v;
   const pct = (v) => (v === null || v === undefined ? '' : calc.formatNumber(v, 1, 1) + ' %');
   const f2 = (v) => (v === null || v === undefined ? '' : calc.formatNumber(v, 2, 2));
@@ -44,7 +45,7 @@ module.exports = function register(app) {
     const xLabels = [...new Set(idx)].map((i) => ({ i, text: displayDateTime(rows[i].created_at) }));
     const lim = A.latestLimits(rows);
     const s = A.stats(rows.map((r) => r.value), lim.min, lim.max);
-    const out = rows.filter((r) => r.verdict === 'sub' || r.verdict === 'peste').length;
+    const out = rows.filter((r) => ['sub', 'peste', 'neconform'].includes(r.verdict)).length;
     if (lim.changed) notes.push(T.an.limits_changed);
     const fmt = valueFmt(quantity);
     return {
@@ -80,7 +81,7 @@ module.exports = function register(app) {
         { key: 'note', header: T.an.note },
       ],
       rows: caps.map((c) => ({
-        ...c, label: c.label === null ? T.common.none : (c.level && groupName === 'product' && c.level !== 'sarma' && c.level !== 'funie' && c.level !== 'conductor' ? `${c.label} · ${T.level[c.level]}` : c.label),
+        ...c, label: c.label === null ? T.common.none : (c.level && groupName === 'product' && ['suvita', 'toron', 'lita'].includes(c.level) ? `${c.label} · ${T.level[c.level]}` : c.label),
         note: [c.informative ? T.verdict.info : '', c.n < tg.min_n ? f(T.an.small_n, { n: tg.min_n }) : '', c.limitsChanged ? T.an.limits_changed_short : ''].filter(Boolean).join('; '),
       })),
     };
@@ -153,7 +154,7 @@ module.exports = function register(app) {
     const byKey = new Map(A.groupRows(rows, group).map((g) => [g.key, g.rows]));
     t.rows.forEach((r) => {
       const gr = byKey.get(r.key) || [];
-      const ev = gr.filter((x) => ['ok', 'sub', 'peste'].includes(x.verdict));
+      const ev = gr.filter((x) => ['ok', 'sub', 'peste', 'neconform'].includes(x.verdict));
       r.pctOut = ev.length ? (ev.filter((x) => x.verdict !== 'ok').length / ev.length) * 100 : null;
     });
     return {
@@ -186,6 +187,7 @@ module.exports = function register(app) {
 
   function meta(f) {
     return {
+      quantities: A.QUANTITIES.concat(db.all('SELECT DISTINCT quantity FROM measurement_results').map((r) => r.quantity).filter((q) => !A.QUANTITIES.includes(q))),
       lists: {
         families: db.all('SELECT * FROM product_families ORDER BY sort'), machines: db.all('SELECT * FROM machines ORDER BY name'), crews: db.all('SELECT * FROM crews ORDER BY name'),
         operators: db.all('SELECT * FROM operators ORDER BY full_name'), clients: db.all('SELECT * FROM clients ORDER BY short_name'), products: A.products(db, f.family_id),
@@ -211,7 +213,7 @@ module.exports = function register(app) {
         record_no: r.record_no, version: r.version, current: r.is_current ? 'da' : 'nu', created_at: r.created_at, shift_date: r.shift_date, shift: T.shift[r.shift], crew: r.crew_name || '',
         family: r.family_name, level: r.family_code === 'FLEXIBIL_CL5' ? T.level[r.level] : '', product: r.construction_label, material: r.material_code, machine: r.machine_name,
         operator: r.operator_name || '', client: r.client_name || '', sample_type: r.sample_type_name, length_no: r.length_no, produced_length_m: r.produced_length_m,
-        out_of_limit: r.results.some((x) => x.verdict === 'sub' || x.verdict === 'peste') ? 'da' : 'nu', notes: r.notes || '', user: r.user_name, revision: `Ed. ${r.rev_edition} Rev. ${r.rev_revision}`,
+        out_of_limit: r.results.some((x) => ['sub', 'peste', 'neconform'].includes(x.verdict)) ? 'da' : 'nu', notes: r.notes || '', user: r.user_name, revision: `Ed. ${r.rev_edition} Rev. ${r.rev_revision}`,
       };
       for (const k of ['d1', 'd2', 'd_avg', 'ovality', 'h', 'l', 'mass_gm', 'r20', 'r20_theor', 'r20_echiv']) o[k] = r.resultMap[k] ? r.resultMap[k].value : null;
       return o;
@@ -233,10 +235,10 @@ module.exports = function register(app) {
     const inputs = [];
     for (const r of data.rows) {
       for (const x of r.results) {
-        long.push({ record_no: r.record_no, version: r.version, created_at: r.created_at, product: r.construction_label, material: r.material_code, machine: r.machine_name, quantity: T.quantity[x.quantity] || x.quantity,
+        long.push({ record_no: r.record_no, version: r.version, created_at: r.created_at, product: r.construction_label, material: r.material_code, machine: r.machine_name, quantity: tests.label(x.quantity),
           value: x.value, lim_min: x.lim_min, lim_max: x.lim_max, verdict: verdictText(x.verdict), deviation_pct: x.deviation_pct, source: x.source });
       }
-      for (const i of db.all('SELECT key, value FROM measurement_inputs WHERE measurement_id = ?', r.id)) inputs.push({ record_no: r.record_no, version: r.version, key: T.input[i.key] || i.key, value: i.value });
+      for (const i of db.all('SELECT key, value FROM measurement_inputs WHERE measurement_id = ?', r.id)) inputs.push({ record_no: r.record_no, version: r.version, key: tests.inputLabel(i.key), value: i.value });
     }
     const longCols = [num('record_no', T.register.no), num('version', T.export.version), { key: 'created_at', header: T.export.created_at }, { key: 'product', header: T.register.product }, { key: 'material', header: T.export.material },
       { key: 'machine', header: T.measure.machine }, { key: 'quantity', header: T.detail.quantity }, num('value', T.detail.value), num('lim_min', T.export.lim_min), num('lim_max', T.export.lim_max),

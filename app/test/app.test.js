@@ -722,14 +722,14 @@ test('24. seeding is idempotent and 25. a new migration backs up first, then app
   assert.deepEqual(Object.fromEntries(Object.entries(before).map(([k]) => [k, app2.db.value(`SELECT count(*) FROM ${k}`)])), before);
   assert.ok(!logs.join('\n').includes('parolă unică'));
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore);
-  // restart 2: a pending 005 migration
+  // restart 2: a pending 006 migration
   await app2.stop();
-  fs.writeFileSync(path.join(migDir, '005_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
+  fs.writeFileSync(path.join(migDir, '006_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
   const logs2 = [];
   app2 = await createApp(cfg, { listen: { port: 0, host: '127.0.0.1' }, log: (m) => logs2.push(m), noScheduler: true, migrationsDir: migDir });
   assert.match(logs2.join('\n'), /Backup înainte de migrare/);
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore + 1);
-  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 5);
+  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 6);
   assert.equal(app2.db.value("SELECT count(*) FROM sqlite_master WHERE name = 'test_added'"), 1);
   // the backup taken is the pre-migration state (no test_added table)
   const newest = backup.listBackups(backup.backupDir(app2.db, cfg))[0];
@@ -751,12 +751,12 @@ test('seed content: drafts, families, flags, warnings', async () => {
   try {
     const db = fresh.db;
     assert.equal(db.value('SELECT count(*) FROM iec_limits'), 185);
-    assert.equal(db.value("SELECT count(*) FROM spec_revisions WHERE status = 'ciorna'"), 5);
+    assert.equal(db.value("SELECT count(*) FROM spec_revisions WHERE status = 'ciorna'"), 6);
     assert.equal(db.value("SELECT count(*) FROM spec_revisions WHERE status = 'activa'"), 0);
     assert.equal(db.value('SELECT count(*) FROM constructions'), 195);
-    assert.deepEqual(db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
+    assert.deepEqual(db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['CABLE_LV', 'EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
     assert.equal(db.value("SELECT count(*) FROM users WHERE username = 'admin' AND must_change_password = 1 AND role = 'administrator'"), 1);
-    assert.deepEqual(db.all('SELECT name FROM machines ORDER BY id').map((r) => r.name), ['TREFILARE 1', 'TREFILARE MF 1', 'RIGID 1', 'RIGID 2', 'KABMAK 1', 'KABMAK 2', 'Conform Extruder', 'LITARE 1', 'LITARE 2', 'LITARE 3', 'LITARE 4']);
+    assert.deepEqual(db.all('SELECT name FROM machines ORDER BY id').map((r) => r.name), ['STAȚIE ÎNCERCĂRI 1', 'TREFILARE 1', 'TREFILARE MF 1', 'RIGID 1', 'RIGID 2', 'KABMAK 1', 'KABMAK 2', 'Conform Extruder', 'LITARE 1', 'LITARE 2', 'LITARE 3', 'LITARE 4']);
     assert.deepEqual(db.all('SELECT short_name FROM clients ORDER BY id').map((r) => r.short_name), ['SBT', 'TUB', 'VOLT', 'ESI', 'Iemar']);
     assert.equal(db.value('SELECT count(*) FROM operators'), 0);
     assert.equal(db.value('SELECT count(*) FROM seed_warnings'), 15);

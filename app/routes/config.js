@@ -59,6 +59,31 @@ module.exports = function register(app) {
     return redirect('/liste/tinte', { flash: { key: 'saved' } });
   });
 
+  // ---------- catalogue of finished-cable tests ----------
+
+  const T = require('../domain/tests');
+  const testRows = () => db.all('SELECT * FROM test_types ORDER BY sort, id');
+
+  router.get('/liste/incercari', { roles: ENG }, (ctx) => page(views.testsPage(ctx, { rows: testRows() })));
+
+  router.post('/liste/incercari/adauga', { roles: ENG }, (ctx) => {
+    const { errors, v } = T.validate(db, ctx.form, { creating: true });
+    const raw = Object.fromEntries(ctx.form.params.entries());
+    if (!errors.code && db.get('SELECT 1 FROM test_types WHERE code = ?', v.code)) errors.code = 'duplicate';
+    if (Object.keys(errors).length) return page(views.testsPage(ctx, { rows: testRows(), err: { id: 'new', errors, values: raw } }), 422);
+    T.add(db, ctx.user.id, v);
+    return redirect('/liste/incercari', { flash: { key: 'added' } });
+  });
+
+  router.post('/liste/incercari/:id', { roles: ENG }, (ctx) => {
+    const id = idOf(ctx.params.id);
+    if (!db.get('SELECT 1 FROM test_types WHERE id = ?', id)) return page(errorPage(ctx, 'not_found'), 404);
+    const { errors, v } = T.validate(db, ctx.form, { creating: false });
+    if (Object.keys(errors).length) return page(views.testsPage(ctx, { rows: testRows(), err: { id, errors, values: Object.fromEntries(ctx.form.params.entries()) } }), 422);
+    T.update(db, ctx.user.id, id, v);
+    return redirect('/liste/incercari', { flash: { key: 'saved' } });
+  });
+
   // ---------- IEC 60228 reference values (limit values only) ----------
 
   const MATS = ['Cu', 'Al'];

@@ -1,11 +1,16 @@
 'use strict';
 const { html } = require('../lib/html');
 const { T, f } = require('../i18n/ro');
+const tests = require('../domain/tests');
 const { layout, valueCell } = require('./layout');
 const { displayDateTime } = require('../lib/time');
 
 function quickRow(r) {
   const m = r.resultMap;
+  if (r.family_code === 'CABLE_LV') {
+    const out = r.results.filter((x) => ['sub', 'peste', 'neconform'].includes(x.verdict)).length;
+    return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at).slice(-5)}</td><td>${T.shift[r.shift]}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}</a>` : ''}</td><td>${r.machine_name}</td><td colspan="4"><span class="val ${out ? 'v-neconform' : 'v-ok'}">${f(T.cable.summary, { n: r.results.length, out })}</span></td></tr>`;
+  }
   const dia = m.h || m.l ? html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}` : html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
   return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at).slice(-5)}</td><td>${T.shift[r.shift]}</td>
     <td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td><td class="nowrap">${dia}</td><td>${valueCell(m.mass_gm, 'mass_gm')}</td>
@@ -16,9 +21,9 @@ const head = () => html`<thead><tr><th>${T.register.no}</th><th>${T.common.time}
   <th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th></tr></thead>`;
 
 function outRows(r) {
-  const bad = r.results.filter((x) => x.verdict === 'sub' || x.verdict === 'peste');
+  const bad = r.results.filter((x) => x.verdict === 'sub' || x.verdict === 'peste' || x.verdict === 'neconform');
   return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at)}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span></td><td>${r.machine_name}</td>
-    <td>${bad.map((x) => html`<span class="out-item">${T.quantity[x.quantity]}: ${valueCell(x, x.quantity)} <span class="muted">(${T.verdict[x.verdict]})</span></span> `)}</td></tr>`;
+    <td>${bad.map((x) => html`<span class="out-item">${tests.label(x.quantity)}: ${valueCell(x, x.quantity)} <span class="muted">(${T.verdict[x.verdict]})</span></span> `)}</td></tr>`;
 }
 
 function homePage(ctx, d) {

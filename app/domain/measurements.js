@@ -14,7 +14,8 @@ const PAGE_SIZE = 50;
 const NOTES_MAX = 2000;
 
 /** Evaluation context for one construction (limits of the active revision + material + IEC resistance limit). */
-function contextFor(db, construction, family, levelWanted) {
+function contextFor(db, construction, family, levelWanted, mode) {
+  if (family.measures.tests) return require('./tests').cableContext(db, construction, family, mode);
   const level = levelWanted && family.levels.includes(levelWanted) ? levelWanted : family.levels[0];
   const material = db.get('SELECT rho20, density, alpha20, code FROM materials WHERE id = ?', construction.material_id);
   const limits = {};
@@ -48,8 +49,9 @@ function contextFor(db, construction, family, levelWanted) {
 }
 
 /** What the entry form must show for a family + construction (which inputs, which limits). */
-function formModel(db, construction, family, level) {
-  const ctx = contextFor(db, construction, family, level);
+function formModel(db, construction, family, level, mode) {
+  const ctx = contextFor(db, construction, family, level, mode);
+  if (ctx.testsMode) return { ctx, shape: null, inputs: { tests: true, diameter: 'none', mass: false, resistance: false } };
   return {
     ctx,
     shape: db.get('SELECT * FROM shapes WHERE id = ?', construction.shape_id),
@@ -154,10 +156,10 @@ function insertVersion(db, m, inputs, evaluation, recordNo, version, supersedes,
   const id = db.run(
     `INSERT INTO measurements(record_no, version, is_current, supersedes_id, edit_reason, created_at, created_by, shift_date, shift, crew_id,
        family_id, machine_id, construction_id, revision_id, level, destination_construction_id, operator_id, client_id, sample_type_id,
-       length_no, produced_length_m, notes) VALUES (?,?,1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+       length_no, produced_length_m, notes, batch_id, drum_id) VALUES (?,?,1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     recordNo, version, supersedes, reason, nowIso(), userId, shiftInfo.shift_date, shiftInfo.shift, shiftInfo.crew_id,
     m.family_id, m.machine_id, m.construction_id, m.revision_id, m.level, m.destination_construction_id || null, m.operator_id, m.client_id, m.sample_type_id,
-    m.length_no, m.produced_length_m, m.notes).id;
+    m.length_no, m.produced_length_m, m.notes, m.batch_id || null, m.drum_id || null).id;
   for (const [k, v] of Object.entries(inputs)) db.run('INSERT INTO measurement_inputs(measurement_id, key, value) VALUES (?,?,?)', id, k, String(v).replace(',', '.'));
   for (const r of evaluation.results) {
     db.run('INSERT INTO measurement_results(measurement_id, quantity, value, lim_min, lim_max, verdict, deviation_pct, source) VALUES (?,?,?,?,?,?,?,?)',
@@ -176,6 +178,7 @@ function create(db, user, form, now) {
   if (!family || !family.active) return { ok: false, errors: { family_id: 'invalid' } };
   if (!machineId || !machineAllowsFamily(db, machineId, familyId)) return { ok: false, errors: { machine_id: 'invalid' } };
   const machine = db.get('SELECT * FROM machines WHERE id = ?', machineId);
+  if (family.measures.tests) return createCable(db, user, form, family, machine, now);
   const construction = constructionId && db.get(
     `SELECT c.* FROM constructions c JOIN spec_revisions r ON r.id = c.revision_id AND r.status = 'activa'
        JOIN spec_documents d ON d.id = r.document_id WHERE c.id = ? AND c.active = 1 AND d.family_id = ?`, constructionId, rev.specFamilyOf(db, family).id);
@@ -204,6 +207,84 @@ function create(db, user, form, now) {
   return { ok: true, ...out, warnings: ev.warnings };
 }
 
+// ---------- finished cable: tests on a batch (and drum) ----------
+
+/** The test inputs of a form: t_<code>[_unit|_len|_temp]. */
+function cleanTestInputs(form) {
+  const inputs = {};
+  for (const [k, v] of form.params.entries()) {
+    if (/^t_[a-z][a-z0-9_]{1,60}$/.test(k) && v.trim() !== '' && v.length <= 300 && !(k in inputs)) inputs[k] = v.trim();
+  }
+  return inputs;
+}
+
+/** Batch with its design, only when it is open and its design belongs to a family that measures tests. */
+function loadBatch(db, batchId) {
+  return batchId ? db.get('SELECT * FROM batches WHERE id = ?', batchId) : null;
+}
+
+function cableCommon(db, form, family, batch, construction, inputs) {
+  const errors = {};
+  const drumId = batch ? form.int('drum_id') : null;
+  let drum = null;
+  if (drumId) {
+    drum = db.get('SELECT * FROM drums WHERE id = ? AND batch_id = ?', drumId, batch.id);
+    if (!drum) errors.drum_id = 'invalid';
+  }
+  const { meta, errors: metaErrors } = readMeta(db, form);
+  Object.assign(errors, metaErrors);
+  const ctx = require('./tests').cableContext(db, construction, family, batch ? 'batch' : 'type');
+  const ev = calc.evaluateTests(inputs, ctx);
+  for (const k of ev.errors) errors[k === '_tests' ? 'tests' : k] = k === '_tests' ? 'no_tests' : 'invalid';
+  return { errors, drum, meta, ctx, ev };
+}
+
+/** A test session on a batch (routine / sample tests) or, without a batch, type tests on a cable design. */
+function createCable(db, user, form, family, machine, now) {
+  const batch = loadBatch(db, form.int('batch_id'));
+  let construction;
+  if (form.int('batch_id')) {
+    if (!batch) return { ok: false, errors: { batch_id: 'invalid' } };
+    if (batch.status !== 'deschis') return { ok: false, errors: { batch_id: 'batch_closed' } };
+    construction = db.get('SELECT c.* FROM constructions c JOIN spec_revisions r ON r.id = c.revision_id JOIN spec_documents d ON d.id = r.document_id WHERE c.id = ? AND d.family_id = ?', batch.construction_id, family.id);
+  } else {
+    construction = db.get(`SELECT c.* FROM constructions c JOIN spec_revisions r ON r.id = c.revision_id AND r.status = 'activa'
+      JOIN spec_documents d ON d.id = r.document_id WHERE c.id = ? AND c.active = 1 AND d.family_id = ?`, form.int('construction_id'), family.id);
+  }
+  if (!construction) return { ok: false, errors: { [batch ? 'batch_id' : 'construction_id']: 'invalid' } };
+  const inputs = cleanTestInputs(form);
+  const c = cableCommon(db, form, family, batch, construction, inputs);
+  if (Object.keys(c.errors).length) return { ok: false, errors: c.errors };
+  const cur = currentShift(db, now || new Date());
+  const m = { ...c.meta, family_id: family.id, machine_id: machine.id, construction_id: construction.id, revision_id: batch ? batch.revision_id : construction.revision_id, level: 'cablu', batch_id: batch ? batch.id : null, drum_id: c.drum ? c.drum.id : null };
+  const out = db.tx(() => {
+    const recordNo = (db.value('SELECT max(record_no) FROM measurements') || 0) + 1;
+    const id = insertVersion(db, m, inputs, c.ev, recordNo, 1, null, null, user.id, { shift_date: cur.shift_date, shift: cur.shift, crew_id: cur.crew ? cur.crew.id : null });
+    audit.log(db, user.id, 'measurement_add', 'measurements', id, { record_no: recordNo, batch: batch ? batch.batch_no : null, type_test: !batch });
+    return { recordNo, id };
+  });
+  return { ok: true, ...out, warnings: c.ev.warnings, batchId: batch ? batch.id : null };
+}
+
+function correctCable(db, user, recordNo, form, cur, family, errors0, reason) {
+  const batch = loadBatch(db, cur.batch_id);
+  const construction = db.get('SELECT * FROM constructions WHERE id = ?', cur.construction_id);
+  const inputs = cleanTestInputs(form);
+  const c = cableCommon(db, form, family, batch, construction, inputs);
+  const errors = { ...errors0, ...c.errors };
+  const machineId = form.int('machine_id') || cur.machine_id;
+  if (machineId !== cur.machine_id && !machineAllowsFamily(db, machineId, cur.family_id)) errors.machine_id = 'invalid';
+  if (Object.keys(errors).length) return { ok: false, errors };
+  const m = { ...c.meta, family_id: cur.family_id, machine_id: machineId, construction_id: cur.construction_id, revision_id: cur.revision_id, level: 'cablu', batch_id: cur.batch_id, drum_id: c.drum ? c.drum.id : null };
+  const out = db.tx(() => {
+    db.run('UPDATE measurements SET is_current = 0 WHERE id = ?', cur.id);
+    const id = insertVersion(db, m, inputs, c.ev, recordNo, cur.version + 1, cur.id, reason, user.id, { shift_date: cur.shift_date, shift: cur.shift, crew_id: cur.crew_id });
+    audit.log(db, user.id, 'measurement_correct', 'measurements', id, { record_no: recordNo, version: cur.version + 1, reason });
+    return { id, version: cur.version + 1 };
+  });
+  return { ok: true, recordNo, ...out, warnings: c.ev.warnings };
+}
+
 /** May this user correct this record right now? (Personal: own record, same shift; Inginer / Admin: any.) */
 function canCorrect(db, user, recordNo, now) {
   const cur = db.get('SELECT * FROM measurements WHERE record_no = ? AND is_current = 1', recordNo);
@@ -227,6 +308,7 @@ function correct(db, user, recordNo, form, now) {
   else if (reason.length > 500) errors.edit_reason = 'too_long';
 
   const family = rev.familyOf(db, cur.family_id);
+  if (family.measures.tests) return correctCable(db, user, recordNo, form, cur, family, errors, reason);
   const construction = db.get('SELECT * FROM constructions WHERE id = ?', cur.construction_id);
   let machineId = form.int('machine_id') || cur.machine_id;
   if (!machineAllowsFamily(db, machineId, cur.family_id) && machineId !== cur.machine_id) errors.machine_id = 'invalid';
@@ -257,7 +339,8 @@ const SELECT_MEAS = `
   SELECT m.*, f.name AS family_name, f.code AS family_code, mc.name AS machine_name, c.label AS construction_label,
          c.stable_key AS stable_key, mat.code AS material_code, sh.code AS shape_code, sh.kind AS shape_kind,
          op.full_name AS operator_name, cl.short_name AS client_name, st.name AS sample_type_name,
-         cr.name AS crew_name, u.full_name AS user_name, r.edition AS rev_edition, r.revision AS rev_revision
+         cr.name AS crew_name, u.full_name AS user_name, r.edition AS rev_edition, r.revision AS rev_revision,
+         bt.batch_no AS batch_no, dr.drum_no AS drum_no
   FROM measurements m
   JOIN product_families f ON f.id = m.family_id
   JOIN machines mc ON mc.id = m.machine_id
@@ -269,7 +352,9 @@ const SELECT_MEAS = `
   JOIN users u ON u.id = m.created_by
   LEFT JOIN operators op ON op.id = m.operator_id
   LEFT JOIN clients cl ON cl.id = m.client_id
-  LEFT JOIN crews cr ON cr.id = m.crew_id`;
+  LEFT JOIN crews cr ON cr.id = m.crew_id
+  LEFT JOIN batches bt ON bt.id = m.batch_id
+  LEFT JOIN drums dr ON dr.id = m.drum_id`;
 
 function attachResults(db, rows) {
   if (!rows.length) return rows;
@@ -301,8 +386,9 @@ function register(db, f, page, size) {
   for (const [k, col] of [['crew_id', 'm.crew_id'], ['family_id', 'm.family_id'], ['machine_id', 'm.machine_id'], ['operator_id', 'm.operator_id'], ['client_id', 'm.client_id'], ['sample_type_id', 'm.sample_type_id']]) {
     if (f[k]) { where.push(`${col} = ?`); p.push(f[k]); }
   }
+  if (f.batch_id) { where.push('m.batch_id = ?'); p.push(f.batch_id); }
   if (f.q) { where.push("c.label LIKE ? ESCAPE '\\'"); p.push('%' + f.q.replace(/[%_\\]/g, (ch) => '\\' + ch) + '%'); }
-  if (f.out) where.push("EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub','peste'))");
+  if (f.out) where.push("EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub','peste','neconform'))");
   const w = where.length ? 'WHERE ' + where.join(' AND ') : '';
   const total = db.value(`SELECT count(*) FROM measurements m JOIN constructions c ON c.id = m.construction_id ${w}`, ...p);
   const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -342,12 +428,12 @@ function outOfLimit24h(db, now) {
   const since = new Date((now || new Date()).getTime() - 24 * 3600 * 1000);
   const { isoLocal } = require('../lib/time');
   const rows = db.all(`${SELECT_MEAS} WHERE m.is_current = 1 AND m.created_at >= ?
-    AND EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub','peste'))
+    AND EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub','peste','neconform'))
     ORDER BY m.created_at DESC LIMIT 100`, isoLocal(since));
   return attachResults(db, rows);
 }
 
 module.exports = {
-  INPUT_KEYS, PAGE_SIZE, toronCount, contextFor, formModel, machineAllowsFamily, constructionsFor, machinesFor, proposeLengthNo,
+  INPUT_KEYS, PAGE_SIZE, cleanTestInputs, toronCount, contextFor, formModel, machineAllowsFamily, constructionsFor, machinesFor, proposeLengthNo,
   currentShift, create, canCorrect, correct, register, record, today, outOfLimit24h, cleanInputs,
 };

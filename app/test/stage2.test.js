@@ -40,7 +40,7 @@ const record = (r) => Number(/\/masuratori\/(\d+)/.exec(r.location)[1]);
 const results = (no) => Object.fromEntries(app.db.all('SELECT r.* FROM measurement_results r JOIN measurements m ON m.id = r.measurement_id WHERE m.record_no = ? AND m.is_current = 1', no).map((x) => [x.quantity, x]));
 
 test('wire families are active for measurement and their sheets are editable', async () => {
-  assert.deepEqual(app.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
+  assert.deepEqual(app.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['CABLE_LV', 'EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
   // class V wire reads the class V data sheet, whose own family (flexible) stays for stage 3
   const flex = rev.familyOf(app.db, app.db.get('SELECT family_id FROM spec_documents WHERE id = ?', ids.cl5Doc).family_id);
   assert.equal(rev.docFamilyActive(app.db, flex), true);
@@ -222,7 +222,7 @@ test('migration 002 upgrades a stage-1 database', async () => {
     db.run("UPDATE product_families SET active = 0 WHERE code IN ('SARMA_CL12','SARMA_CL5','FLEXIBIL_CL5')");
     db.run("UPDATE product_families SET measures = json_remove(measures, '$.spec_family') WHERE code = 'SARMA_CL5'");
     db.run("DELETE FROM limits WHERE level = 'sarma' AND construction_id IN (SELECT id FROM constructions WHERE family_id = (SELECT id FROM product_families WHERE code = 'FLEXIBIL_CL5'))");
-    db.run('DELETE FROM schema_migrations WHERE version >= 2');
+    db.run('DELETE FROM schema_migrations WHERE version BETWEEN 2 AND 4');
     const cfg = fresh.config;
     await fresh.stop();
     const logs = [];
@@ -231,7 +231,7 @@ test('migration 002 upgrades a stage-1 database', async () => {
       assert.match(logs.join('\n'), /Backup înainte de migrare/);
       assert.equal(again.db.get("SELECT iec_group FROM shapes WHERE code = 'RM'").iec_group, 'compactat');
       assert.equal(again.db.value("SELECT count(*) FROM machines WHERE name = 'Conform Extruder'"), 1);
-      assert.deepEqual(again.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
+      assert.deepEqual(again.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['CABLE_LV', 'EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
       assert.equal(JSON.parse(again.db.get("SELECT measures FROM product_families WHERE code = 'SARMA_CL5'").measures).spec_family, 'FLEXIBIL_CL5');
       assert.equal(again.db.value("SELECT count(*) FROM limits WHERE level = 'sarma' AND construction_id IN (SELECT id FROM constructions WHERE family_id = (SELECT id FROM product_families WHERE code = 'FLEXIBIL_CL5'))"), 27);
     } finally {
