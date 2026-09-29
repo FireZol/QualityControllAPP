@@ -1,0 +1,264 @@
+'use strict';
+// Every user-visible string of the application (Romanian, correct diacritics: ș ț with comma below).
+// Missing keys show ⟦key⟧ in production and throw when CTC_STRICT_I18N=1 (tests).
+
+const S = {
+  app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
+
+  nav: {
+    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', specs: 'Fișe tehnice',
+    lists: 'Nomenclatoare', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
+  },
+
+  roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
+  shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
+  material: { Cu: 'Cupru', Al: 'Aluminiu' },
+
+  common: {
+    save: 'Salvează', cancel: 'Renunță', add: 'Adaugă', edit: 'Editează', yes: 'da', no: 'nu', active: 'activ', inactive: 'inactiv',
+    deactivate: 'Dezactivează', activate: 'Activează', search: 'Caută', filter: 'Filtrează', reset: 'Resetează', back: 'Înapoi',
+    details: 'Detalii', actions: 'Acțiuni', name: 'Nume', date: 'Data', none: '—', total: 'Total', previous: 'Anterior', next: 'Următor',
+    pages: 'Paginare', page_of: 'Pagina {page} din {pages}', required: 'obligatoriu', all: 'Toate', continue: 'Continuă', close: 'Închide',
+    status: 'Stare', open: 'Deschide', from: 'De la', to: 'Până la', user: 'Utilizator', time: 'Ora', notes: 'Observații',
+  },
+
+  verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ' },
+
+  errors: {
+    required: 'Câmp obligatoriu.', invalid: 'Valoare nevalidă.', too_long: 'Textul este prea lung.', duplicate: 'Există deja o intrare cu această valoare.',
+    rotor_format: 'Format așteptat: numere separate prin +, de exemplu 1+6+12+18.', capacity: 'Utilajul nu are suficiente straturi pentru această construcție.',
+    password_short: 'Parola trebuie să aibă cel puțin 8 caractere.', password_username: 'Parola nu poate fi identică cu numele de utilizator.',
+    password_mismatch: 'Cele două parole nu coincid.', password_same: 'Parola nouă trebuie să difere de cea actuală.', password_wrong: 'Parola actuală nu este corectă.',
+    own_account: 'Nu vă puteți dezactiva propriul cont.', last_admin: 'Trebuie să rămână cel puțin un administrator activ.',
+    restore_mismatch: 'Numele scris nu coincide cu numele fișierului.',
+  },
+
+  flash: {
+    saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
+    measurement_saved: 'Măsurătoarea a fost salvată.',
+    measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului 0–40 °C; corecția a fost calculată, dar verificați valoarea.',
+    measurement_corrected: 'Corecția a fost salvată ca versiune nouă; versiunea anterioară rămâne în istoric.',
+    rev_created: 'Revizia nouă (ciornă) a fost creată din cea activă.', rev_submitted: 'Revizia a fost trimisă la verificare.',
+    rev_verified: 'Revizia a fost verificată și activată; revizia anterioară a fost arhivată.', rev_rejected: 'Revizia a fost respinsă și a revenit la ciornă.',
+    header_saved: 'Antetul reviziei a fost salvat.', construction_saved: 'Construcția a fost salvată.', construction_toggled: 'Starea construcției a fost schimbată.',
+    settings_saved_restart: 'Setările au fost salvate. Modificările de port, adresă sau nume public se aplică după repornirea serviciului.',
+    backup_done: 'Backup-ul a fost creat.', restore_done: 'Baza de date a fost restaurată. Dacă sesiunea a expirat, autentificați-vă din nou.',
+    e_generic: 'Acțiunea nu a putut fi efectuată.', e_invalid: 'Datele introduse nu sunt valide.',
+    e_open_revision_exists: 'Există deja o revizie în lucru pentru acest document.', e_no_active_revision: 'Documentul nu are o revizie activă din care să se pornească.',
+    e_later_stage: 'Această familie de produse se activează într-o etapă următoare.',
+    e_not_author: 'Doar elaboratorul poate modifica sau trimite această ciornă.', e_not_draft: 'Revizia nu mai este ciornă.',
+    e_not_in_verification: 'Revizia nu este în verificare.', e_author_cannot_verify: 'Elaboratorul nu poate verifica propria revizie.',
+    e_forbidden: 'Nu aveți dreptul să efectuați această acțiune.', e_reason_required: 'Motivul este obligatoriu.',
+    e_iec_errors: 'Revizia nu respectă IEC 60228; vedeți verificările de mai jos.', e_edition_revision_taken: 'Combinația ediție + revizie există deja pentru acest document.',
+    e_not_found: 'Elementul nu a fost găsit.',
+    e_restore_bad_name: 'Numele fișierului de backup nu este valid.', e_restore_not_found: 'Fișierul de backup nu a fost găsit.',
+    e_restore_invalid_backup: 'Fișierul ales nu este o bază de date validă.', e_restore_safety_failed: 'Nu s-a putut face copia de siguranță a bazei curente; restaurarea a fost oprită.',
+  },
+
+  error_pages: {
+    home: 'Înapoi la pagina de start',
+    not_found: { title: 'Pagina nu a fost găsită', text: 'Adresa nu există sau elementul căutat nu mai este disponibil.' },
+    forbidden: { title: 'Acces interzis', text: 'Nu aveți dreptul să deschideți această pagină sau să efectuați această acțiune.' },
+    csrf: { title: 'Cerere respinsă', text: 'Formularul a expirat sau nu provine din aplicație. Reîncărcați pagina și încercați din nou.' },
+    server_error: { title: 'Eroare internă', text: 'A apărut o eroare neașteptată. Datele existente nu au fost afectate. Anunțați administratorul dacă problema persistă.' },
+    maintenance: { title: 'Aplicația este în întreținere', text: 'Se efectuează o restaurare sau o actualizare. Încercați din nou în câteva secunde.' },
+  },
+
+  login: {
+    title: 'Autentificare', username: 'Utilizator', password: 'Parolă', submit: 'Intră',
+    failed: 'Utilizator sau parolă incorectă.',
+    locked: 'Prea multe încercări eșuate. Contul este blocat temporar; reîncercați peste {minutes} min.',
+  },
+
+  password: {
+    title: 'Schimbarea parolei', forced: 'Trebuie să schimbați parola înainte de a continua.', current: 'Parola actuală', new: 'Parola nouă',
+    confirm: 'Confirmați parola nouă', hint: 'Cel puțin 8 caractere.', submit: 'Schimbă parola',
+  },
+
+  home: {
+    title: 'Acasă', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
+    today: 'Măsurătorile de azi (tura curentă prima)', today_empty: 'Nicio măsurătoare înregistrată azi.',
+    out_of_limit: 'Rezultate în afara limitelor — ultimele 24 de ore', out_empty: 'Nicio valoare în afara limitelor în ultimele 24 de ore.', results: 'Valori',
+  },
+
+  quantity: {
+    d: 'Ø', d1: 'Ø citirea 1', d2: 'Ø citirea 2', d_avg: 'Ø mediu', ovality: 'Ovalitate', h: 'Înălțime Î', l: 'Lățime L', mass_gm: 'Masă [g/m]',
+    d_ech: 'Ø echivalent din masă', r20_theor: 'R20 teoretică [Ω/km]', r20: 'R20 măsurată [Ω/km]', r20_echiv: 'R20 echivalentă [Ω/km]', r_max: 'R max la 20 °C [Ω/km]',
+  },
+
+  input: {
+    d1: 'Ø citirea 1 [mm]', d2: 'Ø citirea 2, perpendicular [mm]', h: 'Înălțime Î [mm]', l: 'Lățime L [mm]', mass_g: 'Masa probei [g]',
+    sample_mm: 'Lungimea probei [mm]', r_value: 'Rezistență măsurată', r_unit: 'Unitate', r_sample_m: 'Lungimea probei de rezistență [m]', temp_c: 'Temperatura [°C]',
+  },
+
+  measure: {
+    title: 'Măsurătoare nouă', family: 'Familie de produs', machine: 'Utilaj', construction: 'Produs (secțiune și formă)', choose: '— alegeți —',
+    no_machines: 'Pentru această familie nu există niciun utilaj activ. Un Inginer sau Administrator trebuie să adauge unul în Nomenclatoare → Utilaje.',
+    no_constructions: 'Nu există construcții în fișa tehnică activă potrivite pentru acest utilaj. Verificați dacă fișa are o revizie activă și configurația rotoarelor utilajului.',
+    active_revision: 'Fișa tehnică activă: Ed. {edition}, Rev. {revision} — {doc}',
+    limits_caption: 'Limite din fișa tehnică activă', nominal: 'Nominal', limits: 'Limite', source: 'Sursă', source_sheet: 'fișa tehnică', informative_note: 'informativ, fără verdict',
+    sample_data: 'Datele probei', operator: 'Operator', client: 'Client', sample_type: 'Tip de probă', none_selected: '— nespecificat —',
+    length_no: 'Nr. lungime', length_no_hint: 'Se propune automat pentru probele numerotate.',
+    values: 'Valori măsurate', sample_mm_hint: 'Implicit 1000 mm.', r_optional: 'Opțional. Rezistența se măsoară doar la cupru.', r_sample_hint: 'Implicit 5 m, 2 m la secțiuni mari.',
+    produced_length: 'Lungime produsă [m]', optional: 'Opțional.', notes: 'Observații',
+    live_title: 'Rezultat înainte de salvare', live_hint: 'Rezultatele apar aici pe măsură ce introduceți valorile. Valorile în afara limitelor se marchează, dar nu blochează salvarea.',
+    save: 'Salvează măsurătoarea', cell_empty: 'Completați valorile pentru a vedea rezultatul.', temp_warning: 'Temperatura este în afara intervalului 0–40 °C.',
+  },
+
+  register: {
+    title: 'Registru măsurători', shift: 'Tura', crew: 'Schimb', product: 'Produs', only_out: 'Doar cu valori în afara limitelor', all_versions: 'Arată și versiunile vechi',
+    count: '{total} înregistrări', no: 'Nr.', diameter: 'Ø / Î × L [mm]', versions: '{n} versiuni', versions_title: 'Înregistrarea are mai multe versiuni (corecturi)',
+    empty: 'Nicio înregistrare pentru filtrele alese.',
+  },
+
+  detail: {
+    title: 'Înregistrarea nr. {no}', quantity: 'Mărime', value: 'Valoare', limits: 'Limite', verdict: 'Verdict', deviation: 'Abatere față de R max', source: 'Sursa limitei',
+    calculated: 'calculat', sheet_revision: 'Fișa tehnică folosită', ed_rev: 'Ed. {edition}, Rev. {revision}',
+    correct: 'Corectează', denied_not_own: 'Personalul poate corecta doar înregistrările proprii.', denied_other_shift: 'Personalul poate corecta doar în aceeași tură.',
+    denied_not_found: '', new_same: 'Măsurătoare nouă, același produs', versions: 'Versiuni și istoric', version_n: 'Versiunea {n}', current: 'curentă', superseded: 'înlocuită',
+    saved_by: 'Salvată de', reason: 'motiv', correction_reason: 'Motivul corecturii', correction_reason_label: 'De ce se corectează înregistrarea?',
+    save_correction: 'Salvează corecția (versiune nouă)', correct_title: 'Corectarea înregistrării nr. {no}',
+    correct_hint: 'Se creează versiunea {version}. Versiunea anterioară rămâne în istoric. Înregistrarea păstrează fișa tehnică, tura și schimbul inițiale.',
+  },
+
+  status: { ciorna: 'ciornă', in_verificare: 'în verificare', activa: 'activă', arhivata: 'arhivată' },
+
+  specs: {
+    title: 'Fișe tehnice', document: 'Document', code: 'Cod', code_unset: 'de stabilit', active_revision: 'Revizia activă', open_revision: 'În lucru',
+    later_stage: 'etapa următoare', revisions: 'Revizii', none_active: 'nicio revizie activă', ed_rev: 'Ed. {edition}, Rev. {revision}',
+    later_stage_notice: 'Măsurătorile și fluxul de revizii pentru această familie se activează într-o etapă următoare; datele inițiale sunt încărcate doar pentru consultare.',
+    new_revision: 'Revizie nouă', new_revision_hint: 'Se pornește din revizia activă.', blocked_open: 'Există deja o revizie în lucru.', blocked_no_active: 'Nu există o revizie activă; verificați și activați mai întâi ciorna existentă.',
+    edition: 'Ediție', revision: 'Revizie', elaborated: 'Elaborat', verified: 'Verificat', activated: 'Activată', change_note: 'Modificări', rejected: 'Respinsă',
+    workflow: 'Flux de verificare', submit: 'Trimite la verificare', submit_hint: 'Un alt inginer trebuie să verifice și să activeze revizia.',
+    verify: 'Verifică și activează', verify_confirm: 'Verificați și activați această revizie? Revizia activă curentă va fi arhivată.',
+    reject: 'Respinge', reject_reason: 'Motivul respingerii', author_cannot_verify: 'Elaboratorul nu poate verifica propria revizie; așteptați verificarea unui alt inginer.',
+    data_quality: 'Valori de verificat față de documentul original', data_quality_hint: 'Aceste valori au părut inconsistente la transcrierea din documentele scanate. Nu au fost corectate automat: confirmați-le pe hârtie.',
+    iec_checks: 'Verificări IEC 60228', checks_ok: 'Toate verificările au trecut.', blocking: 'Blochează:', warning: 'Avertizare:',
+    header_edit: 'Antetul reviziei', code_hint: 'Codul documentului (definit în aplicație).', constructions: 'Construcții',
+    changed_legend: 'valoare modificată', changed_hint: 'față de revizia anterioară (roșu, ca în documentele actuale).', add_construction: 'Adaugă construcție',
+    no_constructions: 'Nicio construcție.', removed_rows: 'Construcții eliminate față de revizia anterioară: {n}', new_row: 'nou',
+    red_paper: 'roșu pe original', red_paper_title: 'Valoare tipărită cu roșu în documentul original (ultima modificare)',
+    yellow_paper: 'galben pe original', yellow_paper_title: 'Valoare marcată cu galben în documentul original',
+    iec_exception: 'excepție IEC', coated: 'cositorit', edit_construction: 'Editare: {label}', identity: 'Identificare', material: 'Material', section: 'Secțiune [mm²]',
+    shape: 'Formă', destination: 'Destinație', coated_label: 'Cositorit', printed_label: 'Denumire (ca în fișă)', printed_label_hint: 'Dacă rămâne gol se generează din secțiune și formă.',
+    wires: 'Număr de fire', wire_d: 'Ø fir [mm]', die: 'Filieră', die_hint: 'Text liber, de exemplu 3.21 / 3.215.',
+    iec_exception_reason: 'Motivul excepției de la IEC 60228', iec_exception_hint: 'Dacă este completat, abaterile de la IEC devin avertizări și motivul se tipărește pe fișă.',
+    limits: 'Limite', tolerance: 'Toleranță ±', limits_hint: 'Dacă se completează nominalul și toleranța, iar min / max rămân goale, acestea se calculează. Rândurile goale rămân „nedeterminat”.',
+    process_params: 'Parametri de cablare', strander: 'Strander', rotor: 'Rotor', pitch: 'Pas [mm]', tension: 'Tensionare',
+    params_hint: 'Pe rotor: 6, 12, 18, 24 sau „receptie” pentru tensionarea la recepție. Rândurile goale se ignoră.',
+  },
+
+  sheet: {
+    construction: 'Construcție', wires_x_d: 'Fire × Ø fir [mm]', rope_d: 'Ø funie / Î × L [mm]', mass: 'Masă [g/m]', stranding: 'Cablare: pas / tensionare pe rotor',
+    reception: 'Tensionare recepție', die: 'Filieră', d_nominal: 'Ø nominal [mm]', d_range: 'Ø min … max [mm]', h_l: 'Î × L [mm]', destination: 'Destinație', wires: 'Nr. fire',
+    mass_kgkm: 'Masă [kg/km]', wires_lita: 'Fire în liță', strands: 'Toroane × fire', wire_d5: 'Ø sârmă [mm]', suvita: 'Masă suviță [g/m]', toron: 'Masă toron [g/m]', lita: 'Masă liță [g/m]',
+  },
+
+  limitq: {
+    d: 'Ø', h: 'Înălțime Î', l: 'Lățime L', mass: 'Masă', suvita_mass: 'Masă suviță', toron_mass: 'Masă toron', lita_mass: 'Masă liță (aprox.)', sarma_d: 'Ø sârmă', sarma_mass: 'Masă sârmă',
+  },
+
+  iec: {
+    wires_below_min: 'nr. de fire {wires} este sub minimul IEC 60228 Tab. 4 ({min}) pentru forma {shape}.',
+    wires_below_min_exception: 'nr. de fire {wires} este sub minimul IEC 60228 Tab. 4 ({min}) pentru forma {shape} — excepție acceptată: {reason}',
+    wires_missing: 'numărul de fire lipsește (IEC 60228 Tab. 4 cere minimum {min}).',
+    wires_missing_exception: 'numărul de fire lipsește — excepție acceptată: {reason}',
+    class1_al_circular_only: 'IEC 60228 Tab. 3 nota a: aluminiu 10–35 mm² doar circular, iar {section} mm² este sector.',
+    class1_al_circular_only_exception: 'IEC 60228 Tab. 3 nota a: aluminiu 10–35 mm² doar circular — excepție acceptată: {reason}',
+    wire_d_over_max: 'Ø firului {d} mm depășește maximul IEC 60228 Tab. 5 ({max} mm).',
+    wire_d_over_max_exception: 'Ø firului {d} mm depășește maximul IEC 60228 Tab. 5 ({max} mm) — excepție acceptată: {reason}',
+    limits_order: 'limitele pentru „{quantity}” nu sunt coerente (min trebuie să fie mai mic decât max).',
+    no_constructions: 'revizia nu conține nicio construcție activă.',
+    iec_no_row: 'secțiunea {section} mm² nu există în tabelul IEC 60228 folosit pentru verificare.',
+    mass_vs_wires: 'masa nu corespunde cu nr. de fire × masa firului (raport {ratio}); verificați.',
+  },
+
+  stats: {
+    title: 'Statistici măsurători', heading: 'Statistici pentru {label}', hint: 'Media, minimul, maximul și abaterea standard ale măsurătorilor curente, ca bază pentru stabilirea limitelor într-o revizie următoare.',
+    mean: 'Media', sd: 'Abatere standard', empty: 'Nu există încă măsurători pentru această construcție.', link: 'Statistici',
+  },
+
+  lists: {
+    title: 'Nomenclatoare', intro: 'Listele se pot completa, redenumi și dezactiva. O intrare folosită în măsurători nu se șterge, doar se dezactivează.',
+    names: {
+      machine_types: 'Tipuri de utilaj', machines: 'Utilaje', operators: 'Operatori', clients: 'Clienți', sample_types: 'Tipuri de probă', crews: 'Schimburi',
+      shapes: 'Forme', destinations: 'Destinații', materials: 'Constante material',
+    },
+    descriptions: {
+      machine_types: 'Procesul și familiile de produs permise', machines: 'Nume, tip și configurația rotoarelor', operators: 'Nume și prenume', clients: 'Nume scurt',
+      sample_types: 'Lista tipurilor de probă', crews: 'Schimburile A / B / C și data de start a ciclului', shapes: 'RE, RM, RMC, SM …', destinations: 'Unifilar, Multifilar, Armate …',
+      materials: 'Rezistivitate, densitate, coeficient de temperatură',
+    },
+    fields: {
+      name: 'Nume', machine_type_id: 'Tip utilaj', rotor_config: 'Configurație rotoare', full_name: 'Nume și prenume', short_name: 'Nume scurt', numbered: 'Numerotată', sort: 'Ordine',
+      cycle_start: 'Prima zi de tură de zi a ciclului', code: 'Cod', kind: 'Tip', iec_group: 'Grup IEC', material: 'Material', grade: 'Calitate', rho20: 'ρ20 [Ω·mm²/m]',
+      density: 'Densitate δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Denumire completă', crews_name: 'Schimb',
+    },
+    families: 'Familii de produs permise', crews_hint: 'Fiecare schimb are un ciclu de 12 zile: 4 zile de zi, 2 libere, 4 nopți, 2 libere. Introduceți prima zi de tură de zi a fiecărui schimb; schimburile A, B, C pornesc la 4 zile distanță.',
+    machines_hint: 'Configurația rotoarelor (de exemplu 1+6+12+18) limitează construcțiile la cele cu suficiente fire; dacă rămâne goală nu se aplică nicio limită de capacitate.',
+    materials_hint: 'Modificările se înregistrează în jurnal și se aplică măsurătorilor noi.', materials_check: 'Verificare: corecția de temperatură la 27 °C pentru cupru este {kt}.',
+  },
+
+  users: {
+    title: 'Utilizatori', new: 'Utilizator nou', edit: 'Editare: {name}', username: 'Utilizator', username_hint: 'Litere, cifre, punct, cratimă sau liniuță de subliniere (3–40).',
+    full_name: 'Nume complet', role: 'Rol', job_title: 'Funcție', job_title_hint: 'De exemplu CTC, Manager proces.', active_label: 'Cont activ', must_change: 'parolă de schimbat',
+    self_note: 'Este contul dumneavoastră: nu îl puteți dezactiva.', reset_title: 'Resetare parolă', reset_hint: 'Se generează o parolă unică, afișată o singură dată; utilizatorul trebuie să o schimbe la prima autentificare.',
+    reset: 'Resetează parola', reset_confirm: 'Resetați parola acestui utilizator? Sesiunile lui active vor fi închise.',
+    one_time_title: 'Parolă unică', one_time_for: 'Parola unică pentru {name} ({username}):', one_time_hint: 'Se afișează o singură dată. Comunicați-o utilizatorului; la prima autentificare i se va cere să o schimbe.',
+  },
+
+  settings: {
+    title: 'Setări', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
+    bind_hint: '0.0.0.0 = toate interfețele; 127.0.0.1 = doar acest calculator.', public_name: 'Nume public', public_name_hint: 'De exemplu ctc.romcab.local (înregistrat de IT în DNS).',
+    sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
+    backup: 'Backup', backup_dir: 'Folder de backup', backup_dir_hint: 'Local sau de rețea (\\\\server\\backup\\ctc). Gol = folderul implicit.', backup_time: 'Ora backup-ului zilnic',
+    backup_keep: 'Număr de copii păstrate', backup_auto: 'Backup automat zilnic', backups: 'Copii de siguranță', backup_folder: 'Folder curent: {dir}', backup_now: 'Backup acum',
+    backup_failed: 'Backup-ul a eșuat', file: 'Fișier', size: 'Mărime', restore: 'Restaurează', no_backups: 'Nu există încă niciun backup.',
+    restore_title: 'Restaurarea bazei de date', restore_warning: 'Toate datele curente vor fi înlocuite cu cele din backup. Înainte de restaurare se face automat o copie de siguranță a bazei curente.',
+    restore_file: 'Fișier ales', restore_type: 'Pentru confirmare, scrieți numele fișierului', restore_type_hint: 'Copiați numele afișat mai sus.', restore_do: 'Restaurează',
+  },
+
+  audit: {
+    title: 'Jurnal de audit', action: 'Acțiune', entity: 'Obiect', details: 'Detalii',
+    actions: {
+      login: 'autentificare', login_failed: 'autentificare eșuată', login_blocked: 'autentificare blocată', logout: 'ieșire', password_change: 'schimbare parolă', password_reset: 'resetare parolă',
+      user_create: 'utilizator creat', user_edit: 'utilizator modificat', measurement_add: 'măsurătoare adăugată', measurement_correct: 'măsurătoare corectată',
+      revision_new: 'revizie nouă', revision_header: 'antet revizie', revision_submit: 'revizie trimisă', revision_verify: 'revizie verificată', revision_reject: 'revizie respinsă',
+      construction_add: 'construcție adăugată', construction_edit: 'construcție modificată', construction_deactivate: 'construcție dezactivată', construction_activate: 'construcție activată',
+      setting_change: 'setare modificată', backup: 'backup', backup_failed: 'backup eșuat', restore: 'restaurare', material_change: 'constantă material',
+      list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
+    },
+  },
+};
+
+// ---- accessor ----
+const STRICT = process.env.CTC_STRICT_I18N === '1';
+
+function wrap(obj, path) {
+  return new Proxy(obj, {
+    get(target, key) {
+      if (typeof key === 'symbol') return target[key];
+      if (!Object.prototype.hasOwnProperty.call(target, key)) {
+        if (key === 'toJSON' || key === 'then') return undefined;
+        if (STRICT) throw new Error(`missing i18n key ${path}${String(key)}`);
+        return `⟦${path}${String(key)}⟧`;
+      }
+      const v = target[key];
+      return v && typeof v === 'object' && !Array.isArray(v) ? wrap(v, `${path}${key}.`) : v;
+    },
+  });
+}
+
+/** Fill {placeholders} in a string. */
+function f(str, params) {
+  return String(str).replace(/\{(\w+)\}/g, (m, k) => (params && params[k] !== undefined && params[k] !== null ? String(params[k]) : ''));
+}
+
+const T = wrap(S, '');
+
+/** Safe lookup for keys built at run time: S[section][key] or the fallback (never throws). */
+function opt(section, key, fallback) {
+  return S[section] && Object.prototype.hasOwnProperty.call(S[section], key) ? S[section][key] : fallback;
+}
+
+module.exports = { T, f, S, opt };
