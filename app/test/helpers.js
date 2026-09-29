@@ -83,3 +83,35 @@ class Client {
 }
 
 module.exports = { startApp, Client };
+
+/** Create a user through the admin UI and return a logged-in Client (password already changed). */
+async function makeUser(app, admin, username, role, fullName) {
+  const r = await admin.postForm('/admin/utilizatori/nou', '/admin/utilizatori/nou', { username, full_name: fullName || username, role, job_title: role === 'personal' ? 'CTC' : '' });
+  if (r.status !== 200) throw new Error(`create user ${username}: ${r.status}`);
+  const pw = /<code>([^<]+)<\/code>/.exec(r.text)[1];
+  const c = new Client(app.base);
+  const l = await c.login(username, pw);
+  if (l.status !== 303) throw new Error(`login ${username}: ${l.status}`);
+  const ch = await c.postForm('/parola', '/parola', { current: pw, new: 'Parola-' + username + '-1', confirm: 'Parola-' + username + '-1' });
+  if (ch.status !== 303) throw new Error(`password change ${username}: ${ch.status} ${ch.text.slice(0, 200)}`);
+  c.password = 'Parola-' + username + '-1';
+  return c;
+}
+
+/** The seeded admin, logged in with the password printed at first start and then changed. */
+async function adminClient(app) {
+  const pw = /parolă unică: (\S+)/.exec(app.logs.join('\n'))[1];
+  const c = new Client(app.base);
+  await c.login('admin', pw);
+  const ch = await c.postForm('/parola', '/parola', { current: pw, new: 'Admin-parola-1', confirm: 'Admin-parola-1' });
+  if (ch.status !== 303) throw new Error('admin password change failed');
+  c.password = 'Admin-parola-1';
+  return c;
+}
+
+/** Visible text of an HTML page (tags and script/style removed, entities kept). */
+function textOf(html) {
+  return html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+}
+
+Object.assign(module.exports, { makeUser, adminClient, textOf });

@@ -275,3 +275,10 @@ deviation_pct = (r20 − r_max) / r_max * 100
 ```
 
 Shift mapping (ADR-010): `t < 06:00 → noapte of previous day; 06:00 ≤ t < 18:00 → zi; t ≥ 18:00 → noapte of same day`. Crew: day index `n = (shift_date − crew.cycle_start) mod 12`; `n ∈ 0..3 → zi`, `6..9 → noapte`; the crew whose pattern matches the shift is on duty.
+
+## Additions made in stage 1 (migration 001)
+
+- `constructions.active INTEGER NOT NULL DEFAULT 1` — deactivate a construction inside a draft revision; deactivated rows are not copied by "Revizie nouă".
+- `login_attempts(id, username, ts_ms, ok)` — per-username lockout (5 failures / 15 min).
+- `seed_warnings(id, revision_id, level A|B|C, location, problem)` — data-quality items from `seed/verificare_seed.json`, shown on the draft revision.
+- Shape `LITA` ("Liță clasa 5") for class 5 constructions; indexes `audit_ts`, `meas_record`, `constructions_revision`.

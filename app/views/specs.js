@@ -3,7 +3,7 @@ const { html, raw } = require('../lib/html');
 const { T, f, opt } = require('../i18n/ro');
 const calc = require('../domain/calc');
 const { displayDateTime } = require('../lib/time');
-const { layout, csrf, textField, selectField, checkField, textArea, pager } = require('./layout');
+const { layout, csrf, textField, selectField, checkField, textArea } = require('./layout');
 const { materialName } = require('./measure');
 
 const fmt = (v, q) => (v === null || v === undefined ? '' : calc.formatQuantity(q || 'mass_gm', v));
@@ -63,13 +63,12 @@ function limRange(c, level, q, quantity) {
   return `${fmt(l.min, quantity || q)} … ${fmt(l.max, quantity || q)}`;
 }
 
-function label(c, diff, showFlag) {
+function label(c, diff) {
   const marks = [];
   if (diff.added.has(c.stable_key)) marks.push(html`<span class="tag added">${T.specs.new_row}</span>`);
   if (c.data && (c.data.modificat === 'rosu' || c.data.d_fir_modificat)) marks.push(html`<span class="tag red-paper" title="${T.specs.red_paper_title}">${T.specs.red_paper}</span>`);
   if (c.data && c.data.modificat === 'galben') marks.push(html`<span class="tag yellow-paper" title="${T.specs.yellow_paper_title}">${T.specs.yellow_paper}</span>`);
   if (c.iec_exception_reason) marks.push(html`<span class="tag warn" title="${c.iec_exception_reason}">${T.specs.iec_exception}</span>`);
-  void showFlag;
   return html`<strong>${c.label}</strong> <span class="tag">${materialName(c.material_code)}</span>${c.coated ? html` <span class="tag">${T.specs.coated}</span>` : ''} ${marks}`;
 }
 
@@ -126,14 +125,12 @@ COLUMNS.SARMA_CL5 = COLUMNS.SARMA_CL12;
 
 function constructionTable(ctx, full, diff, editable, backBase) {
   const cols = COLUMNS[full.family.code] || COLUMNS.FUNIE_RIGIDA;
-  const { rev, doc } = full;
   return html`<div class="scroll"><table class="grid sheet"><thead><tr>${cols.map((c) => html`<th>${T.sheet[c.h]}</th>`)}${editable ? html`<th>${T.common.actions}</th>` : ''}</tr></thead>
 <tbody>${full.constructions.map((c) => html`<tr class="${c.active ? '' : 'inactive'}">${cols.map((col) => cell(diff, c, col.keys, col.r(c, diff)))}
   ${editable ? html`<td class="nowrap"><a class="btn small" href="${backBase}/constructii/${c.id}">${T.common.edit}</a>
     <form method="post" action="${backBase}/constructii/${c.id}/${c.active ? 'dezactiveaza' : 'activeaza'}" class="inline">${csrf(ctx)}<button type="submit" class="btn small">${c.active ? T.common.deactivate : T.common.activate}</button></form></td>` : ''}</tr>`)}
 ${full.constructions.length ? '' : html`<tr><td colspan="${cols.length + 1}" class="empty">${T.specs.no_constructions}</td></tr>`}</tbody></table></div>
 ${diff.removed.length ? html`<details class="removed"><summary>${f(T.specs.removed_rows, { n: diff.removed.length })}</summary><ul>${diff.removed.map((c) => html`<li>${c.label} <span class="tag">${materialName(c.material_code)}</span></li>`)}</ul></details>` : ''}`;
-  void rev; void doc;
 }
 
 function findingsBox(findings, revisionId, docId) {
@@ -199,7 +196,7 @@ ${constructionTable(ctx, full, diff, editable, base)}`,
 
 // ---------- construction editor ----------
 
-function limitRows(family, shapeKind) {
+function limitRows(family) {
   const lvl = family.levels[0];
   switch (family.code) {
     case 'FUNIE_RIGIDA': case 'EXTRUDAT_AL':
@@ -210,7 +207,6 @@ function limitRows(family, shapeKind) {
     case 'SARMA_CL12': case 'SARMA_CL5': return [{ level: 'sarma', q: 'd', unit: 'mm', cls: '' }, { level: 'sarma', q: 'mass', unit: 'g/m', cls: '' }];
     default: return [{ level: 'suvita', q: 'mass', unit: 'g/m', cls: '' }, { level: 'toron', q: 'mass', unit: 'g/m', cls: '' }, { level: 'lita', q: 'mass', unit: 'g/m', cls: '' }];
   }
-  void shapeKind;
 }
 
 function constructionForm(ctx, d) {
@@ -284,4 +280,3 @@ function statsPage(ctx, d) {
 }
 
 module.exports = { docsPage, docPage, revisionPage, constructionForm, statsPage, limitRows, statusBadge };
-void pager;

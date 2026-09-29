@@ -1,0 +1,11 @@
+{
+  "name": "romcab-ctc",
+  "version": "1.0.0-etapa1",
+  "private": true,
+  "description": "ROMCAB CTC — măsurători de control al calității, fișe tehnice cu revizii (zero dependențe)",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node app/server.js",
+    "test": "node --test \"app/test/*.test.js\""
+  }
+}

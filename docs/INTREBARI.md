@@ -1,0 +1,18 @@
+# Open questions and conservative choices (stage 1)
+
+Written while building; each item states what was assumed. Confirm or correct with Zoltan.
+
+1. **Machine "Conform Extruder"** (type Sector / extrudare) is seeded on the owner's instruction (2026-09-29); it is what extruded Al measurements use.
+2. **Class 5 has no shape on paper, but `constructions.shape_id` is NOT NULL.** Added shape `LITA` ("Liță clasa 5") so the class 5 seed loads. Sârmă rows with several shapes (e.g. RM + SM72 + SM120) are stored once with the first shape as `shape_id` and all shapes in `constructions.data.forme`; stage 2 may split them.
+3. **Extra schema (migration 001):** `constructions.active` (deactivate inside a draft; not copied to the next revision), `login_attempts` (5 failures / 15 min lockout per username), `seed_warnings` (the items of `seed/verificare_seed.json`, shown on the draft revision). See `docs/DATA-MODEL.md`.
+4. **Required inputs.** Diameter (two readings, or Î and L for sector) and sample mass are required; measured resistance is optional (if a value is typed, temperature is required). Operator and client are optional (the operators list starts empty and Personal cannot edit lists); sample type is required.
+5. **One open revision per document.** "Revizie nouă" is refused while a draft or an in-verification revision exists.
+6. **Who may edit a draft.** Only its elaborator (an Inginer). The seeded drafts have no elaborator: the first Inginer who edits or submits one becomes the elaborator (so the other Inginer can verify).
+7. **Rejection** is done by the verifying Inginer (not the author) and needs a reason; the revision returns to `ciorna`.
+8. **Correction keeps the record's own revision, shift and crew** and its construction; machine, operator, client, sample type, values and notes can change. Personal: only records they created (any version), only while the current shift equals the record's shift.
+9. **IEC checks at submit and again at activation.** Blocking: class 2 wire count below the Tab. 4 minimum for the shape group (RM circular, RMC compacted, SM* shaped); class 1 Al 10–35 mm² as sector (Tab. 3 note a); class 5 wire Ø above Tab. 5; min ≥ max in a limit; no active construction. All IEC ones become warnings when `iec_exception_reason` is set. Warning only: section missing from the IEC table; mass not within 0.85–1.15 × (wires × wire mass) — the tolerance is a guess, please give the real rule.
+10. **RM is checked against the compacted minimum** (owner, 2026-09-29: Al 50 RM has min 6 wires). Seed shape RM has `iec_group = compactat`; a shape with group `circular` still needs 19 wires at 50 mm². This supersedes acceptance case 23 of `docs/ETAPA-1.md` (7-wire RM Al 50 blocked): the seeded Al draft now passes the IEC checks. 54.6 RM has no IEC row (warning).
+11. **"Today" on the home page** = records created today plus the current shift's records (so the night shift after midnight is complete). "Last 24 h" compares stored local timestamps as text; it can be off by one hour on the two daylight-saving switch days.
+12. **Crew start dates** are seeded from the first-start date (A = today, B = +4, C = +8). The Administrator/Inginer must set the real cycle start in Nomenclatoare → Schimburi.
+13. **Node 22 and `node --test app/test`:** Node 22 does not accept a bare directory; use `npm test` or `node --test "app/test/*.test.js"`.
+14. **Windows scripts are untested** (developed on Linux). `start.bat`, `instalare-serviciu.bat/.ps1` (Scheduled Task as SYSTEM, restart on failure, log in `data\server.log`) must be tried on a clean Windows machine.

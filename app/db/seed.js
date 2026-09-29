@@ -15,7 +15,7 @@ const readJson = (dir, f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8
 
 const SHAPES = [
   ['RE', 'RE', 'rotund', 'solid'],
-  ['RM', 'RM', 'rotund', 'circular'],
+  ['RM', 'RM', 'rotund', 'compactat'], // owner (2026-09-29): RM is checked against the compacted minimum (Al 50 RM: min 6 wires)
   ['RMC', 'RMC', 'rotund', 'compactat'],
   ['SM', 'SM', 'sector', 'profilat'],
   ['SM72', 'SM 72°', 'sector', 'profilat'],
@@ -46,6 +46,7 @@ const MACHINE_TYPES = [
 const MACHINES = [
   ['RIGID 1', 'Cablare rigidă'], ['RIGID 2', 'Cablare rigidă'],
   ['KABMAK 1', 'Cablare flexibil'], ['KABMAK 2', 'Cablare flexibil'],
+  ['Conform Extruder', 'Sector / extrudare'],
   ['LITARE 1', 'Cablare flexibil'], ['LITARE 2', 'Cablare flexibil'], ['LITARE 3', 'Cablare flexibil'], ['LITARE 4', 'Cablare flexibil'],
 ];
 const SAMPLE_TYPES = [['Probă de pornire', 0], ['Lungime', 1], ['După reglaj', 0]];

@@ -7,7 +7,6 @@ const audit = require('../domain/audit');
 const settings = require('../domain/settings');
 const backup = require('../lib/backup');
 const { nowIso } = require('../lib/time');
-const calc = require('../domain/calc');
 const views = require('../views/admin');
 const { errorPage } = require('../views/errors');
 
@@ -120,7 +119,7 @@ module.exports = function register(app) {
     const keep = /^\d{1,3}$/.test(raw['backup.keep']) ? Number(raw['backup.keep']) : 0;
     if (keep < 1 || keep > 365) errors['backup.keep'] = 'invalid'; else parsed['backup.keep'] = keep;
     parsed['backup.auto'] = raw['backup.auto'];
-    if (!errors['shift.day_start'] && !errors['shift.night_start'] && calc.parseDecimal('0') === 0 && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
+    if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
     if (Object.keys(errors).length) return page(settingsView(ctx, { values: { ...raw }, errors }), 422);
     const before = settings.all(db);
     const changed = {};

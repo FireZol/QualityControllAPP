@@ -16,7 +16,7 @@ ${ctx.user.role === 'inginer' ? html`<a class="tile" href="/liste/materiale"><st
   });
 }
 
-function fieldInput(def, fld, value, formId, errors, opts, ctx) {
+function fieldInput(def, fld, value, formId, errors, opts) {
   const o = opts || {};
   const name = fld.name;
   const attrs = formId ? ` form="${formId}"` : '';
@@ -28,7 +28,6 @@ function fieldInput(def, fld, value, formId, errors, opts, ctx) {
   }
   const type = fld.type === 'date' ? 'date' : 'text';
   const inputmode = fld.type === 'int' ? ' inputmode="numeric"' : '';
-  void ctx;
   return html`<input type="${type}" name="${name}" value="${value === null || value === undefined ? '' : value}" aria-label="${label}"${raw(attrs + inputmode)}${fld.max ? raw(` maxlength="${fld.max}"`) : ''}${fld.required ? raw(' required') : ''}>${err}`;
 }
 

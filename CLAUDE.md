@@ -25,7 +25,8 @@ Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, co
 ## Run and test
 ```
 node app/server.js                 # dev, uses ./data and ./config.json (copy config.example.json)
-node --test app/test               # unit + integration tests
+npm test                           # = node --test "app/test/*.test.js" (Node 22 needs the glob, not a bare folder)
+node tools/walkthrough.js <dir>    # Playwright browser walk-through with screenshots (dev only)
 ```
 Target: Windows with a portable Node in `node\` (`start.bat`). Develop so paths work on both Windows and Linux (`path.join`, no hard-coded separators). Use Playwright (already available in the dev environment) for browser walk-throughs.
 

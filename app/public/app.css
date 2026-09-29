@@ -85,7 +85,7 @@ button.link { background: none; border: 0; color: inherit; cursor: pointer; padd
 table.grid { border-collapse: collapse; width: 100%; background: var(--panel); }
 table.grid caption { text-align: left; font-weight: 600; padding: 4px 0; }
 table.grid th, table.grid td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
-table.grid thead th { background: #e8edf3; font-size: 0.88rem; position: sticky; top: 0; }
+table.grid thead th { background: #e8edf3; font-size: 0.88rem; }
 table.grid tbody th { font-weight: 600; background: #f7f9fb; }
 table.grid td.empty { text-align: center; color: var(--muted); padding: 18px; }
 table.grid tr.inactive td { opacity: 0.55; }

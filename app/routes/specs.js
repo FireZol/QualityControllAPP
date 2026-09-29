@@ -4,10 +4,8 @@ const rev = require('../domain/revisions');
 const calc = require('../domain/calc');
 const views = require('../views/specs');
 const { errorPage } = require('../views/errors');
-const { rotorMaxWires } = require('../domain/lists');
 
 const ENGINEER = ['inginer'];
-const READERS = ['inginer', 'administrator', 'personal'];
 const RE_CONFIG = /^\d+(\+\d+)*$/;
 const r4 = (v) => Number(Number(v).toFixed(4));
 
@@ -15,7 +13,6 @@ const idOf = (s) => (/^\d+$/.test(s) ? Number(s) : 0);
 
 module.exports = function register(app) {
   const { router, db } = app;
-  void READERS; void rotorMaxWires;
 
   function docRow(id) {
     return db.get(`SELECT d.*, f.name AS family_name, f.active AS family_active FROM spec_documents d JOIN product_families f ON f.id = d.family_id WHERE d.id = ?`, id);
@@ -141,7 +138,7 @@ module.exports = function register(app) {
 
   const num = (v, d) => (v === null || v === undefined ? '' : calc.formatNumber(v, 0, d === undefined ? 4 : d));
 
-  function valuesFromConstruction(c, family) {
+  function valuesFromConstruction(c) {
     const v = {
       material_id: c.material_id, section: num(c.section), shape_id: c.shape_id, destination_id: c.destination_id, coated: !!c.coated,
       label: c.label, wires: c.wires == null ? '' : c.wires, wire_d: num(c.wire_d), die: c.die || '', iec_exception_reason: c.iec_exception_reason || '',
@@ -151,7 +148,6 @@ module.exports = function register(app) {
       v[k + '_nominal'] = num(l.nominal); v[k + '_min'] = num(l.min); v[k + '_max'] = num(l.max); v[k + '_inf'] = !!l.informative;
     }
     v.params = c.params.map((p) => ({ strander_config: p.strander_config, rotor: p.rotor, pitch_mm: num(p.pitch_mm), tension: p.tension || '' }));
-    void family;
     return v;
   }
 
@@ -236,7 +232,7 @@ module.exports = function register(app) {
     const family = l.full.family;
     const c = cons;
     const lists = editorLists();
-    const defaults = c ? valuesFromConstruction(c, family) : {
+    const defaults = c ? valuesFromConstruction(c) : {
       material_id: lists.materials[0].id, shape_id: (lists.shapes.find((s) => s.code === 'RM') || lists.shapes[0]).id, section: '', label: '', wires: '', wire_d: '', die: '', coated: false, params: [],
     };
     const values = state ? state.values : defaults;

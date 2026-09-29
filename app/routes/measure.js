@@ -102,9 +102,8 @@ module.exports = function register(app) {
     const v = versions.find((x) => x.is_current);
     const lists = activeLists(db);
     // keep the record's own values selectable even if they were deactivated since
-    for (const [key, id, table, col] of [['operators', v.operator_id, 'operators', 'full_name'], ['clients', v.client_id, 'clients', 'short_name']]) {
-      if (id && !lists[key].some((x) => x.id === id)) lists[key].push(db.get(`SELECT * FROM ${table} WHERE id = ?`, id));
-      void col;
+    for (const [key, id] of [['operators', v.operator_id], ['clients', v.client_id]]) {
+      if (id && !lists[key].some((x) => x.id === id)) lists[key].push(db.get(`SELECT * FROM ${key} WHERE id = ?`, id));
     }
     if (!lists.sampleTypes.some((x) => x.id === v.sample_type_id)) lists.sampleTypes.push(db.get('SELECT * FROM sample_types WHERE id = ?', v.sample_type_id));
     const machines = M.machinesFor(db, cur.family_id);
