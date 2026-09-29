@@ -56,4 +56,4 @@ C:\ROMCAB-CTC\
 
 ## 7. Cerințe
 
-Windows Server / Windows 10–11 x64, Node.js LTS ≥ 22.13 (modulul `node:sqlite` este inclus), un browser modern pe calculatoarele din laborator și din hală. Fără internet la rulare: nu se încarcă fonturi, scripturi sau imagini externe.
+Windows Server / Windows 10–11 x64, Node.js LTS ≥ 22.13 (modulul `node:sqlite` este inclus), un browser actual (Chrome, Edge sau Firefox) pe calculatoarele din laborator și din hală. Fără internet la rulare: nu se încarcă fonturi, scripturi sau imagini externe.

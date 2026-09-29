@@ -33,7 +33,7 @@ const FAMILIES = [
   { code: 'SARMA_CL5', name: 'Sârmă trefilată multifilar clasa V', iec_class: null, levels: ['sarma'], measures: { diam: '2citiri', mass: false, resistance_measured: [], resistance_theoretical: false, spec_family: 'FLEXIBIL_CL5' }, active: 1, sort: 2 },
   { code: 'FUNIE_RIGIDA', name: 'Funie rigidă clasa 2', iec_class: 2, levels: ['funie'], measures: { diam: 'auto', mass: true, resistance_measured: ['Cu'], resistance_theoretical: true }, active: 1, sort: 3 },
   { code: 'EXTRUDAT_AL', name: 'Conductor extrudat Al clasa 1', iec_class: 1, levels: ['conductor'], measures: { diam: 'auto', mass: true, resistance_measured: [], resistance_theoretical: true }, active: 1, sort: 4 },
-  { code: 'FLEXIBIL_CL5', name: 'Conductor flexibil clasa 5', iec_class: 5, levels: ['suvita', 'toron', 'lita'], measures: { diam: null, mass: true, resistance_measured: ['Cu'], resistance_theoretical: false }, active: 0, sort: 5 },
+  { code: 'FLEXIBIL_CL5', name: 'Conductor flexibil clasa 5', iec_class: 5, levels: ['suvita', 'toron', 'lita'], measures: { diam: null, mass: true, resistance_measured: ['Cu'], resistance_theoretical: false }, active: 1, sort: 5 },
 ];
 
 const MACHINE_TYPES = [
@@ -44,6 +44,7 @@ const MACHINE_TYPES = [
   ['Cablare flexibil', ['FLEXIBIL_CL5']],
 ];
 const MACHINES = [
+  ['TREFILARE 1', 'Trefilare'], ['TREFILARE MF 1', 'Trefilare multifilară'],
   ['RIGID 1', 'Cablare rigidă'], ['RIGID 2', 'Cablare rigidă'],
   ['KABMAK 1', 'Cablare flexibil'], ['KABMAK 2', 'Cablare flexibil'],
   ['Conform Extruder', 'Sector / extrudare'],

@@ -14,8 +14,8 @@ const PAGE_SIZE = 50;
 const NOTES_MAX = 2000;
 
 /** Evaluation context for one construction (limits of the active revision + material + IEC resistance limit). */
-function contextFor(db, construction, family) {
-  const level = family.levels[0];
+function contextFor(db, construction, family, levelWanted) {
+  const level = levelWanted && family.levels.includes(levelWanted) ? levelWanted : family.levels[0];
   const material = db.get('SELECT rho20, density, alpha20, code FROM materials WHERE id = ?', construction.material_id);
   const limits = {};
   for (const l of db.all('SELECT * FROM limits WHERE construction_id = ? AND level = ?', construction.id, level)) {
@@ -29,25 +29,38 @@ function contextFor(db, construction, family) {
   let iecClass = family.iec_class;
   if (family.code === 'SARMA_CL12') iecClass = shape.code === 'RE' && dest && dest.name === 'Unifilar' ? 1 : null;
   const r = iecClass ? iec.resistanceLimit(db, iecClass, material.code, construction.section, construction.coated) : null;
-  const measuresR = (family.measures.resistance_measured || []).includes(material.code) && (family.code !== 'SARMA_CL12' || iecClass === 1);
+  const isFlex = family.code === 'FLEXIBIL_CL5';
+  const measuresR = (family.measures.resistance_measured || []).includes(material.code) && (family.code !== 'SARMA_CL12' || iecClass === 1) && (!isFlex || level !== 'suvita');
+  let nStrands = null;
+  if (isFlex && level === 'toron') {
+    const data = typeof construction.data === 'string' ? JSON.parse(construction.data || '{}') : (construction.data || {});
+    nStrands = data.nr_toroane || null;
+  }
   return {
     shapeKind, material, limits, iec: r, measuresR, level,
     measuresMass: family.measures.mass !== false, theoretical: family.measures.resistance_theoretical !== false,
+    measuresDiameter: !!family.measures.diam, rEquivN: nStrands,
   };
 }
 
 /** What the entry form must show for a family + construction (which inputs, which limits). */
-function formModel(db, construction, family) {
-  const ctx = contextFor(db, construction, family);
+function formModel(db, construction, family, level) {
+  const ctx = contextFor(db, construction, family, level);
   return {
     ctx,
     shape: db.get('SELECT * FROM shapes WHERE id = ?', construction.shape_id),
     inputs: {
-      diameter: ctx.shapeKind === 'sector' ? 'hl' : 'd12',
+      diameter: !ctx.measuresDiameter ? 'none' : ctx.shapeKind === 'sector' ? 'hl' : 'd12',
       mass: ctx.measuresMass,
       resistance: ctx.measuresR,
     },
   };
+}
+
+/** Number of strands (toroane) of a flexible construction, from the data sheet. */
+function toronCount(construction) {
+  const data = typeof construction.data === 'string' ? JSON.parse(construction.data || '{}') : (construction.data || {});
+  return data.nr_toroane || 0;
 }
 
 function machineAllowsFamily(db, machineId, familyId) {
@@ -137,9 +150,9 @@ function insertVersion(db, m, inputs, evaluation, recordNo, version, supersedes,
   const id = db.run(
     `INSERT INTO measurements(record_no, version, is_current, supersedes_id, edit_reason, created_at, created_by, shift_date, shift, crew_id,
        family_id, machine_id, construction_id, revision_id, level, destination_construction_id, operator_id, client_id, sample_type_id,
-       length_no, produced_length_m, notes) VALUES (?,?,1,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?,?,?,?,?)`,
+       length_no, produced_length_m, notes) VALUES (?,?,1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     recordNo, version, supersedes, reason, nowIso(), userId, shiftInfo.shift_date, shiftInfo.shift, shiftInfo.crew_id,
-    m.family_id, m.machine_id, m.construction_id, m.revision_id, m.level, m.operator_id, m.client_id, m.sample_type_id,
+    m.family_id, m.machine_id, m.construction_id, m.revision_id, m.level, m.destination_construction_id || null, m.operator_id, m.client_id, m.sample_type_id,
     m.length_no, m.produced_length_m, m.notes).id;
   for (const [k, v] of Object.entries(inputs)) db.run('INSERT INTO measurement_inputs(measurement_id, key, value) VALUES (?,?,?)', id, k, String(v).replace(',', '.'));
   for (const r of evaluation.results) {
@@ -168,14 +181,16 @@ function create(db, user, form, now) {
   const { meta, errors: metaErrors } = readMeta(db, form);
   Object.assign(errors, metaErrors);
   const inputs = cleanInputs(form);
-  const ctx = contextFor(db, construction, family);
+  const levelWanted = form.get('level') || family.levels[0];
+  if (!family.levels.includes(levelWanted) || (levelWanted === 'toron' && !toronCount(construction))) return { ok: false, errors: { level: 'invalid' } };
+  const ctx = contextFor(db, construction, family, levelWanted);
   const ev = calc.evaluate(inputs, ctx);
   Object.assign(errors, errorMap(ev.errors));
   if (Object.keys(errors).length) return { ok: false, errors };
 
   const when = now || new Date();
   const cur = currentShift(db, when);
-  const m = { ...meta, family_id: familyId, machine_id: machineId, construction_id: constructionId, revision_id: construction.revision_id, level: ctx.level };
+  const m = { ...meta, family_id: familyId, machine_id: machineId, construction_id: constructionId, revision_id: construction.revision_id, level: ctx.level, destination_construction_id: ctx.level === 'toron' ? construction.id : null };
   const out = db.tx(() => {
     const recordNo = (db.value('SELECT max(record_no) FROM measurements') || 0) + 1;
     const id = insertVersion(db, m, inputs, ev, recordNo, 1, null, null, user.id, { shift_date: cur.shift_date, shift: cur.shift, crew_id: cur.crew ? cur.crew.id : null });
@@ -217,12 +232,12 @@ function correct(db, user, recordNo, form, now) {
   const { meta, errors: metaErrors } = readMeta(db, form);
   Object.assign(errors, metaErrors);
   const inputs = cleanInputs(form);
-  const ctx = contextFor(db, construction, family);
+  const ctx = contextFor(db, construction, family, cur.level);
   const ev = calc.evaluate(inputs, ctx);
   Object.assign(errors, errorMap(ev.errors));
   if (Object.keys(errors).length) return { ok: false, errors };
 
-  const m = { ...meta, family_id: cur.family_id, machine_id: machineId, construction_id: cur.construction_id, revision_id: cur.revision_id, level: cur.level };
+  const m = { ...meta, family_id: cur.family_id, machine_id: machineId, construction_id: cur.construction_id, revision_id: cur.revision_id, level: cur.level, destination_construction_id: cur.destination_construction_id };
   const out = db.tx(() => {
     db.run('UPDATE measurements SET is_current = 0 WHERE id = ?', cur.id);
     const id = insertVersion(db, m, inputs, ev, recordNo, cur.version + 1, cur.id, reason, user.id, { shift_date: cur.shift_date, shift: cur.shift, crew_id: cur.crew_id });
@@ -329,6 +344,6 @@ function outOfLimit24h(db, now) {
 }
 
 module.exports = {
-  INPUT_KEYS, PAGE_SIZE, contextFor, formModel, machineAllowsFamily, constructionsFor, machinesFor, proposeLengthNo,
+  INPUT_KEYS, PAGE_SIZE, toronCount, contextFor, formModel, machineAllowsFamily, constructionsFor, machinesFor, proposeLengthNo,
   currentShift, create, canCorrect, correct, register, record, today, outOfLimit24h, cleanInputs,
 };

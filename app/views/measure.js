@@ -15,9 +15,9 @@ function limitsTable(model) {
   const rows = [];
   const add = (label, l, q) => rows.push(html`<tr><th scope="row">${label}</th><td>${l && l.nominal != null ? calc.formatQuantity(q, l.nominal) : ''}</td>
     <td>${l ? (l.informative ? T.verdict.info : limitText(l.min, l.max, q)) : T.verdict.nedeterminat}</td><td>${l && l.informative ? T.measure.informative_note : T.measure.source_sheet}</td></tr>`);
-  if (ctx.shapeKind === 'sector') { add(T.quantity.h, ctx.limits.h, 'h'); add(T.quantity.l, ctx.limits.l, 'l'); } else add(T.quantity.d, ctx.limits.d, 'd1');
+  if (ctx.measuresDiameter && ctx.shapeKind === 'sector') { add(T.quantity.h, ctx.limits.h, 'h'); add(T.quantity.l, ctx.limits.l, 'l'); } else if (ctx.measuresDiameter) add(T.quantity.d, ctx.limits.d, 'd1');
   if (ctx.measuresMass) add(T.quantity.mass_gm, ctx.limits.mass, 'mass_gm');
-  if (ctx.iec) rows.push(html`<tr><th scope="row">${T.quantity.r_max}</th><td></td><td>≤ ${calc.formatQuantity('r20', ctx.iec.r_max)}</td><td>${ctx.iec.source}</td></tr>`);
+  if (ctx.iec && (ctx.measuresR || ctx.theoretical)) rows.push(html`<tr><th scope="row">${ctx.rEquivN ? T.quantity.r_max_finished : T.quantity.r_max}</th><td></td><td>≤ ${calc.formatQuantity('r20', ctx.iec.r_max)}</td><td>${ctx.iec.source}</td></tr>`);
   return html`<table class="grid limits"><caption>${T.measure.limits_caption}</caption><thead><tr><th></th><th>${T.measure.nominal}</th><th>${T.measure.limits}</th><th>${T.measure.source}</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
@@ -43,6 +43,7 @@ function entryForm(ctx, sel, model, data) {
   ${csrf(ctx)}
   <input type="hidden" name="family_id" value="${sel.family.id}">
   <input type="hidden" name="construction_id" value="${sel.construction.id}">
+  <input type="hidden" name="level" value="${sel.level}">
   ${data.correction ? '' : html`<input type="hidden" name="machine_id" value="${sel.machine.id}">`}
   <script type="application/json" id="live-ctx">${jsonBlock({ ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: T.measure.temp_warning } })}</script>
 
@@ -59,11 +60,11 @@ function entryForm(ctx, sel, model, data) {
 
   <fieldset class="card">
     <legend>${T.measure.values}</legend>
-    <div class="row">
+    ${model.inputs.diameter === 'none' ? '' : html`<div class="row">
       ${model.inputs.diameter === 'hl'
     ? html`${numInput('h', T.input.h, values, errors, { required: true })}${numInput('l', T.input.l, values, errors, { required: true })}`
     : html`${numInput('d1', T.input.d1, values, errors, { required: true })}${numInput('d2', T.input.d2, values, errors, { required: true })}`}
-    </div>
+    </div>`}
     ${model.inputs.mass ? html`<div class="row">
       ${numInput('mass_g', T.input.mass_g, values, errors, { required: true })}
       ${numInput('sample_mm', T.input.sample_mm, { sample_mm: values.sample_mm === undefined ? '1000' : values.sample_mm }, errors, { hint: T.measure.sample_mm_hint })}
@@ -113,9 +114,10 @@ function newPage(ctx, d) {
     ${selectField({ label: T.measure.family, name: 'family', value: family_id, options: families.map((x) => [x.id, x.name]), blank: T.measure.choose, attrs: 'data-autosubmit data-resets="machine,construction"' })}
     ${family_id ? selectField({ label: T.measure.machine, name: 'machine', value: machine_id, options: machines.map((m) => [m.id, m.name + (m.rotor_config ? ` (${m.rotor_config})` : '')]), blank: T.measure.choose, attrs: 'data-autosubmit data-resets="construction"' }) : ''}
     ${family_id && machine_id ? html`<label class="field"><span class="lbl">${T.measure.construction}</span>
-      <select name="construction" data-autosubmit><option value="">${T.measure.choose}</option>
+      <select name="construction" data-autosubmit data-resets="level"><option value="">${T.measure.choose}</option>
       ${Object.keys(byMat).map((mat) => html`<optgroup label="${materialName(mat)}">${byMat[mat].map((c) => html`<option value="${c.id}"${String(c.id) === String(construction_id) ? raw(' selected') : ''}>${c.label}${c.destination_name ? ' · ' + c.destination_name : ''}${c.die ? ' · ' + c.die : ''}</option>`)}</optgroup>`)}
       </select></label>` : ''}
+    ${d.levels.length > 1 ? selectField({ label: T.measure.level, name: 'level', value: d.level, options: d.levels.map((l) => [l, T.level[l]]), blank: T.measure.choose, attrs: 'data-autosubmit' }) : ''}
     <noscript><button class="btn" type="submit">${T.common.continue}</button></noscript>
   </div>
   ${family_id && !machines.length ? html`<p class="notice">${T.measure.no_machines}</p>` : ''}
@@ -123,7 +125,7 @@ function newPage(ctx, d) {
 </form>
 ${sel && model ? html`
 <section class="card product">
-  <h2>${sel.construction.label} <span class="tag">${materialName(sel.construction.material_code)}</span> <span class="tag">${sel.machine.name}</span></h2>
+  <h2>${sel.construction.label} <span class="tag">${materialName(sel.construction.material_code)}</span> <span class="tag">${sel.machine.name}</span>${sel.family.levels.length > 1 ? html` <span class="tag ok">${T.level[sel.level]}</span>` : ''}</h2>
   <p class="muted">${revInfo}</p>
   ${sel.family.levels[0] === 'sarma' && model.ctx.measuresMass ? html`<p class="muted">${T.measure.wire_mass_hint}</p>` : ''}
   ${limitsTable(model)}
@@ -174,9 +176,9 @@ function registerPage(ctx, d) {
   <tbody>${data.rows.length ? data.rows.map((r) => html`<tr class="${r.is_current ? '' : 'old'}">
     <td><a href="/masuratori/${r.record_no}">${r.record_no}</a>${r.versions > 1 ? html` <span class="badge" title="${T.register.versions_title}">${f(T.register.versions, { n: r.versions })}${r.is_current ? '' : ` (v${r.version})`}</span>` : ''}</td>
     <td>${displayDateTime(r.created_at)}</td><td>${T.shift[r.shift]}<br><span class="muted">${displayDate(r.shift_date)}</span></td><td>${r.crew_name || ''}</td>
-    <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span></td><td>${r.machine_name}</td>
+    <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td>
     <td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
-    <td class="nowrap">${cellD(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
+    <td class="nowrap">${cellD(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
     <td class="notes">${r.notes || ''}</td></tr>`) : html`<tr><td colspan="15" class="empty">${T.register.empty}</td></tr>`}</tbody>
 </table></div>
 ${pager('/masuratori', data.page, data.pages, Object.fromEntries(qs))}`,
@@ -211,7 +213,7 @@ function detailPage(ctx, d) {
 <section class="card">
   <dl class="facts">
     <div><dt>${T.measure.family}</dt><dd>${cur.family_name}</dd></div>
-    <div><dt>${T.register.product}</dt><dd>${cur.construction_label} <span class="tag">${materialName(cur.material_code)}</span></dd></div>
+    <div><dt>${T.register.product}</dt><dd>${cur.construction_label} <span class="tag">${materialName(cur.material_code)}</span>${cur.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[cur.level]}</span>` : ''}</dd></div>
     <div><dt>${T.measure.machine}</dt><dd>${cur.machine_name}</dd></div>
     <div><dt>${T.register.shift}</dt><dd>${T.shift[cur.shift]} · ${displayDate(cur.shift_date)}${cur.crew_name ? ` · ${T.register.crew} ${cur.crew_name}` : ''}</dd></div>
     <div><dt>${T.measure.operator}</dt><dd>${cur.operator_name || T.common.none}</dd></div>

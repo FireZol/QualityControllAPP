@@ -23,7 +23,7 @@ const S = {
   },
 
   print: {
-    print: 'Tipărește', apply: 'Aplică', copy: 'Exemplar', code: 'Cod', code_unset: 'de stabilit', signature: 'Semnătura',
+    page: 'Pag.', print: 'Tipărește', apply: 'Aplică', copy: 'Exemplar', code: 'Cod', code_unset: 'de stabilit', signature: 'Semnătura',
     hint: 'Tipărirea se face din browser, pe hârtie sau în PDF (pentru registre largi alegeți A3 sau orientarea peisaj).',
     not_in_force: 'Revizie {status} — nu este document în vigoare', red_note: 'Valorile scrise cu roșu s-au modificat față de revizia anterioară.',
     iec_notes: 'Excepții acceptate de la IEC 60228:', pitch_legend: 'Pe rotor: pas [mm] / tensionare. Tensionarea la recepție conform fișei.',
@@ -94,7 +94,7 @@ const S = {
 
   quantity: {
     d: 'Ø', d1: 'Ø citirea 1', d2: 'Ø citirea 2', d_avg: 'Ø mediu', ovality: 'Ovalitate', h: 'Înălțime Î', l: 'Lățime L', mass_gm: 'Masă [g/m]',
-    d_ech: 'Ø echivalent din masă', r20_theor: 'R20 teoretică [Ω/km]', r20: 'R20 măsurată [Ω/km]', r20_echiv: 'R20 echivalentă [Ω/km]', r_max: 'R max la 20 °C [Ω/km]',
+    r_max_finished: 'R max al conductorului finit [Ω/km]', d_ech: 'Ø echivalent din masă', r20_theor: 'R20 teoretică [Ω/km]', r20: 'R20 măsurată [Ω/km]', r20_echiv: 'R20 toron raportată la liță [Ω/km]', r_max: 'R max la 20 °C [Ω/km]',
   },
 
   input: {
@@ -102,8 +102,10 @@ const S = {
     sample_mm: 'Lungimea probei [mm]', r_value: 'Rezistență măsurată', r_unit: 'Unitate', r_sample_m: 'Lungimea probei de rezistență [m]', temp_c: 'Temperatura [°C]',
   },
 
+  level: { suvita: 'Suviță', toron: 'Toron', lita: 'Liță' },
+
   measure: {
-    title: 'Măsurătoare nouă', family: 'Familie de produs', machine: 'Utilaj', construction: 'Produs (secțiune și formă)', choose: '— alegeți —',
+    level: 'Nivel măsurat', title: 'Măsurătoare nouă', family: 'Familie de produs', machine: 'Utilaj', construction: 'Produs (secțiune și formă)', choose: '— alegeți —',
     no_machines: 'Pentru această familie nu există niciun utilaj activ. Un Inginer sau Administrator trebuie să adauge unul în Nomenclatoare → Utilaje.',
     no_constructions: 'Nu există construcții în fișa tehnică activă potrivite pentru acest utilaj. Verificați dacă fișa are o revizie activă și configurația rotoarelor utilajului.',
     active_revision: 'Fișa tehnică activă: Ed. {edition}, Rev. {revision} — {doc}',

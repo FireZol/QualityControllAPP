@@ -1,5 +1,5 @@
 /* Printed documents: A4 portrait, header and footer repeated on every page through thead / tfoot. */
-@page { size: A4 portrait; margin: 12mm 12mm 16mm 12mm; @bottom-right { content: "Pag. " counter(page) " / " counter(pages); font-size: 9pt; } }
+@page { size: A4 portrait; margin: 12mm 12mm 16mm 12mm; }
 body.print-page { background: #fff; color: #000; font-size: 10pt; margin: 0; padding: 0 8px; }
 .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; background: #eef2f7; border-bottom: 1px solid var(--line); padding: 8px 14px; margin: 0 -8px 12px; }
 .toolbar .short { width: 110px; min-height: 32px; display: inline-block; }
@@ -32,7 +32,17 @@ table.sheet thead th { background: #e6e6e6; -webkit-print-color-adjust: exact; p
 .small { font-size: 8.5pt; }
 .notes { font-size: 8.5pt; margin-top: 6px; }
 .new { font-size: 7.5pt; border: 1px solid #000; padding: 0 3px; }
+/* pages built by print-paginate.js (identical in Chrome, Edge and Firefox); on screen they look like sheets of paper */
+.pg-stage { position: absolute; left: -10000px; top: 0; visibility: hidden; }
+.pg-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-bottom: 30px; }
+.pg { display: flex; flex-direction: column; background: #fff; border: 1px solid #b9c2cf; box-shadow: 0 1px 6px rgba(0,0,0,0.12); padding: 0; box-sizing: content-box; }
+.pg-body { flex: 1; }
+.pg-num { text-align: right; font-size: 9pt; margin-top: 4px; }
+.pg-foot { font-size: 9pt; }
 @media print {
+  .pg { break-after: page; page-break-after: always; border: 0; box-shadow: none; }
+  .pg:last-child { break-after: auto; page-break-after: auto; }
+  .pg-wrap { display: block; padding: 0; }
   .noprint { display: none !important; }
   body.print-page { padding: 0; }
 }

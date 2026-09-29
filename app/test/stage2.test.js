@@ -36,21 +36,13 @@ async function activate(docId, revId) {
 const construction = (revId, where, ...p) => app.db.get(`SELECT c.* FROM constructions c JOIN shapes s ON s.id = c.shape_id JOIN materials m ON m.id = c.material_id
   LEFT JOIN destinations d ON d.id = c.destination_id WHERE c.revision_id = ? AND ${where}`, revId, ...p);
 
-async function addMachine(list, name, typeName) {
-  const type = app.db.get('SELECT id FROM machine_types WHERE name = ?', typeName).id;
-  const r = await engA.postForm(`/liste/${list}`, `/liste/${list}/adauga`, { name, machine_type_id: String(type) });
-  assert.equal(r.status, 303);
-  return app.db.get('SELECT id FROM machines WHERE name = ?', name).id;
-}
-
 const record = (r) => Number(/\/masuratori\/(\d+)/.exec(r.location)[1]);
 const results = (no) => Object.fromEntries(app.db.all('SELECT r.* FROM measurement_results r JOIN measurements m ON m.id = r.measurement_id WHERE m.record_no = ? AND m.is_current = 1', no).map((x) => [x.quantity, x]));
 
 test('wire families are active for measurement and their sheets are editable', async () => {
-  assert.deepEqual(app.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
+  assert.deepEqual(app.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
   // class V wire reads the class V data sheet, whose own family (flexible) stays for stage 3
   const flex = rev.familyOf(app.db, app.db.get('SELECT family_id FROM spec_documents WHERE id = ?', ids.cl5Doc).family_id);
-  assert.equal(flex.active, 0);
   assert.equal(rev.docFamilyActive(app.db, flex), true);
   const page = await engA.get(`/fise/${ids.cl5Doc}/revizii/${ids.cl5Rev}`);
   assert.match(page.text, /Trimite la verificare/);
@@ -62,7 +54,7 @@ test('wire families are active for measurement and their sheets are editable', a
 
 test('class I–II wire: diameter (two readings) and mass in kg/km, no theoretical resistance', async () => {
   await activate(ids.wireDoc, ids.wireRev);
-  const mach = await addMachine('utilaje', 'TREF 1', 'Trefilare');
+  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREFILARE 1'").id; // seeded default machine
   const c = construction(ids.wireRev, "c.label = '6 RE' AND m.code = 'Al' AND c.destination_id IS NULL");
   assert.ok(c);
   const page = await ctc.get(`/masuratori/nou?family=${ids.famWire}&machine=${mach}&construction=${c.id}`);
@@ -97,7 +89,7 @@ test('class I–II wire: diameter (two readings) and mass in kg/km, no theoretic
 });
 
 test('copper unifilar RE wire: measured resistance against IEC Tab. 3; multifilar wire has none', async () => {
-  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREF 1'").id;
+  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREFILARE 1'").id;
   const uni = construction(ids.wireRev, "m.code = 'Cu' AND s.code = 'RE' AND d.name = 'Unifilar'");
   const mul = construction(ids.wireRev, "m.code = 'Cu' AND s.code = 'RE' AND d.name = 'Multifilar'");
   const pageU = await ctc.get(`/masuratori/nou?family=${ids.famWire}&machine=${mach}&construction=${uni.id}`);
@@ -127,7 +119,7 @@ test('class V: IEC wire diameter blocks activation until an exception is recorde
   assert.equal(app.db.get('SELECT status FROM spec_revisions WHERE id = ?', ids.cl5Rev).status, 'ciorna');
   app.db.run("UPDATE constructions SET iec_exception_reason = 'Acceptat de client' WHERE id = ?", c25.id);
   await activate(ids.cl5Doc, ids.cl5Rev);
-  const mach = await addMachine('utilaje', 'TMF 1', 'Trefilare multifilară');
+  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREFILARE MF 1'").id; // seeded default machine
   const c = construction(ids.cl5Rev, "c.section = 0.5 AND c.die LIKE '8 x%'");
   const page = await ctc.get(`/masuratori/nou?family=${ids.famCl5}&machine=${mach}&construction=${c.id}`);
   assert.match(page.text, /name="d1"/);
@@ -199,7 +191,7 @@ test('printed sheet marks values changed against the previous revision in red', 
 });
 
 test('printed register: filtered selection, landscape, escaped text', async () => {
-  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREF 1'").id;
+  const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREFILARE 1'").id;
   const c = construction(app.db.get("SELECT id FROM spec_revisions WHERE document_id = ? AND status = 'activa'", ids.wireDoc).id, "c.label = '6 RE' AND m.code = 'Al' AND c.destination_id IS NULL");
   const r0 = await ctc.postForm('/masuratori/nou', '/masuratori/nou', { family_id: String(ids.famWire), machine_id: String(mach), construction_id: String(c.id), sample_type_id: String(ids.sample), d1: '2.78', d2: '2.78', mass_g: '16.38', notes: '<b>x</b>' });
   assert.equal(r0.status, 303);
@@ -227,10 +219,10 @@ test('migration 002 upgrades a stage-1 database', async () => {
     // put the database back into its stage-1 shape
     db.run("UPDATE shapes SET iec_group = 'circular' WHERE code = 'RM'");
     db.run("DELETE FROM machines WHERE name = 'Conform Extruder'");
-    db.run("UPDATE product_families SET active = 0 WHERE code IN ('SARMA_CL12','SARMA_CL5')");
+    db.run("UPDATE product_families SET active = 0 WHERE code IN ('SARMA_CL12','SARMA_CL5','FLEXIBIL_CL5')");
     db.run("UPDATE product_families SET measures = json_remove(measures, '$.spec_family') WHERE code = 'SARMA_CL5'");
     db.run("DELETE FROM limits WHERE level = 'sarma' AND construction_id IN (SELECT id FROM constructions WHERE family_id = (SELECT id FROM product_families WHERE code = 'FLEXIBIL_CL5'))");
-    db.run('DELETE FROM schema_migrations WHERE version = 2');
+    db.run('DELETE FROM schema_migrations WHERE version >= 2');
     const cfg = fresh.config;
     await fresh.stop();
     const logs = [];
@@ -239,7 +231,7 @@ test('migration 002 upgrades a stage-1 database', async () => {
       assert.match(logs.join('\n'), /Backup înainte de migrare/);
       assert.equal(again.db.get("SELECT iec_group FROM shapes WHERE code = 'RM'").iec_group, 'compactat');
       assert.equal(again.db.value("SELECT count(*) FROM machines WHERE name = 'Conform Extruder'"), 1);
-      assert.deepEqual(again.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
+      assert.deepEqual(again.db.all('SELECT code FROM product_families WHERE active = 1 ORDER BY code').map((r) => r.code), ['EXTRUDAT_AL', 'FLEXIBIL_CL5', 'FUNIE_RIGIDA', 'SARMA_CL12', 'SARMA_CL5']);
       assert.equal(JSON.parse(again.db.get("SELECT measures FROM product_families WHERE code = 'SARMA_CL5'").measures).spec_family, 'FLEXIBIL_CL5');
       assert.equal(again.db.value("SELECT count(*) FROM limits WHERE level = 'sarma' AND construction_id IN (SELECT id FROM constructions WHERE family_id = (SELECT id FROM product_families WHERE code = 'FLEXIBIL_CL5'))"), 27);
     } finally {

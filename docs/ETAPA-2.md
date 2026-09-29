@@ -14,6 +14,6 @@ Scope from `docs/SPECIFICATIE.md` §10: drawn wire (class I–II and class V mul
 
 ## Notes / assumptions
 
-- "Pag. x / y" uses CSS page margin boxes (Chromium / Edge ≥ 131). Older browsers print without the page counter; header and footer repeat regardless.
-- No machine names were given for **Trefilare** and **Trefilare multifilară**; an Inginer/Administrator adds them in Nomenclatoare → Utilaje (the form says so when none exists).
+- "Pag. x / y" is produced by `print-paginate.js` (browser-side pagination), so it is identical in Chrome, Edge and Firefox; `node tools/print-check.js` verifies it in headless Chromium.
+- Default machines `TREFILARE 1` (Trefilare) and `TREFILARE MF 1` (Trefilare multifilară) are seeded so every process has one (owner request); rename or add more in Nomenclatoare → Utilaje.
 - The wire sheets are drafts transcribed from scans; the engineers must verify and a second engineer activate them before measurements can be saved (same two-person rule as stage 1).

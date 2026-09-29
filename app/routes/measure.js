@@ -35,12 +35,17 @@ module.exports = function register(app) {
     const machine = machines.find((x) => x.id === int('machine')) || null;
     const constructions = machine ? M.constructionsFor(db, family, machine) : [];
     const construction = constructions.find((x) => x.id === int('construction')) || null;
-    const d = { families, machines, constructions, family_id: family && family.id, machine_id: machine && machine.id, construction_id: construction && construction.id, sel: null, model: null };
+    const d = { families, machines, constructions, family_id: family && family.id, machine_id: machine && machine.id, construction_id: construction && construction.id, sel: null, model: null, levels: [], level: null };
     if (construction) {
+      // flexible conductors are measured per level: suviță, toron (if the row has strands), liță
+      d.levels = family.levels.filter((l) => l !== 'toron' || M.toronCount(construction) > 0);
+      d.level = d.levels.length === 1 ? d.levels[0] : (d.levels.includes(query.get('level')) ? query.get('level') : null);
+    }
+    if (construction && d.level) {
       const revision = db.get('SELECT * FROM spec_revisions WHERE id = ?', construction.revision_id);
       const doc = db.get('SELECT * FROM spec_documents WHERE id = ?', revision.document_id);
-      d.sel = { family, machine, construction, revision, doc };
-      d.model = M.formModel(db, construction, family);
+      d.sel = { family, machine, construction, revision, doc, level: d.level };
+      d.model = M.formModel(db, construction, family, d.level);
       const cur = M.currentShift(db);
       const lists = activeLists(db);
       const first = lists.sampleTypes[0];
@@ -60,7 +65,7 @@ module.exports = function register(app) {
   router.post('/masuratori/nou', {}, (ctx) => {
     const r = M.create(db, ctx.user, ctx.form);
     if (r.ok) return redirect(`/masuratori/${r.recordNo}`, { flash: { key: r.warnings.includes('temp_range') ? 'measurement_saved_temp' : 'measurement_saved', type: r.warnings.includes('temp_range') ? 'err' : 'ok' } });
-    const q = new URLSearchParams({ family: ctx.form.get('family_id'), machine: ctx.form.get('machine_id'), construction: ctx.form.get('construction_id') });
+    const q = new URLSearchParams({ family: ctx.form.get('family_id'), machine: ctx.form.get('machine_id'), construction: ctx.form.get('construction_id'), level: ctx.form.get('level') });
     const state = { ...stateFromForm(ctx.form), errors: r.errors };
     return page(views.newPage(ctx, newContext(q, state)), 422);
   });
@@ -114,8 +119,8 @@ module.exports = function register(app) {
     };
     return {
       current: cur,
-      sel: { family, construction },
-      model: M.formModel(db, construction, family),
+      sel: { family, construction, level: cur.level },
+      model: M.formModel(db, construction, family, cur.level),
       form: {
         values: st.values, meta: st.meta, errors: st.errors || null, action: `/masuratori/${no}/corecteaza`, cancelHref: `/masuratori/${no}`,
         correction: true, editReason: st.editReason || '', lists: { ...lists, machines }, lengthProposal: cur.length_no || 1,

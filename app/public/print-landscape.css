@@ -1,4 +1,4 @@
 /* Register print: A4 landscape (choose A3 in the print dialog for wide selections). */
-@page { size: A4 landscape; margin: 10mm 10mm 14mm 10mm; @bottom-right { content: "Pag. " counter(page) " / " counter(pages); font-size: 9pt; } }
+@page { size: A4 landscape; margin: 10mm 10mm 14mm 10mm; }
 table.register-print th, table.register-print td { font-size: 8pt; padding: 1px 4px; }
 .doc-foot { grid-template-columns: 1fr auto; }

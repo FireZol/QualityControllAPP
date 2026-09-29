@@ -128,7 +128,8 @@
    *   limits      { d|h|l|mass : {min,max,informative} }   (from the revision's `limits`)
    *   iec         { r_max, source } | null                 (resistance limit of the finished conductor)
    *   measuresR   true when measured resistance applies to this family + material
-   *   measuresMass / theoretical   false to skip the mass (and derived) rows; default true
+   *   measuresMass / theoretical / measuresDiameter   false to skip that part; default true
+   *   rEquivN     number of strands: the measured resistance is a strand's, reported to the finished conductor
    * @returns {{results: object[], warnings: string[], errors: string[]}}
    */
   function evaluate(inputs, ctx) {
@@ -153,8 +154,10 @@
       });
     }
 
-    // diameter
-    if (ctx.shapeKind === 'sector') {
+    // diameter (families without a diameter, e.g. flexible conductors, skip it)
+    if (ctx.measuresDiameter === false) {
+      // nothing to read
+    } else if (ctx.shapeKind === 'sector') {
       const h = num('h'), l = num('l');
       if (h === null) errors.push('h'); else push('h', h, lim.h);
       if (l === null) errors.push('l'); else push('l', l, lim.l);
@@ -212,11 +215,15 @@
         const perKm = resistancePerKm(rv, unit, rs);
         const r20 = resistanceAt20(perKm, t, ctx.material.alpha20);
         const rMax = ctx.iec ? ctx.iec.r_max : null;
-        push('r20', r20, rMax === null || rMax === undefined ? null : { min: null, max: rMax },
-          {
-            source: ctx.iec ? ctx.iec.source : 'calculat',
-            deviation_pct: rMax ? deviationPercent(r20, rMax) : null,
-          });
+        const limit = rMax === null || rMax === undefined ? null : { min: null, max: rMax };
+        if (ctx.rEquivN) {
+          // strand (toron) measured, reported to the finished conductor: R20 / number of strands (spec §5)
+          push('r20', r20, null, { verdict: 'info', source: 'calculat' });
+          const eq = resistanceEquivalent(r20, ctx.rEquivN);
+          push('r20_echiv', eq, limit, { source: ctx.iec ? ctx.iec.source : 'calculat', deviation_pct: rMax ? deviationPercent(eq, rMax) : null });
+        } else {
+          push('r20', r20, limit, { source: ctx.iec ? ctx.iec.source : 'calculat', deviation_pct: rMax ? deviationPercent(r20, rMax) : null });
+        }
       }
     }
     return { results, warnings, errors };

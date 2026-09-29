@@ -1,7 +1,7 @@
 'use strict';
 // Printable documents (spec §8): A6 annexes and stranding instructions from the database, and the filtered register.
 // Standalone pages (no application navigation); printing is done by the browser, on paper or to PDF.
-const { html } = require('../lib/html');
+const { html, raw } = require('../lib/html');
 const { T, f } = require('../i18n/ro');
 const calc = require('../domain/calc');
 const { displayDateTime, displayDate } = require('../lib/time');
@@ -26,6 +26,7 @@ ${opts.landscape ? html`<link rel="stylesheet" href="/static/print-landscape.css
 ${opts.toolbar}
 ${opts.body}
 <script src="/static/app.js"></script>
+<script src="/static/print-paginate.js"></script>
 </body>
 </html>`;
 }
@@ -45,7 +46,7 @@ function toolbar(ctx, { backHref, action, hidden, exemplar, withExemplar }) {
 /** A4 frame with a repeating header and footer (thead / tfoot repeat on every printed page). */
 function frame(d) {
   const { company, title, code, edition, revision, statusNote, footer, content, noMeta } = d;
-  return html`<table class="doc">
+  return html`<table class="doc" data-label-page="${T.print.page}"${d.landscape ? raw(' data-landscape') : ''}>
   <thead><tr><td>
     <div class="doc-head">
       <div class="doc-company">${company}</div>
@@ -205,13 +206,13 @@ function registerPrint(ctx, d) {
     <table class="sheet register-print"><thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.shift}</th><th>${T.register.crew}</th><th>${T.register.product}</th><th>${T.measure.machine}</th><th>${T.measure.operator}</th><th>${T.measure.client}</th><th>${T.measure.sample_type}</th>
       <th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th><th>${T.common.notes}</th></tr></thead>
     <tbody>${rows.map((r) => html`<tr><td>${r.record_no}${r.versions > 1 ? html`<sup>v${r.version}</sup>` : ''}</td><td>${displayDateTime(r.created_at)}</td><td>${T.shift[r.shift]}</td><td>${r.crew_name || ''}</td>
-      <td>${r.construction_label} ${r.material_code}</td><td>${r.machine_name}</td><td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
-      <td class="nowrap">${dia(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td><td>${r.notes || ''}</td></tr>`)}</tbody></table>`;
+      <td>${r.construction_label} ${r.material_code}${r.family_code === 'FLEXIBIL_CL5' ? ' · ' + T.level[r.level] : ''}</td><td>${r.machine_name}</td><td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
+      <td class="nowrap">${dia(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td><td>${r.notes || ''}</td></tr>`)}</tbody></table>`;
   const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(d.now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
   return page({
     title: T.register.title, landscape: true,
     toolbar: toolbar(ctx, { backHref: '/masuratori' + (d.qs ? '?' + d.qs : ''), action: '/masuratori/tipar', hidden: filters, withExemplar: false }),
-    body: frame({ company, title: T.register.title, noMeta: true, statusNote: '', footer, content }),
+    body: frame({ landscape: true, company, title: T.register.title, noMeta: true, statusNote: '', footer, content }),
   });
 }
 
