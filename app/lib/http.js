@@ -93,6 +93,16 @@ function text(body, status, filename) {
   return { status: status || 200, headers, body };
 }
 
+/** A file download (CSV, XLSX). */
+function download(body, filename, contentType) {
+  const ascii = filename.replace(/[^\w.\-]+/g, '_');
+  return {
+    status: 200,
+    headers: { 'Content-Type': contentType, 'Cache-Control': 'no-store', 'Content-Disposition': `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(filename)}` },
+    body,
+  };
+}
+
 function staticFile(file, cache) {
   let st;
   try { st = fs.statSync(file); } catch (_) { return null; }
@@ -124,4 +134,4 @@ function safeEqual(a, b) {
   return x.length === y.length && crypto.timingSafeEqual(x, y);
 }
 
-module.exports = { SECURITY_HEADERS, parseCookies, cookie, Form, readBody, page, redirect, json, text, staticFile, safeJoin, randomToken, sha256, safeEqual };
+module.exports = { download, SECURITY_HEADERS, parseCookies, cookie, Form, readBody, page, redirect, json, text, staticFile, safeJoin, randomToken, sha256, safeEqual };

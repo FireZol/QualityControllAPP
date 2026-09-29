@@ -5,7 +5,7 @@ const { T, f, opt } = require('../i18n/ro');
 const calc = require('../domain/calc');
 
 function nav(user, active) {
-  const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register], ['specs', '/fise', T.nav.specs]];
+  const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register], ['analyses', '/analize', T.nav.analyses], ['specs', '/fise', T.nav.specs]];
   if (user.role === 'inginer' || user.role === 'administrator') items.push(['lists', '/liste', T.nav.lists]);
   if (user.role === 'administrator') {
     items.push(['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]);

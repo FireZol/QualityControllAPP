@@ -6,7 +6,7 @@ const S = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
 
   nav: {
-    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', specs: 'Fișe tehnice',
+    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', analyses: 'Analize', specs: 'Fișe tehnice',
     lists: 'Nomenclatoare', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
@@ -20,6 +20,33 @@ const S = {
     details: 'Detalii', actions: 'Acțiuni', name: 'Nume', date: 'Data', none: '—', total: 'Total', previous: 'Anterior', next: 'Următor',
     pages: 'Paginare', page_of: 'Pagina {page} din {pages}', required: 'obligatoriu', all: 'Toate', continue: 'Continuă', close: 'Închide',
     status: 'Stare', open: 'Deschide', from: 'De la', to: 'Până la', user: 'Utilizator', time: 'Ora', notes: 'Observații',
+  },
+
+  an: {
+    title: 'Analize', export: 'Export', group_by: 'Grupează după', group_default: '— implicit —', showing: 'Se afișează ultimele {n} din {total}.',
+    tabs: { tendinta: 'Tendință', distributie: 'Distribuție și capabilitate', neconformitate: 'Rată de neconformitate', consum: 'Consum suplimentar', comparatie: 'Comparație' },
+    tab_help: {
+      tendinta: 'Valorile măsurate în timp, cu banda min–max a limitelor față de care a fost judecată fiecare valoare.',
+      distributie: 'Histogramă, medie, abatere standard, Cp și Cpk pe produs, utilaj și celelalte grupări.',
+      neconformitate: 'Procentul rezultatelor în afara limitelor, cu sub minim și peste maxim separat.',
+      consum: 'Abaterea masei peste maxim, în g/m și %; în kg doar dacă s-a introdus lungimea produsă.',
+      comparatie: 'Aceeași mărime, alăturat, pentru utilaje, ture, schimburi, operatori sau clienți, în aceeași perioadă.',
+    },
+    groups: { product: 'Produs', machine: 'Utilaj', shift: 'Tura', crew: 'Schimb', operator: 'Operator', client: 'Client' },
+    need_product: 'Alegeți un produs (și, dacă este cazul, mărimea) pentru această analiză.', need_level: 'Produsul are măsurători pe mai multe niveluri; alegeți nivelul (suviță, toron sau liță).',
+    no_data: 'Nu există măsurători pentru filtrele alese.', limits_changed: 'Limitele s-au schimbat între revizii în perioada aleasă; fiecare punct este judecat față de limitele din momentul măsurării, iar Cp / Cpk folosesc limitele cele mai recente.',
+    limits_changed_short: 'limite schimbate', small_n: 'n < 30: orientativ', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distanța dintre medie și limita cea mai apropiată / 3s. Abaterea standard este cea a eșantionului (n − 1). Rezultatele informative și cele fără limită nu au Cp / Cpk.',
+    pick_product_for_histogram: 'Alegeți un produs pentru a vedea histograma.', summary: 'Rezumat', points: 'Valorile măsurate', mean: 'Media', sd: 'Abatere standard', lsl: 'Limita min', usl: 'Limita max',
+    out_count: 'În afara limitelor', capability: 'Capabilitate', note: 'Observații', nonconf: 'Neconformitate', nonconf_chart: 'Rezultate în afara limitelor [%]', nonconf_hint: 'Se numără doar rezultatele cu verdict (în limite, sub minim, peste maxim); cele informative și nedeterminate nu intră.',
+    evaluated: 'Rezultate evaluate', pct_out: '% în afara limitelor', pct_sub: '% sub minim', pct_peste: '% peste maxim',
+    consum: 'Consum suplimentar', consum_chart_kg: 'Consum suplimentar de material [kg]', consum_chart_gm: 'Abatere medie a masei peste maxim [g/m]', consum_hint: 'Se ia în calcul masa peste maxim; kg = abatere [g/m] × lungime produsă [m] / 1000, doar pentru înregistrările cu lungime produsă.',
+    mass_results: 'Rezultate de masă', over_count: 'Peste maxim', pct_over: '% peste maxim', avg_excess_gm: 'Abatere medie [g/m]', avg_excess_pct: 'Abatere medie [%]', max_excess_gm: 'Abatere maximă [g/m]', with_length: 'Cu lungime produsă', excess_kg: 'Consum suplimentar [kg]',
+    compare_hint: 'Punctul este media, linia groasă media ± abaterea standard, linia subțire minimul și maximul; liniile verticale sunt limitele.',
+  },
+
+  export: {
+    version: 'Versiune', current: 'Curentă', created_at: 'Data și ora', shift_date: 'Data turei', material: 'Material', out_of_limit: 'În afara limitelor', revision: 'Fișa tehnică',
+    lim_min: 'Limita min', lim_max: 'Limita max', sheet_register: 'Registru', sheet_results: 'Rezultate', sheet_inputs: 'Valori introduse',
   },
 
   print: {

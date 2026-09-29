@@ -169,7 +169,8 @@ function registerPage(ctx, d) {
     <a class="btn" href="/masuratori">${T.common.reset}</a>
   </div>
 </form>
-<p class="muted">${f(T.register.count, { total: data.total })} <a class="btn small" href="/masuratori/tipar${qs.toString() ? '?' + qs.toString() : ''}">${T.print.register_print}</a></p>
+<p class="muted">${f(T.register.count, { total: data.total })} <a class="btn small" href="/masuratori/tipar${qs.toString() ? '?' + qs.toString() : ''}">${T.print.register_print}</a>
+  ${T.an.export}: <a class="btn small" href="/masuratori/export?${qs.toString()}${qs.toString() ? '&' : ''}format=csv">CSV</a> <a class="btn small" href="/masuratori/export?${qs.toString()}${qs.toString() ? '&' : ''}format=xlsx">Excel (.xlsx)</a></p>
 <div class="scroll"><table class="grid register">
   <thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.shift}</th><th>${T.register.crew}</th><th>${T.measure.family}</th><th>${T.register.product}</th><th>${T.measure.machine}</th>
     <th>${T.measure.operator}</th><th>${T.measure.client}</th><th>${T.measure.sample_type}</th><th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th><th>${T.common.notes}</th></tr></thead>
