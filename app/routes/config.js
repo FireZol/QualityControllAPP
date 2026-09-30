@@ -36,7 +36,7 @@ module.exports = function register(app) {
     m.resistance_theoretical = ctx.form.bool('theor');
     m.resistance_measured = [ctx.form.bool('r_cu') ? 'Cu' : null, ctx.form.bool('r_al') ? 'Al' : null].filter(Boolean);
     const active = ctx.form.bool('active') ? 1 : 0;
-    if (active && !m.mass && !m.diam && !m.resistance_measured.length) return page(views.familiesPage(ctx, { rows: familyRows(), err: require('../i18n/ro').T.cfg.families_nothing }), 422);
+    if (active && !m.mass && !m.diam && !m.resistance_measured.length) return page(views.familiesPage(ctx, { rows: familyRows(), err: require('../i18n').T.cfg.families_nothing }), 422);
     db.tx(() => {
       db.run('UPDATE product_families SET active = ?, measures = ? WHERE id = ?', active, JSON.stringify(m), id);
       audit.log(db, ctx.user.id, 'family_change', 'product_families', id, { code: row.code, before, after: { active, measures: m } });

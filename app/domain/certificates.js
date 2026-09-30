@@ -8,7 +8,7 @@ const tests = require('./tests');
 const batches = require('./batches');
 const settings = require('./settings');
 const { nowIso } = require('../lib/time');
-const { S } = require('../i18n/ro');
+const { S } = require('../i18n');
 
 const OUT = ['sub', 'peste', 'neconform'];
 

@@ -1,6 +1,6 @@
 'use strict';
 const { html, raw } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const calc = require('../domain/calc');
 const { layout, textField, selectField } = require('./layout');
 const tests = require('../domain/tests');

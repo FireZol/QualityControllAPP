@@ -1,6 +1,6 @@
 'use strict';
 const { html } = require('../lib/html');
-const { T, f, S } = require('../i18n/ro');
+const { T, f, S } = require('../i18n');
 const { displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, checkField, pager } = require('./layout');
 

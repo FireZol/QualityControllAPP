@@ -1,7 +1,7 @@
 'use strict';
 // Finished cable: test entry (batch tests and type tests), batches, drums.
 const { html, raw, jsonBlock } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const calc = require('../domain/calc');
 const tests = require('../domain/tests');
 const { displayDate, displayDateTime } = require('../lib/time');

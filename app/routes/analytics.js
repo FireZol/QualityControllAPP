@@ -8,7 +8,7 @@ const svg = require('../lib/svg');
 const xp = require('../lib/export');
 const views = require('../views/analytics');
 const { displayDateTime } = require('../lib/time');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const fill = f;
 const tests = require('../domain/tests');
 

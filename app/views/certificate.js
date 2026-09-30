@@ -1,7 +1,7 @@
 'use strict';
 // Printed batch certificate and type test report (A4, numbered pages, same frame as the data sheets).
 const { html } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const calc = require('../domain/calc');
 const { displayDate } = require('../lib/time');
 const P = require('./print');

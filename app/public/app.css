@@ -28,6 +28,10 @@ code { font-family: Consolas, "Courier New", monospace; font-size: 0.92em; }
 .nav a:hover { background: rgba(255,255,255,0.15); }
 .nav a.active { background: rgba(255,255,255,0.25); font-weight: 600; }
 .top { position: relative; }
+.lang { display: inline-flex; gap: 2px; margin: 0; }
+.lang button { background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 2px 8px; font: inherit; font-size: 0.82rem; cursor: pointer; }
+.lang button.active { background: var(--brand-ink); color: var(--brand); border-color: var(--brand-ink); font-weight: 700; }
+.lang button:hover:not(.active) { background: rgba(255,255,255,0.18); }
 .help { position: relative; }
 .help summary { list-style: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; font-weight: 700; user-select: none; }
 .help summary::-webkit-details-marker { display: none; }

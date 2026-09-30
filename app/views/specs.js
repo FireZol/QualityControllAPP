@@ -1,6 +1,6 @@
 'use strict';
 const { html, raw } = require('../lib/html');
-const { T, f, opt, S } = require('../i18n/ro');
+const { T, f, opt, S } = require('../i18n');
 const { designLine } = require('./cable');
 const calc = require('../domain/calc');
 const tests = require('../domain/tests');

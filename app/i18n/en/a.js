@@ -1,0 +1,131 @@
+'use strict';
+// English texts, part A. Same keys and {placeholders} as ../ro.js (a test compares them).
+// Terms: fișă tehnică = data sheet, revizie = revision, utilaj = machine, probă = sample, tură = shift, schimb = crew,
+// suviță = wire, toron = strand, liță = conductor (flexible class 5), Nomenclatoare = Master data.
+
+module.exports = {
+  app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Technological Quality Control' },
+
+  nav: {
+    label: 'Main navigation', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
+    lists: 'Master data', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
+  },
+
+  help: {
+    label: 'Help', title: 'About this page',
+    default: ['If something is unclear, ask an Engineer or the Administrator.'],
+    home: ['Here you see today\'s measurements and the out-of-limit values of the last 24 hours.', 'Press “New measurement” to start a sample.', 'A measurement number opens its details, history and correction.'],
+    new: ['Pick the family, machine and product; next time the app remembers the ones you used last.', 'Enter the values: Enter moves to the next field, Ctrl+Enter saves.', 'Green = within limits, red = out of limits. An out-of-limit value is flagged but never blocks saving.', 'Resistance is compared at 20 °C: the lower, the better.'],
+    register: ['Filter by date, shift, product, machine or client; “Out of limits only” shows the problems.', 'To correct a measurement, open it: a correction creates a new version and the old one stays in the history.', 'Printing uses the chosen filters.'],
+    specs: ['The data sheet holds the limits of each product. Measurements can only be entered against an active sheet.', 'An Engineer drafts or changes a revision and submits it for verification; a second Engineer verifies and activates it.', 'An active sheet is never edited: a new revision is started, and earlier measurements keep the limits of their time.'],
+    lists: ['Master data are the lists used in the forms: machines, operators, clients, sample types, materials.', 'Targets, product families and IEC values are changed here; every change appears in the Audit log.', 'Nothing is deleted: an entry is deactivated and disappears from forms, but stays in the history.'],
+    users: ['Staff enter measurements, Engineers work with data sheets and master data, the Administrator can do everything.', 'The one-time password is shown only once; the user changes it at first login.'],
+    settings: ['Port and address apply after the service restarts.', 'A backup is made automatically every day; a restore requires typing the file name.', 'The optional parts (finished cable, analyses) are switched on under “Modules”.'],
+    audit: ['The log shows who did what and when. It cannot be changed or deleted.'],
+    batches: ['A batch groups the drums of a finished cable; tests and the certificate are made per batch.'],
+    analyses: ['Analyses use the saved measurements; choose the product and the quantity, then the period.'],
+  },
+
+  roles: { administrator: 'Administrator', inginer: 'Engineer', personal: 'Staff' },
+  shift: { zi: 'Day shift', noapte: 'Night shift' },
+  material: { Cu: 'Copper', Al: 'Aluminium' },
+
+  common: {
+    save: 'Save', cancel: 'Cancel', add: 'Add', edit: 'Edit', yes: 'yes', no: 'no', active: 'active', inactive: 'inactive',
+    deactivate: 'Deactivate', activate: 'Activate', search: 'Search', filter: 'Filter', reset: 'Reset', back: 'Back',
+    details: 'Details', actions: 'Actions', name: 'Name', date: 'Date', none: '—', total: 'Total', previous: 'Previous', next: 'Next',
+    pages: 'Pagination', page_of: 'Page {page} of {pages}', required: 'required', all: 'All', continue: 'Continue', close: 'Close',
+    status: 'Status', open: 'Open', from: 'From', to: 'To', user: 'User', time: 'Time', notes: 'Notes',
+  },
+
+  cfg: {
+    families: 'Product families', families_desc: 'What is measured per family: mass, measured resistance (Cu / Al), theoretical resistance', targets: 'Targets and thresholds', targets_desc: 'Temperature, default sample lengths, Cpk, minimum sample size',
+    tests: 'Test types (finished cable)', tests_desc: 'The test catalogue: routine, sample, type; per compound; in-house or external',
+    tests_intro: 'The test catalogue for finished cable (IEC 60502-1, HD 603, VDE 0276-603). Limits are set on the data sheet of each cable type; here you define which tests exist, in which units, whether they apply only to certain compounds (PVC, XLPE, HFFR …) and whether they are done in the lab or externally. Tests can be deactivated or added at any time.',
+    tests_note: 'The code cannot change after creation (saved results use it). The kind (value, multiple readings, pass/fail, resistance) is chosen at creation. “Multiple readings” gives the average, minimum and maximum of the readings.',
+    test_code: 'Code', test_code_hint: 'lower-case letters, digits, _', test_kind: 'Kind', test_unit: 'Unit', test_decimals: 'Decimals', test_scope: 'Category', test_applies: 'Applies to compounds', test_ref: 'Standard reference', test_inhouse: 'In-house', test_sort: 'Order',
+    kinds: { numeric: 'value', readings: 'multiple readings', passfail: 'pass / fail', resistance: 'resistance (corrected to 20 °C)' },
+    iec: 'IEC 60228 table', iec_desc: 'The reference limit values: R max, minimum number of wires, maximum wire Ø',
+    families_intro: 'Here you set what is measured for each family and whether the family is active for measurements. It applies to new measurements; existing records do not change. Every change is written to the audit log.',
+    families_rule: 'Resistance: lower is better. Up to the limit (R max from the sheet or, if missing, from IEC 60228) the result is green, above the limit red — whether the value is measured, calculated theoretically from the mass, or a strand reported to the conductor.',
+    families_nothing: 'An active family must measure at least something (mass, resistance or diameter).',
+    f_active: 'Active for measurements', f_mass: 'Mass', f_theor: 'Theoretical R from mass', f_r_cu: 'Measured R for Cu', f_r_al: 'Measured R for Al',
+    targets_intro: 'Values that used to be fixed in the application. They apply immediately to new measurements and analyses.', range: 'Between {min} and {max}',
+    t_group_entry: 'Measurement entry', t_group_analysis: 'Analyses', t_group_checks: 'Revision checks', t_group_spc: 'Control charts (SPC)',
+    t: { sample_mm: 'Default length of the mass sample', r_sample_m: 'Default length of the resistance sample', temp_min: 'Minimum allowed temperature', temp_max: 'Maximum allowed temperature',
+      spc_min_n: 'Minimum number of values for SPC signals', spc_window: 'Window of analysed values (last N)', spc_recent: 'Last N values that trigger an alert',
+      cpk_good: 'Good Cpk (green) from', cpk_min: 'Acceptable Cpk (yellow) from', min_n: 'Minimum number of values for Cp / Cpk', mass_ratio_min: 'Minimum ratio sheet mass / (wires × wire mass)', mass_ratio_max: 'Maximum ratio sheet mass / (wires × wire mass)' },
+    rule_title: 'The resistance rule', rule_text: 'For resistance the lower value is better; there is no lower limit.', rule_green: 'at or below the limit: within limits (the lower, the better).', rule_red: 'above the limit: nonconforming.',
+    rule_where: 'The limit is R max from the data sheet (the construction\'s “R max at 20 °C” field) or, if that is missing, the value from the IEC 60228 table below.',
+    iec_licence: 'Only the numeric limit values are kept; the text of the standard is not stored (ASRO licence). Changes are written to the audit log and apply to new measurements and checks.',
+    iec_table: 'Table', iec_rmax: 'R max [Ω/km]', iec_w_circ: 'Min. wires circular', iec_w_comp: 'Min. wires compacted', iec_w_shaped: 'Min. wires shaped', iec_dmax: 'Max wire Ø [mm]',
+  },
+
+  an: {
+    title: 'Analyses', export: 'Export', group_by: 'Group by', group_default: '— default —', showing: 'Showing the last {n} of {total}.',
+    tabs: { control: 'Control chart (SPC)', tendinta: 'Trend', distributie: 'Distribution and capability', neconformitate: 'Nonconformity rate', consum: 'Extra consumption', comparatie: 'Comparison' },
+    tab_help: {
+      control: 'Control chart for individual values (I-MR): the control limits come from the process, not from the specification; the Western Electric / Nelson rules flag drifts before the tolerance is left.',
+      tendinta: 'The measured values over time, with the min–max band of the limits each value was judged against.',
+      distributie: 'Histogram, mean, standard deviation, Cp and Cpk per product, machine and the other groupings.',
+      neconformitate: 'The percentage of results outside the limits, with below-minimum and above-maximum separate.',
+      consum: 'The mass deviation above the maximum, in g/m and %; in kg only when the produced length was entered.',
+      comparatie: 'The same quantity side by side for machines, shifts, crews, operators or clients, in the same period.',
+    },
+    groups: { product: 'Product', machine: 'Machine', shift: 'Shift', crew: 'Crew', operator: 'Operator', client: 'Client' },
+    rule: 'Signal', rules: { 1: 'one point outside the control limits (±3σ)', 2: '2 of 3 consecutive points beyond 2σ, on the same side', 3: '4 of 5 consecutive points beyond 1σ, on the same side', 4: '8 consecutive points on the same side of the centre line', 5: '6 consecutive points rising or falling' },
+    signals: 'Signals', mr_chart: 'Moving range (MR)', base_n: 'Limits from the first N values', base_hint: 'Empty = all values; use a stable period as the reference.', spc_too_few: 'At least 3 values are needed.',
+    spc_small: 'Below {n} values the control limits are only indicative.', spc_hint: 'The control limits (CL ± 3σ, σ = MR̄ / 1.128) describe the process, not the sheet requirement; the dotted yellow lines are the sheet limits. Marked points carry the number of the rule they break.',
+    need_product: 'Choose a product (and, where relevant, the quantity) for this analysis.', need_level: 'The product has measurements at several levels; choose the level (wire, strand or conductor).',
+    no_data: 'There are no measurements for the chosen filters.', limits_changed: 'The limits changed between revisions in the chosen period; each point is judged against the limits of the moment it was measured, while Cp / Cpk use the most recent limits.',
+    limits_changed_short: 'limits changed', small_n: 'n < {n}: indicative', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distance between the mean and the nearest limit / 3s. The standard deviation is the sample one (n − 1). Informative results and those without a limit have no Cp / Cpk.',
+    pick_product_for_histogram: 'Choose a product to see the histogram.', summary: 'Summary', points: 'Measured values', mean: 'Mean', sd: 'Standard deviation', lsl: 'Min limit', usl: 'Max limit',
+    out_count: 'Out of limits', capability: 'Capability', note: 'Notes', nonconf: 'Nonconformity', nonconf_chart: 'Results outside the limits [%]', nonconf_hint: 'Only results with a verdict (within limits, below minimum, above maximum) are counted; informative and undetermined ones are not.',
+    evaluated: 'Evaluated results', pct_out: '% out of limits', pct_sub: '% below minimum', pct_peste: '% above maximum',
+    consum: 'Extra consumption', consum_chart_kg: 'Extra material consumption [kg]', consum_chart_gm: 'Average mass deviation above the maximum [g/m]', consum_hint: 'The mass above the maximum is counted; kg = deviation [g/m] × produced length [m] / 1000, only for records with a produced length.',
+    mass_results: 'Mass results', over_count: 'Above maximum', pct_over: '% above maximum', avg_excess_gm: 'Average deviation [g/m]', avg_excess_pct: 'Average deviation [%]', max_excess_gm: 'Maximum deviation [g/m]', with_length: 'With produced length', excess_kg: 'Extra consumption [kg]',
+    compare_hint: 'The dot is the mean, the thick line the mean ± standard deviation, the thin line the minimum and maximum; the vertical lines are the limits.',
+  },
+
+  export: {
+    version: 'Version', current: 'Current', created_at: 'Date and time', shift_date: 'Shift date', material: 'Material', out_of_limit: 'Out of limits', revision: 'Data sheet',
+    lim_min: 'Min limit', lim_max: 'Max limit', sheet_register: 'Register', sheet_results: 'Results', sheet_inputs: 'Entered values',
+  },
+
+  cable: {
+    batch: 'Batch', batches: 'Batches', batch_no: 'Batch number', new_batch: 'New batch', order: 'Order', design: 'Cable type', drum: 'Drum', drums: 'Drums', length_m: 'Length [m]', standard: 'Standard',
+    produced_length: 'Produced length [m]', produced_on: 'Production date', created: 'Created', sheet: 'Data sheet', search: 'Search (batch or order)', session: 'Test type',
+    st: { deschis: 'open', inchis: 'closed' }, tests_done: 'Tests', certificates: 'Certificates', no_batches: 'No batches.', no_drums: 'No drum added yet.',
+    no_designs: 'There are no cable types in the active data sheet for finished cable. An engineer has to add the types under Data sheets → Low-voltage cable and activate the revision.',
+    edit_batch: 'Edit batch data', add_tests: 'Add tests', close: 'Close the batch', close_confirm: 'Close the batch? Once closed, no more tests or drums can be added (an engineer can reopen it).', reopen: 'Reopen the batch',
+    batch_level_tests: 'Tests on the whole batch', coverage: 'Required tests', none_required_batch: 'The data sheet does not list the required tests for this cable type; only what was entered is checked.',
+    missing: 'Required tests still missing:', all_done: 'All required tests are recorded.', out_count: '{n} results outside the requirements.',
+    preview_cert: 'Preview the certificate', issue: 'Issue the certificate', issue_confirm: 'Issue the certificate? Its content is frozen and gets a number; a later correction needs a new certificate.',
+    issue_hint: 'Only an engineer can issue; issued content never changes.', no_certificates: 'No certificate issued.', no_results_yet: 'There are no tests for this batch yet.',
+    override_needed: 'The batch has nonconforming results. The certificate can only be issued with a reason, which is printed on the certificate.', override_reason: 'Reason for issuing with deviations', nonconforming: 'nonconforming',
+    superseded_by: 'replaced by {no}', superseded_banner: 'Certificate replaced by {no}', certificate: 'Certificate', certificate_title: 'Batch test certificate', cert_no: 'Certificate no.', draft: 'draft',
+    preview_banner: 'PREVIEW — not an issued certificate', conclusion: 'Conclusion', conforming_text: 'The batch conforms to the requirements of the data sheet and of the stated standard, based on the tests above.',
+    nonconforming_text: 'The batch does NOT conform to all requirements.', test: 'Test', unit: 'Unit', requirement: 'Requirement', result: 'Result', whole_batch: 'whole batch', no_batch_type: '— type tests on a cable type —',
+    type_tests: 'Type tests', type_report: 'Type test report', type_conforming: 'All recorded type tests conform.', type_nonconforming: 'There are nonconforming type tests.', no_type_results: 'There are no type tests recorded yet for this cable type.',
+    scopes: { routine: 'Routine tests (per drum)', sample: 'Sample tests (per batch)', type: 'Type tests' },
+    external: 'external', external_title: 'Test made by an external laboratory; the result comes from its report', external_note: 'Test performed by an external laboratory; the result comes from its report.',
+    limit: 'requirement', pass: 'Pass', fail: 'Fail', not_tested: '— not tested —', readings_placeholder: 'values separated by spaces', other_tests: 'Other tests ({n}) without a requirement on the sheet', none_required: 'The sheet requires no tests of this kind; you find them under “Other tests”.',
+    hidden_note: '{n} measured values without a requirement on the data sheet are not shown; they stay in the records.', pass_fail_req: 'pass / fail', design_data: 'Cable data', cores: 'Number of cores', rated_voltage: 'Rated voltage (U0/U)', rated_voltage_hint: 'For example 0.6/1 kV', conductor_class: 'Conductor class (IEC 60228)',
+    insulation: 'Insulation', sheath: 'Sheath', armour: 'Armour / screen', required_tests: 'Tests required by the sheet', required_tests_hint: 'Tick the tests required for this cable type (routine, sample, type). The ticked ones appear in the main list when entering tests and are checked in the batch coverage; the others stay under “Other tests”.',
+    tests_count: '{req} required, {lim} with limits', type_report_link: 'Type report', cable_design: 'Conductor', cable_voltage: 'Voltage', cable_compounds: 'Insulation / sheath', cable_standard: 'Standard', cable_tests: 'Tests', cable_report: 'Report',
+    remarks: 'Remarks', nothing_to_test: 'There are no open batches and no cable types in the active sheet. Create a batch or activate the cable data sheet.', summary: '{n} results, {out} nonconforming', suffix: { unit: 'unit', len: 'sample length', temp: 'temperature' },
+  },
+
+  print: {
+    cable_required: 'Required', cable_scope: 'Category', elaborated: 'Drawn up', page: 'Page', print: 'Print', apply: 'Apply', copy: 'Copy', code: 'Code', code_unset: 'to be set', signature: 'Signature',
+    hint: 'Printing is done from the browser, on paper or to PDF (for wide registers choose A3 or landscape).',
+    not_in_force: 'Revision {status} — not a document in force', red_note: 'Values written in red changed from the previous revision.',
+    iec_notes: 'Accepted exceptions from IEC 60228:', pitch_legend: 'On the rotor: pitch [mm] / tension. Tension at acceptance as per the sheet.',
+    g_cu: 'Copper', g_al: 'Aluminium', g_al_carrier: 'Carrier aluminium', g_al_evn: 'EVN aluminium', g_cl5_small: 'Sections 0.5 – 6 mm²', g_cl5_large: 'Sections 10 – 400 mm²',
+    wire_in_strand: 'Wire Ø in the conductor [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pitch / tension', g_re: 'Round conductors (RE)', g_se: 'Sector conductors (SE)',
+    die_drawing: 'Drawing die', no_filters: 'No filters: all current records.', truncated: 'the first {n} are printed; narrow the filters',
+    printed_by: 'Printed by {user}, {when}', open_print: 'Print', register_print: 'Print the register',
+  },
+
+  verdict: { ok: 'Within limits', sub: 'Below minimum', peste: 'Above maximum', nedeterminat: 'Undetermined', info: 'Informative', neconform: 'Nonconforming' },
+};

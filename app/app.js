@@ -1,6 +1,7 @@
 'use strict';
 // Application assembly: database, migrations, seed, router, HTTP server.
 const modules = require('./domain/modules');
+const i18n = require('./i18n');
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -12,7 +13,7 @@ const auth = require('./lib/auth');
 const settings = require('./domain/settings');
 const backup = require('./lib/backup');
 const audit = require('./domain/audit');
-const { T, S } = require('./i18n/ro');
+const { T, S } = require('./i18n');
 const { errorPage } = require('./views/errors');
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -90,7 +91,12 @@ function send(res, result, extraCookies) {
 
 function notFoundPage(ctx) { return H.page(errorPage(ctx, 'not_found'), 404); }
 
-async function handle(app, req, res) {
+/** Every request runs inside its own language scope (the user's language is set as soon as the session is known). */
+function handle(app, req, res) {
+  return i18n.run(i18n.DEFAULT, (store) => handleRequest(app, req, res, store));
+}
+
+async function handleRequest(app, req, res, langStore) {
   const { db } = app;
   const url = new URL(req.url, 'http://localhost');
   const method = req.method;
@@ -134,6 +140,7 @@ async function handle(app, req, res) {
     if (s) { ctx.user = s.user; ctx.session = s.session; }
   }
 
+  langStore.lang = ctx.user && i18n.valid(ctx.user.language) ? ctx.user.language : (i18n.valid(cookies.ctc_lang) ? cookies.ctc_lang : i18n.DEFAULT);
   ctx.modules = modules.get(db);
   const mod = modules.moduleOf(pathname);
   if (mod && !ctx.modules[mod]) return send(res, notFoundPage(ctx), extra);

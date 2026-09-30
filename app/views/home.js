@@ -1,6 +1,6 @@
 'use strict';
 const { html } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const tests = require('../domain/tests');
 const { layout, valueCell } = require('./layout');
 const { displayDateTime } = require('../lib/time');

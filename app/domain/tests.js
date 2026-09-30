@@ -3,7 +3,7 @@
 const calc = require('./calc');
 const iec = require('./iec');
 const audit = require('./audit');
-const { S } = require('../i18n/ro');
+const { S } = require('../i18n');
 
 const KINDS = ['numeric', 'readings', 'passfail', 'resistance'];
 const SCOPES = ['routine', 'sample', 'type'];
@@ -25,8 +25,8 @@ function refresh(db) {
   const formats = {};
   for (const t of CATALOGUE) {
     formats[t.code] = { kind: t.kind, decimals: t.decimals };
-    for (const [q, part] of quantitiesOf(t)) LABELS[q] = part ? `${t.name} — ${S.tests.parts[part]}` : t.name;
-    if (t.kind === 'passfail') LABELS[t.code] = t.name;
+    for (const [q, part] of quantitiesOf(t)) LABELS[q] = { name: t.name, part };
+    if (t.kind === 'passfail') LABELS[t.code] = { name: t.name, part: null };
   }
   calc.registerQuantities(formats);
   return CATALOGUE;
@@ -38,7 +38,8 @@ const active = () => CATALOGUE.filter((t) => t.active);
 /** Label of any result quantity: built-in quantities first, then the catalogue. */
 function label(q) {
   if (Object.prototype.hasOwnProperty.call(S.quantity, q)) return S.quantity[q];
-  return LABELS[q] || q;
+  const l = LABELS[q];
+  return l ? (l.part ? `${l.name} — ${S.tests.parts[l.part]}` : l.name) : q;
 }
 
 /** Label of a typed input key (d1, mass_g ... or t_<code>[_unit|_len|_temp]). */

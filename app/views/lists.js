@@ -1,6 +1,6 @@
 'use strict';
 const { html, raw } = require('../lib/html');
-const { T, f, S } = require('../i18n/ro');
+const { T, f, S } = require('../i18n');
 const calc = require('../domain/calc');
 const { layout, csrf, errText } = require('./layout');
 const { LISTS } = require('../domain/lists');

@@ -1,7 +1,8 @@
 'use strict';
 // Page shell and small HTML helpers shared by every view. All output goes through html`` / h().
 const { html, h, raw } = require('../lib/html');
-const { T, f, opt } = require('../i18n/ro');
+const { T, f, opt } = require('../i18n');
+const i18n = require('../i18n');
 const calc = require('../domain/calc');
 
 function nav(user, active, modules) {
@@ -24,6 +25,16 @@ function helpBox(active) {
     <div class="help-box" role="region" aria-label="${T.help.title}"><strong>${T.help.title}</strong><ul>${lines.map((l) => html`<li>${l}</li>`)}</ul></div></details>`;
 }
 
+const LANG_TITLE = { ro: 'Română', en: 'English' };
+
+/** RO | EN buttons: they post the choice and come back to the same page. */
+function langSwitch(ctx) {
+  const cur = i18n.current();
+  const back = ctx.url ? ctx.url.pathname + ctx.url.search : '/';
+  return html`<form method="post" action="${ctx.user ? '/limba' : '/limba/login'}" class="lang">${csrf(ctx)}<input type="hidden" name="back" value="${back}">${i18n.LANGUAGES.map((l) =>
+    html`<button type="submit" name="lang" value="${l}" title="${LANG_TITLE[l]}"${l === cur ? raw(' class="active" aria-current="true"') : ''}>${i18n.NAMES[l]}</button>`)}</form>`;
+}
+
 function flashBox(flash) {
   if (!flash) return '';
   const msg = T.flash[flash.key];
@@ -40,7 +51,7 @@ function layout(ctx, opts) {
   const title = opts.title ? `${opts.title} — ${T.app.name}` : T.app.name;
   const scripts = ['/static/app.js'].concat(opts.scripts || []);
   return html`<!doctype html>
-<html lang="ro">
+<html lang="${i18n.current()}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,7 +64,7 @@ function layout(ctx, opts) {
   ${user ? nav(user, opts.active, ctx.modules) : ''}
   ${user ? html`<div class="who"><span class="who-name">${user.full_name}</span> <span class="who-role">${T.roles[user.role]}</span>
     <a href="/parola">${T.nav.password}</a>
-    <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form>${helpBox(opts.active)}</div>` : ''}
+    <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form>${langSwitch(ctx)}${helpBox(opts.active)}</div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
 </header>
 <main class="${opts.wide ? 'wide' : ''}">
 ${flashBox(ctx.flash)}

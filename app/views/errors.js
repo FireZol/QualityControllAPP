@@ -1,6 +1,6 @@
 'use strict';
 const { html } = require('../lib/html');
-const { T } = require('../i18n/ro');
+const { T } = require('../i18n');
 const { layout } = require('./layout');
 
 function errorPage(ctx, key) {

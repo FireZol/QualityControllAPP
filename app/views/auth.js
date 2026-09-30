@@ -1,6 +1,6 @@
 'use strict';
 const { html } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const { layout, csrf, textField } = require('./layout');
 
 function loginPage(ctx, { username, error, next, lockedMinutes }) {

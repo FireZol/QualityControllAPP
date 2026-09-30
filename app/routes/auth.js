@@ -2,7 +2,7 @@
 const { page, redirect, cookie, randomToken } = require('../lib/http');
 const auth = require('../lib/auth');
 const audit = require('../domain/audit');
-const { T } = require('../i18n/ro');
+const { T } = require('../i18n');
 const views = require('../views/auth');
 
 const DUMMY_HASH = 'scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA$' + Buffer.alloc(64).toString('base64url');
@@ -11,8 +11,27 @@ function safeNext(n) {
   return typeof n === 'string' && n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') && !n.startsWith('/login') ? n : '/';
 }
 
+const i18n = require('../i18n');
+
+function safeBack(b) {
+  return typeof b === 'string' && b.startsWith('/') && !b.startsWith('//') && !b.startsWith('/\\') ? b : '/';
+}
+
 module.exports = function register(app) {
   const { router, db } = app;
+
+  // language switch: a logged-in user's choice is stored on the account; everyone also gets a cookie (used on the login page)
+  function setLanguage(ctx) {
+    const lang = ctx.form.get('lang');
+    const back = safeBack(ctx.form.get('back'));
+    if (!i18n.valid(lang)) return redirect(back);
+    if (ctx.user) db.run('UPDATE users SET language = ? WHERE id = ?', lang, ctx.user.id);
+    const res = redirect(back);
+    res.cookies = (res.cookies || []).concat(cookie('ctc_lang', lang, { maxAge: 365 * 24 * 3600 }));
+    return res;
+  }
+  router.post('/limba', {}, setLanguage);
+  router.post('/limba/login', { public: true, csrf: 'login' }, setLanguage);
 
   router.get('/login', { public: true }, (ctx) => {
     if (ctx.user) return redirect('/');

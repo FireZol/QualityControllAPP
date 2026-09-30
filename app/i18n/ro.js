@@ -1,6 +1,6 @@
 'use strict';
 // Every user-visible string of the application (Romanian, correct diacritics: ș ț with comma below).
-// Missing keys show ⟦key⟧ in production and throw when CTC_STRICT_I18N=1 (tests).
+// The master dictionary: every other language must have the same keys and {placeholders} (a test checks it).
 
 const S = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
@@ -351,34 +351,4 @@ const S = {
   },
 };
 
-// ---- accessor ----
-const STRICT = process.env.CTC_STRICT_I18N === '1';
-
-function wrap(obj, path) {
-  return new Proxy(obj, {
-    get(target, key) {
-      if (typeof key === 'symbol') return target[key];
-      if (!Object.prototype.hasOwnProperty.call(target, key)) {
-        if (key === 'toJSON' || key === 'then') return undefined;
-        if (STRICT) throw new Error(`missing i18n key ${path}${String(key)}`);
-        return `⟦${path}${String(key)}⟧`;
-      }
-      const v = target[key];
-      return v && typeof v === 'object' && !Array.isArray(v) ? wrap(v, `${path}${key}.`) : v;
-    },
-  });
-}
-
-/** Fill {placeholders} in a string. */
-function f(str, params) {
-  return String(str).replace(/\{(\w+)\}/g, (m, k) => (params && params[k] !== undefined && params[k] !== null ? String(params[k]) : ''));
-}
-
-const T = wrap(S, '');
-
-/** Safe lookup for keys built at run time: S[section][key] or the fallback (never throws). */
-function opt(section, key, fallback) {
-  return S[section] && Object.prototype.hasOwnProperty.call(S[section], key) ? S[section][key] : fallback;
-}
-
-module.exports = { T, f, S, opt };
+module.exports = S;

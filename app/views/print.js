@@ -2,7 +2,7 @@
 // Printable documents (spec §8): A6 annexes and stranding instructions from the database, and the filtered register.
 // Standalone pages (no application navigation); printing is done by the browser, on paper or to PDF.
 const { html, raw } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f, current: currentLang } = require('../i18n');
 const calc = require('../domain/calc');
 const { displayDateTime, displayDate } = require('../lib/time');
 const { valueCell } = require('./layout');
@@ -15,7 +15,7 @@ const matName = (code) => (code === 'Cu' ? T.material.Cu : T.material.Al);
 function page(opts) {
   const title = opts.title;
   return html`<!doctype html>
-<html lang="ro">
+<html lang="${currentLang()}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

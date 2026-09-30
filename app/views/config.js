@@ -1,7 +1,7 @@
 'use strict';
 // Engineering configuration pages (Inginer): product-family switches, targets and thresholds, the IEC 60228 reference values.
 const { html, raw } = require('../lib/html');
-const { T, f } = require('../i18n/ro');
+const { T, f } = require('../i18n');
 const { layout, csrf, textField, selectField, errText } = require('./layout');
 const { LIMITS } = require('../domain/targets');
 

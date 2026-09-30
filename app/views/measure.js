@@ -1,6 +1,6 @@
 'use strict';
 const { html, h, raw, jsonBlock } = require('../lib/html');
-const { T, f, opt } = require('../i18n/ro');
+const { T, f, opt } = require('../i18n');
 const calc = require('../domain/calc');
 const tests = require('../domain/tests');
 const { displayDateTime, displayDate } = require('../lib/time');
