@@ -1,14 +1,14 @@
 'use strict';
 // English texts, part A. Same keys and {placeholders} as ../ro.js (a test compares them).
 // Terms: fișă tehnică = data sheet, revizie = revision, utilaj = machine, probă = sample, tură = shift, schimb = crew,
-// suviță = wire, toron = strand, liță = bunched conductor (flexible class 5), Nomenclatoare / Date de bază = Master data.
+// suviță = wire, toron = strand, liță = bunched conductor (flexible class 5), Date de bază (formerly Nomenclatoare) = Database.
 
 module.exports = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Technological Quality Control' },
 
   nav: {
     label: 'Main navigation', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
-    lists: 'Master data', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
+    lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
   },
 
   help: {
@@ -18,8 +18,8 @@ module.exports = {
     new: ['Pick the family, machine and product; next time the app remembers the ones you used last.', 'Enter the values: Enter moves to the next field, Ctrl+Enter saves.', 'Green = within limits, red = out of limits. An out-of-limit value is flagged but never blocks saving.', 'Resistance is compared at 20 °C: the lower, the better.'],
     register: ['Filter by date, shift, product, machine or client; “Out of limits only” shows the problems.', 'To correct a measurement, open it: a correction creates a new version and the old one stays in the history.', 'Printing uses the chosen filters.'],
     specs: ['The data sheet holds the limits of each product. Measurements can only be entered against an active sheet.', 'An Engineer drafts or changes a revision and submits it for verification; a second Engineer verifies and activates it.', 'An active sheet is never edited: a new revision is started, and earlier measurements keep the limits of their time.'],
-    lists: ['Master data are the lists used in the forms: machines, operators, clients, sample types, materials.', 'Targets, product families and IEC values are changed here; every change appears in the Audit log.', 'Nothing is deleted: an entry is deactivated and disappears from forms, but stays in the history.'],
-    users: ['Staff enter measurements, Engineers work with data sheets and master data, the Administrator can do everything.', 'The one-time password is shown only once; the user changes it at first login.'],
+    lists: ['The Database holds the lists used in the forms: machines, operators, clients, sample types, materials.', 'Targets, product families and IEC values are changed here; every change appears in the Audit log.', 'Nothing is deleted: an entry is deactivated and disappears from forms, but stays in the history.'],
+    users: ['Staff enter measurements, Engineers work with data sheets and the Database, the Administrator can do everything.', 'The one-time password is shown only once; the user changes it at first login.'],
     settings: ['Port and address apply after the service restarts.', 'A backup is made automatically every day; a restore requires typing the file name.', 'The optional parts (finished cable, analyses) are switched on under “Modules”.'],
     audit: ['The log shows who did what and when. It cannot be changed or deleted.'],
     batches: ['A batch groups the drums of a finished cable; tests and the certificate are made per batch.'],

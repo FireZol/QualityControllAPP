@@ -1,5 +1,5 @@
 'use strict';
-// English texts, part C (data sheets, master data, users, settings, audit log).
+// English texts, part C (data sheets, Database, users, settings, audit log).
 
 module.exports = {
   specs: {
@@ -61,7 +61,7 @@ module.exports = {
   },
 
   lists: {
-    title: 'Master data', intro: 'The lists can be completed, renamed and deactivated. An entry used in measurements is never deleted, only deactivated.',
+    title: 'Database', intro: 'The lists can be completed, renamed and deactivated. An entry used in measurements is never deleted, only deactivated.',
     names: {
       machine_types: 'Machine types', machines: 'Machines', operators: 'Operators', clients: 'Clients', sample_types: 'Sample types', crews: 'Crews',
       shapes: 'Shapes', destinations: 'Destinations', materials: 'Material constants', compounds: 'Compounds (insulation / sheath)', cable_standards: 'Cable standards',

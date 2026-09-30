@@ -1,5 +1,5 @@
 'use strict';
-// Reference lists (master data, “Date de bază”): add / rename / deactivate, never delete (ADR-005).
+// Reference lists (“Date de bază” / Database): add / rename / deactivate, never delete (ADR-005).
 const audit = require('./audit');
 
 const RE_ROTOR = /^\d+(\+\d+)*$/;

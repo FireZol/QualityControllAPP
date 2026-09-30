@@ -15,7 +15,7 @@ module.exports = {
   flash: {
     saved: 'The changes were saved.', added: 'The entry was added.', toggled: 'The status was changed.', password_changed: 'The password was changed.',
     measurement_saved: 'The measurement was saved.',
-    measurement_saved_temp: 'The measurement was saved. Warning: the temperature is outside the allowed range (Master data → Targets and thresholds); the correction was calculated, but please check the value.',
+    measurement_saved_temp: 'The measurement was saved. Warning: the temperature is outside the allowed range (Database → Targets and thresholds); the correction was calculated, but please check the value.',
     measurement_corrected: 'The correction was saved as a new version; the previous version stays in the history.',
     rev_created: 'The new revision (draft) was created from the active one.', rev_submitted: 'The revision was submitted for verification.',
     rev_verified: 'The revision was verified and activated; the previous revision was archived.', rev_rejected: 'The revision was rejected and returned to draft.',
@@ -79,13 +79,13 @@ module.exports = {
 
   measure: {
     level: 'Measured level', title: 'New measurement', family: 'Product family', machine: 'Machine', construction: 'Product (section and shape)', choose: '— choose —',
-    no_machines: 'There is no active machine for this family. An Engineer or the Administrator has to add one under Master data → Machines.',
+    no_machines: 'There is no active machine for this family. An Engineer or the Administrator has to add one under Database → Machines.',
     no_constructions: 'The active data sheet has no products suitable for this machine. Most often the sheet has no active revision yet: an Engineer verifies it and a second Engineer activates it. See:',
     active_revision: 'Active data sheet: Ed. {edition}, Rev. {revision} — {doc}',
     limits_caption: 'Limits from the active data sheet', nominal: 'Nominal', limits: 'Limits', source: 'Source', source_sheet: 'data sheet', informative_note: 'informative, no verdict',
     sample_data: 'Sample data', operator: 'Operator', client: 'Client', sample_type: 'Sample type', none_selected: '— unspecified —',
     length_no: 'Length no.', length_no_hint: 'Proposed automatically for numbered samples.',
-    values: 'Measured values', sample_mm_hint: 'Default {n} mm.', r_optional: 'Optional. Resistance is measured for the materials enabled for the family (Master data → Product families).', r_sample_hint: 'Default {n} m, 2 m for large sections.',
+    values: 'Measured values', sample_mm_hint: 'Default {n} mm.', r_optional: 'Optional. Resistance is measured for the materials enabled for the family (Database → Product families).', r_sample_hint: 'Default {n} m, 2 m for large sections.',
     produced_length: 'Produced length [m]', optional: 'Optional.', notes: 'Notes',
     live_title: 'Result before saving', live_hint: 'The results appear here as you enter the values. Out-of-limit values are flagged but never block saving.',
     wire_mass_hint: 'Wire mass: g/m equals kg/km (the unit on the sheet).',
