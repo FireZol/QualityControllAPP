@@ -293,3 +293,32 @@ test('the live preview gets the viewer\'s decimal separator', async () => {
   assert.match((await ctc.get('/static/calc.js')).text, /setDecimal/);
   await ctc.postForm('/', '/limba', { lang: 'ro', back: '/' });
 });
+
+test('start production: one time, typed confirmation, backup first, clears only the measurements', async () => {
+  const before = { m: app.db.value('SELECT count(*) FROM measurements'), users: app.db.value('SELECT count(*) FROM users'), revs: app.db.value("SELECT count(*) FROM spec_revisions WHERE status = 'activa'"), machines: app.db.value('SELECT count(*) FROM machines') };
+  assert.ok(before.m > 0 && before.revs > 0);
+  assert.equal((await ctc.get('/admin/productie')).status, 403, 'only the Administrator');
+  assert.ok((await admin.get('/admin/setari')).text.includes('/admin/productie'));
+  assert.match(textOf((await admin.get('/admin/productie')).text), new RegExp(`Măsurători de șters: ${before.m}`));
+  // wrong word: nothing happens
+  let r = await admin.postForm('/admin/productie', '/admin/productie', { confirm: 'start prod' });
+  assert.equal(r.status, 422);
+  assert.equal(app.db.value('SELECT count(*) FROM measurements'), before.m);
+  // the right word
+  r = await admin.postForm('/admin/productie', '/admin/productie', { confirm: 'START' });
+  assert.equal(r.status, 303);
+  assert.equal(app.db.value('SELECT count(*) FROM measurements') + app.db.value('SELECT count(*) FROM measurement_results') + app.db.value('SELECT count(*) FROM measurement_inputs'), 0);
+  assert.equal(app.db.value('SELECT count(*) FROM users'), before.users);
+  assert.equal(app.db.value("SELECT count(*) FROM spec_revisions WHERE status = 'activa'"), before.revs);
+  assert.equal(app.db.value('SELECT count(*) FROM machines'), before.machines);
+  assert.equal(app.db.value("SELECT count(*) FROM audit_log WHERE action = 'backup' AND details LIKE '%before-production%'"), 1, 'a backup was taken first');
+  const a = app.db.get("SELECT details FROM audit_log WHERE action = 'golive_reset'");
+  assert.equal(JSON.parse(a.details).removed.measurements, before.m);
+  assert.ok(require('../domain/settings').get(app.db, 'production.started_at'));
+  // cannot be repeated, and the button is gone
+  r = await admin.postForm('/admin/setari', '/admin/productie', { confirm: 'START' });
+  assert.equal(r.status, 303);
+  assert.equal(app.db.value("SELECT count(*) FROM audit_log WHERE action = 'golive_reset'"), 1);
+  assert.equal((await admin.get('/admin/productie')).status, 303);
+  assert.ok(!(await admin.get('/admin/setari')).text.includes('href="/admin/productie"'));
+});

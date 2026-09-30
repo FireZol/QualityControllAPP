@@ -86,6 +86,9 @@ function settingsPage(ctx, d) {
   ${checkField({ label: T.settings.backup_auto, name: 'backup.auto', checked: !!values['backup.auto'] })}
   <div class="actions"><button class="btn primary" type="submit">${T.common.save}</button></div>
 </form>
+<section class="card"><h2>${T.settings.production}</h2>
+  ${values.production_started_at ? html`<p>${f(T.settings.production_started, { when: displayDateTime(values.production_started_at) })}</p>` : html`<p class="muted">${T.settings.production_hint}</p><a class="btn" href="/admin/productie">${T.settings.production_go}</a>`}
+</section>
 <section class="card"><h2>${T.settings.backups}</h2>
   <p class="muted">${f(T.settings.backup_folder, { dir: backupDir })}</p>
   ${backupError ? html`<div class="flash flash-err" role="alert">${T.settings.backup_failed}: ${backupError}</div>` : ''}
@@ -94,6 +97,20 @@ function settingsPage(ctx, d) {
   <tbody>${backups.length ? backups.map((b) => html`<tr><td><code>${b.name}</code></td><td>${calc.dec((b.size / 1024 / 1024).toFixed(2))} MB</td><td>${displayDateTime(b.mtime.toISOString().slice(0, 19))}</td>
     <td><a class="btn small" href="/admin/setari/restaurare?f=${encodeURIComponent(b.name)}">${T.settings.restore}</a></td></tr>`) : html`<tr><td colspan="4" class="empty">${T.settings.no_backups}</td></tr>`}</tbody></table></div>
 </section>`,
+  });
+}
+
+function golivePage(ctx, d) {
+  const c = d.st.counts;
+  return layout(ctx, {
+    title: T.settings.production, active: 'settings',
+    body: html`<section class="card narrow"><h1>${T.settings.production}</h1>
+<p class="flash flash-err">${T.settings.production_warning}</p>
+<ul><li>${f(T.settings.production_measurements, { n: c.measurements })}</li><li>${f(T.settings.production_batches, { b: c.batches, c: c.certificates })}</li></ul>
+<p class="muted">${T.settings.production_keeps}</p>
+<form method="post" action="/admin/productie" autocomplete="off">${csrf(ctx)}
+  ${textField({ label: f(T.settings.production_type, { word: d.word }), name: 'confirm', value: '', errors: d.errors, required: true, autofocus: true })}
+  <button class="btn primary" type="submit">${T.settings.production_do}</button> <a class="btn" href="/admin/setari">${T.common.cancel}</a></form></section>`,
   });
 }
 
@@ -130,4 +147,4 @@ ${pager('/admin/jurnal', pg, pages, qs)}`,
   });
 }
 
-module.exports = { usersPage, userForm, passwordShown, settingsPage, restorePage, auditPage };
+module.exports = { usersPage, userForm, passwordShown, settingsPage, restorePage, golivePage, auditPage };

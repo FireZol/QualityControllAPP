@@ -6,6 +6,7 @@ const auth = require('../lib/auth');
 const audit = require('../domain/audit');
 const settings = require('../domain/settings');
 const modules = require('../domain/modules');
+const golive = require('../domain/golive');
 const backup = require('../lib/backup');
 const { nowIso } = require('../lib/time');
 const views = require('../views/admin');
@@ -97,6 +98,7 @@ module.exports = function register(app) {
     const values = extra && extra.values ? extra.values : settings.all(db);
     if (!extra || !extra.values) [values['cycle.day'], values['cycle.off1'], values['cycle.night'], values['cycle.off2']] = values['shift.cycle'];
     const dir = backup.backupDir(db, config);
+    values.production_started_at = settings.get(db, 'production.started_at');
     return views.settingsPage(ctx, { values, errors: extra && extra.errors, backups: backup.listBackups(dir), backupDir: dir, backupError: extra && extra.backupError });
   }
 
@@ -153,6 +155,21 @@ module.exports = function register(app) {
     });
     const restart = ['server.port', 'server.bind', 'server.public_name'].some((k) => changed[k]);
     return redirect('/admin/setari', { flash: { key: restart ? 'settings_saved_restart' : 'saved' } });
+  });
+
+  // ---------- start production (one-time clearing of the pilot's measurements) ----------
+
+  router.get('/admin/productie', { roles: ADMIN }, (ctx) => {
+    const st = golive.status(db);
+    if (st.startedAt) return redirect('/admin/setari', { flash: { type: 'err', key: 'e_golive_done' } });
+    return page(views.golivePage(ctx, { st, word: golive.CONFIRM_WORD }));
+  });
+
+  router.post('/admin/productie', { roles: ADMIN }, (ctx) => {
+    const r = golive.run(db, config, ctx.user, ctx.form.get('confirm'));
+    if (r.ok) return redirect('/admin/setari', { flash: { key: 'golive_done' } });
+    if (r.code === 'golive_confirm') return page(views.golivePage(ctx, { st: golive.status(db), word: golive.CONFIRM_WORD, errors: { confirm: 'invalid' } }), 422);
+    return redirect('/admin/setari', { flash: { type: 'err', key: 'e_' + r.code } });
   });
 
   router.post('/admin/setari/backup', { roles: ADMIN }, (ctx) => {
