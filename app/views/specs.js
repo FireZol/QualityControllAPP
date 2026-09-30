@@ -20,8 +20,8 @@ function docsPage(ctx, docs) {
     title: T.specs.title, active: 'specs',
     body: html`<h1>${T.specs.title}</h1>
 <div class="scroll"><table class="grid"><thead><tr><th>${T.specs.document}</th><th>${T.specs.code}</th><th>${T.measure.family}</th><th>${T.specs.active_revision}</th><th>${T.specs.open_revision}</th><th></th></tr></thead>
-<tbody>${docs.map((d) => html`<tr><td><a href="/fise/${d.id}">${d.title}</a></td><td>${d.code || html`<span class="muted">${T.specs.code_unset}</span>`}</td><td>${d.family_name}${d.family_active ? '' : html` <span class="tag">${T.specs.later_stage}</span>`}</td>
-  <td>${d.active ? html`<a href="/fise/${d.id}/revizii/${d.active.id}">${f(T.specs.ed_rev, { edition: d.active.edition, revision: d.active.revision })}</a> <span class="muted">${displayDateTime(d.active.activated_at)}</span>` : html`<span class="muted">${T.specs.none_active}</span>`}</td>
+<tbody>${docs.map((d) => html`<tr><td><a href="/fise/${d.id}">${d.title}</a></td><td>${d.code || html`<span class="muted">—</span>`}</td><td>${d.family_name}${d.family_active ? '' : html` <span class="tag">${T.specs.later_stage}</span>`}</td>
+  <td>${d.active ? html`<a href="/fise/${d.id}/revizii/${d.active.id}">${f(T.specs.ed_rev, { edition: d.active.edition, revision: d.active.revision })}</a> <span class="muted">${displayDateTime(d.active.activated_at)}</span>` : html`<span class="tag warn">${T.specs.none_active}</span>`}</td>
   <td>${d.open ? html`<a href="/fise/${d.id}/revizii/${d.open.id}">${f(T.specs.ed_rev, { edition: d.open.edition, revision: d.open.revision })}</a> ${statusBadge(d.open.status)}` : ''}</td>
   <td><a class="btn" href="/fise/${d.id}">${T.specs.revisions}</a></td></tr>`)}</tbody></table></div>`,
   });
@@ -158,8 +158,19 @@ function findingsBox(findings, revisionId, docId) {
     for (const k of Object.keys(p)) if (typeof p[k] === 'number') p[k] = calc.formatNumber(p[k], 0, 3);
     return f(tpl, p);
   };
-  return html`<ul class="findings">${findings.map((x) => html`<li class="f-${x.level}"><strong>${x.level === 'error' ? T.specs.blocking : T.specs.warning}</strong>
-    ${x.construction ? html`<a href="/fise/${docId}/revizii/${revisionId}/constructii/${x.construction.id}">${x.construction.label}</a>: ` : ''}${msg(x)}</li>`)}</ul>`;
+  const item = (x) => html`<li class="f-${x.level}"><strong>${x.level === 'error' ? T.specs.blocking : T.specs.warning}</strong>
+    ${x.construction ? html`<a href="/fise/${docId}/revizii/${revisionId}/constructii/${x.construction.id}">${x.construction.label}</a>: ` : ''}${msg(x)}</li>`;
+  // blocking findings always in full; a warning that repeats on many rows is folded into one line with a count
+  const errors = findings.filter((x) => x.level === 'error');
+  const warns = findings.filter((x) => x.level !== 'error');
+  const byCode = new Map();
+  for (const x of warns) { if (!byCode.has(x.code)) byCode.set(x.code, []); byCode.get(x.code).push(x); }
+  const FOLD = 4;
+  const single = [...byCode.values()].filter((g) => g.length <= FOLD).flat();
+  const folded = [...byCode.entries()].filter(([, g]) => g.length > FOLD);
+  return html`${errors.length ? html`<ul class="findings">${errors.map(item)}</ul>` : ''}
+    ${single.length ? html`<ul class="findings">${single.map(item)}</ul>` : ''}
+    ${folded.map(([code, g]) => html`<details class="findings-group"><summary><strong>${T.specs.warning}</strong> ${f(T.specs.findings_n, { n: g.length, what: opt('iec_short', code, code) })}</summary><ul class="findings">${g.map(item)}</ul></details>`)}`;
 }
 
 function revisionPage(ctx, d) {

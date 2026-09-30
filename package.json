@@ -1,6 +1,6 @@
 {
   "name": "romcab-ctc",
-  "version": "0.9.0-beta.1",
+  "version": "0.9.0-beta.2",
   "private": true,
   "description": "ROMCAB CTC — măsurători de control al calității, fișe tehnice cu revizii (zero dependențe)",
   "engines": {

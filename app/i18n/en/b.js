@@ -94,13 +94,14 @@ module.exports = {
     produced_length: 'Produced length [m]', optional: 'Optional.', notes: 'Notes',
     live_title: 'Result before saving', live_hint: 'The results appear here as you enter the values. Out-of-limit values are flagged but never block saving.',
     wire_mass_hint: 'Wire mass: g/m equals kg/km (the unit on the sheet).',
+    banner_ok: '✓ Within limits', banner_out: '✗ Out of limits: {list}', banner_undef: 'No verdict (limits missing)',
     save: 'Save the measurement', cell_empty: 'Fill in the values to see the result.', temp_warning: 'The temperature is outside the allowed range ({min} … {max} °C).',
   },
 
   register: {
     title: 'Measurement register', shift: 'Shift', crew: 'Crew', product: 'Product', only_out: 'Only with out-of-limit values', all_versions: 'Also show old versions',
     count: '{total} records', no: 'No.', diameter: 'Ø / H × W [mm]', versions: '{n} versions', versions_title: 'The record has several versions (corrections)',
-    empty: 'No record for the chosen filters.', clear_filters: 'Clear the filters', add_first: 'Add a measurement',
+    more_filters: 'More filters', empty: 'No record for the chosen filters.', clear_filters: 'Clear the filters', add_first: 'Add a measurement',
   },
 
   detail: {

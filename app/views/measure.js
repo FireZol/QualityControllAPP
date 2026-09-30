@@ -46,7 +46,7 @@ function entryForm(ctx, sel, model, data) {
   <input type="hidden" name="construction_id" value="${sel.construction.id}">
   <input type="hidden" name="level" value="${sel.level}">
   ${data.correction ? '' : html`<input type="hidden" name="machine_id" value="${sel.machine.id}">`}
-  <script type="application/json" id="live-ctx">${jsonBlock({ decimal: calc.decimal(), ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(model.ctx.targets.temp_min, 0, 1), max: calc.formatNumber(model.ctx.targets.temp_max, 0, 1) }) } })}</script>
+  <script type="application/json" id="live-ctx">${jsonBlock({ decimal: calc.decimal(), ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { banner_ok: T.measure.banner_ok, banner_out: T.measure.banner_out, banner_undef: T.measure.banner_undef, empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(model.ctx.targets.temp_min, 0, 1), max: calc.formatNumber(model.ctx.targets.temp_max, 0, 1) }) } })}</script>
 
   <fieldset class="card">
     <legend>${T.measure.sample_data}</legend>
@@ -84,6 +84,7 @@ function entryForm(ctx, sel, model, data) {
 
   <section class="card live" aria-live="polite">
     <h2>${T.measure.live_title}</h2>
+    <div id="live-banner" class="banner undef hidden" role="status"></div>
     <p class="muted js-only-hint">${T.measure.live_hint}</p>
     <div id="live-out"></div>
   </section>
@@ -108,7 +109,7 @@ function newPage(ctx, d) {
   for (const c of constructions) (byMat[c.material_code] = byMat[c.material_code] || []).push(c);
   const revInfo = sel && sel.revision ? f(T.measure.active_revision, { edition: sel.revision.edition, revision: sel.revision.revision, doc: sel.doc.title }) : '';
   return layout(ctx, {
-    title: T.measure.title, active: 'new', scripts: ['/static/calc.js', '/static/measure.js'],
+    title: T.measure.title, active: 'new', wide: true, scripts: ['/static/calc.js', '/static/measure.js'],
     body: html`<h1>${T.measure.title}</h1>
 <form method="get" action="/masuratori/nou" class="card selector" id="selector">
   <div class="row">
@@ -146,6 +147,8 @@ function cableSummary(r) {
 function registerPage(ctx, d) {
   const { data, filters, lists } = d;
   const opt = (rows, key, label) => rows.map((r) => [r[key], r[label]]);
+  const showOperator = data.rows.some((r) => r.operator_name), showClient = data.rows.some((r) => r.client_name), showNotes = data.rows.some((r) => r.notes);
+  const moreOpen = !!(filters.crew_id || filters.family_id || filters.machine_id || filters.operator_id || filters.client_id || filters.sample_type_id || filters.all_versions);
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(filters)) if (v !== '' && v !== null && v !== undefined && v !== false) qs.set(k, v === true ? '1' : String(v));
   const cellD = (r) => {
@@ -162,33 +165,36 @@ function registerPage(ctx, d) {
     ${textField({ label: T.common.from, name: 'from', value: filters.from, type: 'date' })}
     ${textField({ label: T.common.to, name: 'to', value: filters.to, type: 'date' })}
     ${selectField({ label: T.register.shift, name: 'shift', value: filters.shift, options: [['zi', T.shift.zi], ['noapte', T.shift.noapte]], blank: T.common.all })}
-    ${selectField({ label: T.register.crew, name: 'crew_id', value: filters.crew_id, options: opt(lists.crews, 'id', 'name'), blank: T.common.all })}
-    ${selectField({ label: T.measure.family, name: 'family_id', value: filters.family_id, options: opt(lists.families, 'id', 'name'), blank: T.common.all })}
-    ${selectField({ label: T.measure.machine, name: 'machine_id', value: filters.machine_id, options: opt(lists.machines, 'id', 'name'), blank: T.common.all })}
-    ${selectField({ label: T.measure.operator, name: 'operator_id', value: filters.operator_id, options: opt(lists.operators, 'id', 'full_name'), blank: T.common.all })}
-    ${selectField({ label: T.measure.client, name: 'client_id', value: filters.client_id, options: opt(lists.clients, 'id', 'short_name'), blank: T.common.all })}
-    ${selectField({ label: T.measure.sample_type, name: 'sample_type_id', value: filters.sample_type_id, options: opt(lists.sampleTypes, 'id', 'name'), blank: T.common.all })}
     ${textField({ label: T.register.product, name: 'q', value: filters.q })}
-  </div>
-  <div class="row checks">
     <label class="check"><input type="checkbox" name="out" value="1"${filters.out ? raw(' checked') : ''}> <span>${T.register.only_out}</span></label>
-    <label class="check"><input type="checkbox" name="all_versions" value="1"${filters.all_versions ? raw(' checked') : ''}> <span>${T.register.all_versions}</span></label>
     <button class="btn primary" type="submit">${T.common.filter}</button>
     <a class="btn" href="/masuratori">${T.common.reset}</a>
   </div>
+  <details class="more-filters"${moreOpen ? raw(' open') : ''}><summary>${T.register.more_filters}</summary>
+    <div class="row">
+      ${selectField({ label: T.register.crew, name: 'crew_id', value: filters.crew_id, options: opt(lists.crews, 'id', 'name'), blank: T.common.all })}
+      ${selectField({ label: T.measure.family, name: 'family_id', value: filters.family_id, options: opt(lists.families, 'id', 'name'), blank: T.common.all })}
+      ${selectField({ label: T.measure.machine, name: 'machine_id', value: filters.machine_id, options: opt(lists.machines, 'id', 'name'), blank: T.common.all })}
+      ${selectField({ label: T.measure.operator, name: 'operator_id', value: filters.operator_id, options: opt(lists.operators, 'id', 'full_name'), blank: T.common.all })}
+      ${selectField({ label: T.measure.client, name: 'client_id', value: filters.client_id, options: opt(lists.clients, 'id', 'short_name'), blank: T.common.all })}
+      ${selectField({ label: T.measure.sample_type, name: 'sample_type_id', value: filters.sample_type_id, options: opt(lists.sampleTypes, 'id', 'name'), blank: T.common.all })}
+      <label class="check"><input type="checkbox" name="all_versions" value="1"${filters.all_versions ? raw(' checked') : ''}> <span>${T.register.all_versions}</span></label>
+    </div>
+  </details>
 </form>
 <p class="muted">${f(T.register.count, { total: data.total })} <a class="btn small" href="/masuratori/tipar${qs.toString() ? '?' + qs.toString() : ''}">${T.print.register_print}</a>
   ${T.an.export}: <a class="btn small" href="/masuratori/export?${qs.toString()}${qs.toString() ? '&' : ''}format=csv">CSV</a> <a class="btn small" href="/masuratori/export?${qs.toString()}${qs.toString() ? '&' : ''}format=xlsx">Excel (.xlsx)</a></p>
 <div class="scroll"><table class="grid register">
-  <thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.shift}</th><th>${T.register.crew}</th><th>${T.measure.family}</th><th>${T.register.product}</th><th>${T.measure.machine}</th>
-    <th>${T.measure.operator}</th><th>${T.measure.client}</th><th>${T.measure.sample_type}</th><th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th><th>${T.common.notes}</th></tr></thead>
+  <thead><tr><th>${T.register.no}</th><th>${T.common.date}</th><th>${T.register.shift}</th><th>${T.register.product}</th><th>${T.measure.machine}</th>
+    ${showOperator ? html`<th>${T.measure.operator}</th>` : ''}${showClient ? html`<th>${T.measure.client}</th>` : ''}<th>${T.measure.sample_type}</th><th>${T.register.diameter}</th><th>${T.quantity.mass_gm}</th><th>${T.quantity.r20}</th><th>${T.quantity.r20_theor}</th>${showNotes ? html`<th>${T.common.notes}</th>` : ''}</tr></thead>
   <tbody>${data.rows.length ? data.rows.map((r) => html`<tr class="${r.is_current ? '' : 'old'}">
-    <td><a href="/masuratori/${r.record_no}">${r.record_no}</a>${r.versions > 1 ? html` <span class="badge" title="${T.register.versions_title}">${f(T.register.versions, { n: r.versions })}${r.is_current ? '' : ` (v${r.version})`}</span>` : ''}</td>
-    <td>${displayDateTime(r.created_at)}</td><td>${T.shift[r.shift]}<br><span class="muted">${displayDate(r.shift_date)}</span></td><td>${r.crew_name || ''}</td>
-    <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}${r.drum_no ? ' / ' + r.drum_no : ''}</a>` : ''}${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td>
-    <td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
-    <td class="nowrap">${cellD(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
-    <td class="notes">${r.notes || ''}</td></tr>`) : html`<tr><td colspan="15" class="empty">${T.register.empty} <a href="/masuratori">${T.register.clear_filters}</a> · <a href="/masuratori/nou">${T.register.add_first}</a></td></tr>`}</tbody>
+    <td class="nowrap"><a href="/masuratori/${r.record_no}">${r.record_no}</a>${r.versions > 1 ? html` <span class="badge" title="${T.register.versions_title}">${f(T.register.versions, { n: r.versions })}${r.is_current ? '' : ` (v${r.version})`}</span>` : ''}</td>
+    <td class="nowrap">${displayDateTime(r.created_at)}</td><td class="nowrap">${T.shift[r.shift]}${r.crew_name ? ` · ${r.crew_name}` : ''}<br><span class="muted">${displayDate(r.shift_date)}</span></td>
+    <td class="product"><strong>${r.construction_label}</strong> <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}${r.drum_no ? ' / ' + r.drum_no : ''}</a>` : ''}${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}<br><span class="muted">${r.family_name}</span></td>
+    <td class="nowrap">${r.machine_name}</td>
+    ${showOperator ? html`<td>${r.operator_name || ''}</td>` : ''}${showClient ? html`<td>${r.client_name || ''}</td>` : ''}<td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
+    <td class="nowrap">${cellD(r)}</td><td class="nowrap">${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td class="nowrap">${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td class="nowrap">${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
+    ${showNotes ? html`<td class="notes">${r.notes || ''}</td>` : ''}</tr>`) : html`<tr><td colspan="14" class="empty">${T.register.empty} <a href="/masuratori">${T.register.clear_filters}</a> · <a href="/masuratori/nou">${T.register.add_first}</a></td></tr>`}</tbody>
 </table></div>
 ${pager('/masuratori', data.page, data.pages, Object.fromEntries(qs))}`,
   });
@@ -221,12 +227,21 @@ function inputsLine(v) {
   return parts;
 }
 
+/** One big line for the whole record: within limits, or what is out. */
+function verdictBanner(cur) {
+  const outs = cur.results.filter((x) => ['sub', 'peste', 'neconform'].includes(x.verdict));
+  if (outs.length) return html`<div class="banner bad" role="status">${f(T.measure.banner_out, { list: outs.map((x) => tests.label(x.quantity)).join(', ') })}</div>`;
+  if (cur.results.some((x) => x.verdict === 'ok')) return html`<div class="banner ok" role="status">${T.measure.banner_ok}</div>`;
+  return html`<div class="banner undef" role="status">${T.measure.banner_undef}</div>`;
+}
+
 function detailPage(ctx, d) {
   const { versions, canCorrect, denied } = d;
   const cur = versions.find((v) => v.is_current) || versions[0];
   return layout(ctx, {
     title: f(T.detail.title, { no: cur.record_no }), active: 'register',
     body: html`<h1>${f(T.detail.title, { no: cur.record_no })} <span class="badge">${f(T.register.versions, { n: versions.length })}</span></h1>
+${verdictBanner(cur)}
 <section class="card">
   <dl class="facts">
     <div><dt>${T.measure.family}</dt><dd>${cur.family_name}</dd></div>
@@ -242,8 +257,8 @@ function detailPage(ctx, d) {
     ${cur.notes ? html`<div class="wide-fact"><dt>${T.common.notes}</dt><dd>${cur.notes}</dd></div>` : ''}
   </dl>
   <div class="actions">
-    ${canCorrect ? html`<a class="btn primary" href="/masuratori/${cur.record_no}/corecteaza">${T.detail.correct}</a>` : html`<span class="muted">${opt('detail', 'denied_' + denied, '')}</span>`}
-    <a class="btn" href="/masuratori/nou?family=${cur.family_id}&amp;machine=${cur.machine_id}&amp;construction=${cur.construction_id}&amp;level=${cur.level}">${T.detail.new_same}</a>
+    ${canCorrect ? html`<a class="btn" href="/masuratori/${cur.record_no}/corecteaza">${T.detail.correct}</a>` : html`<span class="muted">${opt('detail', 'denied_' + denied, '')}</span>`}
+    <a class="btn primary" autofocus href="/masuratori/nou?family=${cur.family_id}&amp;machine=${cur.machine_id}&amp;construction=${cur.construction_id}&amp;level=${cur.level}">${T.detail.new_same}</a>
     <a class="btn" href="/masuratori">${T.common.back}</a>
   </div>
 </section>

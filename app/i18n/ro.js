@@ -7,7 +7,7 @@ const S = {
 
   nav: {
     label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
-    lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
+    admin: 'Administrare', lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
   // short tips behind the "?" button at the top right, one list per screen (layout key = nav key)
@@ -26,7 +26,7 @@ const S = {
     analyses: ['Analizele folosesc măsurătorile salvate; alegeți produsul și mărimea, apoi perioada.'],
   },
 
-  layout: { report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
+  layout: { comfort: 'Text și butoane mai mari (pentru ecrane din hală)', report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
 
   roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
   shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
@@ -223,13 +223,14 @@ const S = {
     produced_length: 'Lungime produsă [m]', optional: 'Opțional.', notes: 'Observații',
     live_title: 'Rezultat înainte de salvare', live_hint: 'Rezultatele apar aici pe măsură ce introduceți valorile. Valorile în afara limitelor se marchează, dar nu blochează salvarea.',
     wire_mass_hint: 'Masa firului: g/m este egal cu kg/km (unitatea din fișă).',
+    banner_ok: '✓ În limite', banner_out: '✗ În afara limitelor: {list}', banner_undef: 'Fără verdict (lipsesc limitele)',
     save: 'Salvează măsurătoarea', cell_empty: 'Completați valorile pentru a vedea rezultatul.', temp_warning: 'Temperatura este în afara intervalului admis ({min} … {max} °C).',
   },
 
   register: {
     title: 'Registru măsurători', shift: 'Tura', crew: 'Schimb', product: 'Produs', only_out: 'Doar cu valori în afara limitelor', all_versions: 'Arată și versiunile vechi',
     count: '{total} înregistrări', no: 'Nr.', diameter: 'Ø / Î × L [mm]', versions: '{n} versiuni', versions_title: 'Înregistrarea are mai multe versiuni (corecturi)',
-    empty: 'Nicio înregistrare pentru filtrele alese.', clear_filters: 'Ștergeți filtrele', add_first: 'Adăugați o măsurătoare',
+    more_filters: 'Mai multe filtre', empty: 'Nicio înregistrare pentru filtrele alese.', clear_filters: 'Ștergeți filtrele', add_first: 'Adăugați o măsurătoare',
   },
 
   detail: {
@@ -254,7 +255,7 @@ const S = {
     verify: 'Verifică și activează', verify_confirm: 'Verificați și activați această revizie? Revizia activă curentă va fi arhivată.',
     waiting_verification: 'În așteptarea verificării.', reject: 'Respinge', reject_reason: 'Motivul respingerii', author_cannot_verify: 'Elaboratorul nu poate verifica propria revizie; așteptați verificarea unui alt inginer.',
     data_quality: 'Valori de verificat față de documentul original', data_quality_hint: 'Aceste valori au părut inconsistente la transcrierea din documentele scanate. Nu au fost corectate automat: confirmați-le pe hârtie.',
-    iec_checks: 'Verificări IEC 60228', checks_ok: 'Toate verificările au trecut.', blocking: 'Blochează:', warning: 'Avertizare:',
+    findings_n: '{n} rânduri: {what}', iec_checks: 'Verificări IEC 60228', checks_ok: 'Toate verificările au trecut.', blocking: 'Blochează:', warning: 'Avertizare:',
     header_edit: 'Antetul reviziei', code_hint: 'Codul documentului (definit în aplicație).', constructions: 'Construcții',
     changed_legend: 'valoare modificată', changed_hint: 'față de revizia anterioară (roșu, ca în documentele actuale).', add_construction: 'Adaugă construcție',
     no_constructions: 'Nicio construcție.', removed_rows: 'Construcții eliminate față de revizia anterioară: {n}', new_row: 'nou',
@@ -281,6 +282,8 @@ const S = {
     r20: 'R max la 20 °C', funie_r20: 'R max la 20 °C', conductor_r20: 'R max la 20 °C', sarma_r20: 'R max la 20 °C', lita_r20: 'R max la 20 °C (conductor finit)',
     d: 'Ø', h: 'Înălțime Î', l: 'Lățime L', mass: 'Masă', suvita_mass: 'Masă suviță', toron_mass: 'Masă toron', lita_mass: 'Masă liță (aprox.)', sarma_d: 'Ø sârmă', sarma_mass: 'Masă sârmă',
   },
+
+  iec_short: { mass_vs_wires: 'masa nu corespunde cu nr. de fire × masa firului', wires_below_min: 'număr de fire sub minimul IEC', wire_d_over_max: 'Ø fir peste maximul IEC', iec_no_row: 'secțiune lipsă din tabelul IEC', wires_missing: 'număr de fire lipsă' },
 
   iec: {
     wires_below_min: 'nr. de fire {wires} este sub minimul IEC 60228 Tab. 4 ({min}) pentru forma {shape}.',

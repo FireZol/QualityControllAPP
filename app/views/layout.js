@@ -11,11 +11,10 @@ function nav(user, active, modules) {
   if (modules && modules.analytics) items.push(['analyses', '/analize', T.nav.analyses]);
   items.push(['specs', '/fise', T.nav.specs]);
   if (user.role === 'inginer' || user.role === 'administrator') items.push(['lists', '/liste', T.nav.lists]);
-  if (user.role === 'administrator') {
-    items.push(['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]);
-  }
-  return html`<nav class="nav" aria-label="${T.nav.label}">${items.map(([key, href, label]) =>
-    html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`)}</nav>`;
+  // administration is one menu instead of three more tabs, so the bar stays on a single row
+  const admin = user.role === 'administrator' ? [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]] : [];
+  const link = ([key, href, label]) => html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`;
+  return html`<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}${admin.length ? html`<details class="navmore${admin.some((a) => a[0] === active) ? ' active' : ''}"><summary>${T.nav.admin} <span aria-hidden="true">▾</span></summary><div class="navmore-box">${admin.map(link)}</div></details>` : ''}</nav>`;
 }
 
 /** The "?" button at the top right: a short tip list for the current screen. No script needed to open it. */
@@ -68,14 +67,18 @@ function layout(ctx, opts) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 <link rel="stylesheet" href="/static/app.css">
+<script src="/static/prefs.js"></script>
 </head>
 <body>
 <header class="top">
   <a class="brand" href="/">${T.app.name}</a>
   ${user ? nav(user, opts.active, ctx.modules) : ''}
-  ${user ? html`<div class="who"><span class="who-name">${user.full_name}</span> <span class="who-role">${T.roles[user.role]}</span>
-    <a href="/parola">${T.nav.password}</a>
-    <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form>${langSwitch(ctx)}${helpBox(opts.active)}</div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
+  ${user ? html`<div class="who">
+    <button type="button" class="comfort-btn" data-comfort title="${T.layout.comfort}" aria-label="${T.layout.comfort}" aria-pressed="false">A<small>+</small></button>
+    ${langSwitch(ctx)}${helpBox(opts.active)}
+    <details class="navmore account"><summary title="${T.roles[user.role]}">${user.full_name} <span aria-hidden="true">▾</span></summary>
+      <div class="navmore-box right"><div class="navmore-role">${T.roles[user.role]}</div><a href="/parola">${T.nav.password}</a>
+        <form method="post" action="/iesire">${csrf(ctx)}<button type="submit">${T.nav.logout}</button></form></div></details></div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
 </header>
 <main class="${opts.wide ? 'wide' : ''}">
 ${flashBox(ctx.flash)}

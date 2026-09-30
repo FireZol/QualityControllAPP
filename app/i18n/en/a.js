@@ -8,7 +8,7 @@ module.exports = {
 
   nav: {
     label: 'Main navigation', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
-    lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
+    admin: 'Administration', lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
   },
 
   help: {
@@ -26,7 +26,7 @@ module.exports = {
     analyses: ['Analyses use the saved measurements; choose the product and the quantity, then the period.'],
   },
 
-  layout: { report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
+  layout: { comfort: 'Larger text and buttons (for hall screens)', report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
 
   roles: { administrator: 'Administrator', inginer: 'Engineer', personal: 'Staff' },
   shift: { zi: 'Day shift', noapte: 'Night shift' },

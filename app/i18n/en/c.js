@@ -12,7 +12,7 @@ module.exports = {
     verify: 'Verify and activate', verify_confirm: 'Verify and activate this revision? The current active revision will be archived.',
     waiting_verification: 'Waiting for verification.', reject: 'Reject', reject_reason: 'Reason for rejection', author_cannot_verify: 'The author cannot verify their own revision; wait for another engineer to verify it.',
     data_quality: 'Values to check against the original document', data_quality_hint: 'These values looked inconsistent when transcribed from the scanned documents. They were not corrected automatically: confirm them on paper.',
-    iec_checks: 'IEC 60228 checks', checks_ok: 'All checks passed.', blocking: 'Blocks:', warning: 'Warning:',
+    findings_n: '{n} rows: {what}', iec_checks: 'IEC 60228 checks', checks_ok: 'All checks passed.', blocking: 'Blocks:', warning: 'Warning:',
     header_edit: 'Revision header', code_hint: 'The document code (defined in the application).', constructions: 'Constructions',
     changed_legend: 'changed value', changed_hint: 'compared with the previous revision (red, as in the current documents).', add_construction: 'Add construction',
     no_constructions: 'No construction.', removed_rows: 'Constructions removed compared with the previous revision: {n}', new_row: 'new',
@@ -39,6 +39,8 @@ module.exports = {
     r20: 'R max at 20 °C', funie_r20: 'R max at 20 °C', conductor_r20: 'R max at 20 °C', sarma_r20: 'R max at 20 °C', lita_r20: 'R max at 20 °C (finished conductor)',
     d: 'Ø', h: 'Height H', l: 'Width W', mass: 'Mass', suvita_mass: 'Wire mass', toron_mass: 'Strand mass', lita_mass: 'Bunched conductor mass (approx.)', sarma_d: 'Wire Ø', sarma_mass: 'Wire mass',
   },
+
+  iec_short: { mass_vs_wires: 'mass does not match number of wires × wire mass', wires_below_min: 'number of wires below the IEC minimum', wire_d_over_max: 'wire Ø above the IEC maximum', iec_no_row: 'section missing from the IEC table', wires_missing: 'number of wires missing' },
 
   iec: {
     wires_below_min: 'the number of wires {wires} is below the IEC 60228 Table 4 minimum ({min}) for the {shape} shape.',

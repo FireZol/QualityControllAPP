@@ -294,6 +294,35 @@ test('the live preview gets the viewer\'s decimal separator', async () => {
   await ctc.postForm('/', '/limba', { lang: 'ro', back: '/' });
 });
 
+test('UX: one-row menu with administration and account menus, verdict banners, compact register, larger-text switch', async () => {
+  // administration is one menu for the Administrator only; everybody has the account menu with password and log out
+  const adminHome = (await admin.get('/')).text;
+  assert.match(adminHome, /<details class="navmore"><summary>Administrare/);
+  assert.ok(['/admin/utilizatori', '/admin/setari', '/admin/jurnal'].every((u) => adminHome.includes(`href="${u}"`)));
+  assert.ok(!(await engA.get('/')).text.includes('Administrare'), 'an Inginer has no Administration menu');
+  const ctcHome = (await ctc.get('/')).text;
+  assert.ok(!ctcHome.includes('Administrare'));
+  assert.ok(ctcHome.includes('class="navmore account"') && ctcHome.includes('action="/iesire"') && ctcHome.includes('href="/parola"'));
+  assert.ok(ctcHome.includes('data-comfort') && ctcHome.includes('/static/prefs.js'));
+  assert.equal((await fetch(`${app.base}/static/prefs.js`)).status, 200);
+  // a record shows one big verdict
+  const badNo = app.db.value("SELECT m.record_no FROM measurements m JOIN measurement_results r ON r.measurement_id = m.id WHERE m.is_current = 1 AND r.verdict IN ('sub', 'peste') LIMIT 1");
+  const okNo = app.db.value("SELECT m.record_no FROM measurements m WHERE m.is_current = 1 AND NOT EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict IN ('sub', 'peste', 'neconform')) AND EXISTS (SELECT 1 FROM measurement_results r WHERE r.measurement_id = m.id AND r.verdict = 'ok') LIMIT 1");
+  if (badNo) assert.match((await ctc.get(`/masuratori/${badNo}`)).text, /class="banner bad"[^>]*>✗ În afara limitelor: /);
+  if (okNo) assert.match((await ctc.get(`/masuratori/${okNo}`)).text, /class="banner ok"[^>]*>✓ În limite/);
+  // the register drops columns nobody filled in and keeps the extra filters folded away until used
+  const reg = (await ctc.get('/masuratori')).text;
+  const used = (col) => app.db.value(`SELECT count(*) FROM measurements WHERE is_current = 1 AND ${col} IS NOT NULL AND ${col} <> ''`) > 0;
+  assert.equal(/<th>Operator<\/th>/.test(reg), used('operator_id'));
+  assert.equal(/<th>Client<\/th>/.test(reg), used('client_id'));
+  assert.equal(/<th>Observații<\/th>/.test(reg), used('notes'));
+  assert.ok(!used('client_id'), 'this data has no client, so the column is gone (the check above is meaningful)');
+  assert.ok(reg.includes('<details class="more-filters">') && !reg.includes('<details class="more-filters" open'));
+  assert.ok((await ctc.get(`/masuratori?family_id=${ids.famWire}`)).text.includes('<details class="more-filters" open'));
+  // the entry screen has the live verdict banner
+  assert.ok((await ctc.get('/masuratori/nou')).text.includes('id="live-banner"'));
+});
+
 test('start production: one time, typed confirmation, backup first, clears only the measurements', async () => {
   const before = { m: app.db.value('SELECT count(*) FROM measurements'), users: app.db.value('SELECT count(*) FROM users'), revs: app.db.value("SELECT count(*) FROM spec_revisions WHERE status = 'activa'"), machines: app.db.value('SELECT count(*) FROM machines') };
   assert.ok(before.m > 0 && before.revs > 0);

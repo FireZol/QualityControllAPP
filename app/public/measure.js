@@ -37,10 +37,26 @@
     return r.lim_min === null && r.lim_max !== null ? '≤ ' + b : a + ' … ' + b;
   }
 
+  // one big verdict for the whole sample: green, red (with what is out) or grey
+  const bannerEl = document.getElementById('live-banner');
+  function banner(results) {
+    if (!bannerEl) return;
+    const outs = results.filter(function (r) { return r.verdict === 'sub' || r.verdict === 'peste' || r.verdict === 'neconform'; });
+    const oks = results.filter(function (r) { return r.verdict === 'ok'; });
+    bannerEl.textContent = '';
+    if (!results.length) { bannerEl.className = 'banner undef hidden'; return; }
+    if (outs.length) {
+      const names = outs.map(function (r) { return cfg.quantities[r.quantity] || r.quantity; }).join(', ');
+      bannerEl.className = 'banner bad';
+      bannerEl.textContent = (cfg.messages.banner_out || '').replace('{list}', names);
+    } else if (oks.length) { bannerEl.className = 'banner ok'; bannerEl.textContent = cfg.messages.banner_ok; } else { bannerEl.className = 'banner undef'; bannerEl.textContent = cfg.messages.banner_undef; }
+  }
+
   function render() {
     const ev = cfg.mode === 'tests' ? C.evaluateTests(inputs(), cfg.ctx) : C.evaluate(inputs(), cfg.ctx);
     out.textContent = '';
     if (ev.warnings.indexOf('temp_range') !== -1) out.appendChild(el('p', 'warn-line', cfg.messages.temp_warning));
+    banner(ev.results);
     if (!ev.results.length) { out.appendChild(el('p', 'muted', cfg.messages.empty)); return; }
     const table = el('table', 'grid');
     const tbody = el('tbody');

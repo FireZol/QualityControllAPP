@@ -15,12 +15,33 @@
     form.submit();
   });
 
-  // the "?" tip box closes on a click elsewhere or on Esc
+  // "A+" switches larger text and controls for this PC (factory hall screens); the choice is kept in this browser
+  (function () {
+    const btn = document.querySelector('[data-comfort]');
+    if (!btn) return;
+    const root = document.documentElement;
+    const sync = function () { btn.setAttribute('aria-pressed', root.classList.contains('comfort') ? 'true' : 'false'); };
+    sync();
+    btn.addEventListener('click', function () {
+      const on = !root.classList.contains('comfort');
+      root.classList.toggle('comfort', on);
+      try { localStorage.setItem('ctc_comfort', on ? '1' : '0'); } catch (e) { /* cannot remember: still applied now */ }
+      sync();
+    });
+  })();
+
+  // a success notice fades after a few seconds; errors stay until the page changes
+  document.querySelectorAll('.flash-ok').forEach(function (el) {
+    setTimeout(function () { el.classList.add('fade'); }, 6000);
+    setTimeout(function () { el.classList.add('hidden'); }, 7000);
+  });
+
+  // the "?" tip box and the Administration menu close on a click elsewhere or on Esc
   document.addEventListener('click', function (e) {
-    document.querySelectorAll('details.help[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+    document.querySelectorAll('details.help[open], details.navmore[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') document.querySelectorAll('details.help[open]').forEach(function (d) { d.removeAttribute('open'); });
+    if (e.key === 'Escape') document.querySelectorAll('details.help[open], details.navmore[open]').forEach(function (d) { d.removeAttribute('open'); });
   });
 
   // <button data-print> opens the browser's print dialog

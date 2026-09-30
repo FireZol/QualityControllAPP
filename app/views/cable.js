@@ -59,7 +59,7 @@ function liveCtx(model, sel) {
     ctx: { tests: c.tests.map((t) => ({ code: t.code, kind: t.kind })), limits: c.limits, iec: c.iec, material: { alpha20: c.material.alpha20 }, targets: c.targets },
     numbered: [], proposal: 1,
     quantities: { ...T.quantity, ...tests.labelsFor(c.tests) }, formats: tests.formatsFor(c.tests), verdicts: T.verdict,
-    messages: { empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(c.targets.temp_min, 0, 1), max: calc.formatNumber(c.targets.temp_max, 0, 1) }) },
+    messages: { banner_ok: T.measure.banner_ok, banner_out: T.measure.banner_out, banner_undef: T.measure.banner_undef, empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(c.targets.temp_min, 0, 1), max: calc.formatNumber(c.targets.temp_max, 0, 1) }) },
   };
 }
 

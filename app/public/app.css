@@ -24,10 +24,62 @@ code { font-family: Consolas, "Courier New", monospace; font-size: 0.92em; }
 .top a { color: var(--brand-ink); text-decoration: none; }
 .brand { font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em; }
 .nav { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
-.nav a { padding: 8px 12px; border-radius: 6px; }
+.nav a { padding: 8px 10px; border-radius: 6px; }
 .nav a:hover { background: rgba(255,255,255,0.15); }
 .nav a.active { background: rgba(255,255,255,0.25); font-weight: 600; }
 .top { position: relative; }
+.nav a, .navmore summary { white-space: nowrap; }
+.navmore { position: relative; }
+.navmore summary { list-style: none; cursor: pointer; padding: 8px 12px; border-radius: 6px; user-select: none; }
+.navmore summary::-webkit-details-marker { display: none; }
+.navmore summary:hover, .navmore[open] summary { background: rgba(255,255,255,0.15); }
+.navmore.active summary { background: rgba(255,255,255,0.25); font-weight: 600; }
+.navmore-box { position: absolute; left: 0; top: 100%; z-index: 30; min-width: 200px; background: var(--brand); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: flex; flex-direction: column; }
+.navmore-box a, .navmore-box button { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 6px; color: var(--brand-ink); background: transparent; border: 0; font: inherit; cursor: pointer; text-decoration: none; }
+.navmore-box a:hover, .navmore-box button:hover { background: rgba(255,255,255,0.18); }
+.navmore-role { padding: 6px 12px 8px; font-size: 0.82rem; opacity: 0.8; border-bottom: 1px solid rgba(255,255,255,0.25); margin-bottom: 4px; }
+.navmore-box.right { left: auto; right: 0; }
+.navmore-box form { margin: 0; }
+.account summary { display: flex; align-items: center; gap: 6px; }
+.filters .field { min-width: 150px; }
+.filters .field input[type=date] { min-width: 150px; }
+.more-filters { margin-top: 4px; }
+.more-filters summary { cursor: pointer; color: var(--brand); font-weight: 600; padding: 6px 0; }
+table.register td.product { min-width: 220px; }
+table.register td, table.register th { padding: 8px 10px; }
+table.register tbody tr:nth-child(even) { background: #fafbfd; }
+table.register tbody tr:hover { background: #eef4fa; }
+.who { margin-left: auto; }
+@media (max-width: 1200px) { .top .nav { order: 3; flex-basis: 100%; } }
+html.comfort .top .nav { order: 3; flex-basis: 100%; }
+.findings-group { margin: 6px 0; }
+.findings-group summary { cursor: pointer; padding: 6px 0; }
+.comfort-btn { background: transparent; color: inherit; border: 2px solid currentColor; border-radius: 6px; font: inherit; font-weight: 700; padding: 1px 8px; cursor: pointer; line-height: 1.4; }
+.comfort-btn small { font-size: 0.7em; }
+.comfort-btn[aria-pressed=true] { background: var(--brand-ink); color: var(--brand); }
+.flash { transition: opacity 0.8s; }
+.flash.fade { opacity: 0; }
+
+/* the entry screen: inputs on the left, the live verdict stays in view on the right */
+.banner { border-radius: var(--radius); padding: 14px 16px; margin: 0 0 12px; font-size: 1.25rem; font-weight: 700; border: 2px solid; }
+.banner.ok { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+.banner.bad { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+.banner.undef { background: var(--undef-bg); color: var(--undef); border-color: var(--undef); }
+.banner small { display: block; font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
+@media (min-width: 1100px) {
+  form.entry { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(400px, 0.9fr); column-gap: var(--gap); align-items: start; }
+  form.entry > fieldset, form.entry > .actions { grid-column: 1; }
+  form.entry > .live { grid-column: 2; grid-row: 1 / span 6; position: sticky; top: 12px; }
+}
+
+/* larger text and controls for factory hall screens (switch "A+" in the header, remembered per PC) */
+html.comfort { font-size: 19px; }
+html.comfort .btn, html.comfort input:not([type=checkbox]), html.comfort select, html.comfort textarea { min-height: 54px; }
+html.comfort .entry input:not([type=checkbox]), html.comfort .entry select { min-height: 60px; font-size: 1.3rem; }
+html.comfort input[type=checkbox] { width: 28px; height: 28px; min-height: 28px; }
+html.comfort .nav a, html.comfort .navmore summary { padding: 12px 14px; }
+html.comfort table.grid td, html.comfort table.grid th { padding: 10px 11px; }
+html.comfort .btn.small { min-height: 44px; }
 .foot { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 18px 12px 26px; }
 .beta-tag { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn); border-radius: 4px; padding: 0 6px; font-weight: 700; font-size: 0.75rem; }
 .checklist-steps { list-style: none; margin: 0; padding: 0; }
@@ -47,7 +99,7 @@ code { font-family: Consolas, "Courier New", monospace; font-size: 0.92em; }
 .help-box { position: absolute; right: 0; top: 38px; z-index: 20; width: min(380px, 90vw); background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); font-size: 0.95rem; }
 .help-box ul { margin: 8px 0 0; padding-left: 18px; }
 .help-box li { margin: 4px 0; }
-.who { display: flex; align-items: center; gap: 12px; font-size: 0.92rem; }
+.who { display: flex; align-items: center; gap: 10px; font-size: 0.92rem; }
 .who-role { opacity: 0.8; }
 .who a:hover { text-decoration: underline; }
 
