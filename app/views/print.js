@@ -3,6 +3,7 @@
 // Standalone pages (no application navigation); printing is done by the browser, on paper or to PDF.
 const { html, raw } = require('../lib/html');
 const { T, f, current: currentLang } = require('../i18n');
+const i18n = require('../i18n');
 const calc = require('../domain/calc');
 const { displayDateTime, displayDate } = require('../lib/time');
 const { valueCell } = require('./layout');
@@ -33,11 +34,12 @@ ${opts.body}
 </html>`;
 }
 
-function toolbar(ctx, { backHref, action, hidden, exemplar, withExemplar }) {
+function toolbar(ctx, { backHref, action, hidden, exemplar, withExemplar, fixedLanguage }) {
   return html`<div class="noprint toolbar">
   <a class="btn" href="${backHref}">« ${T.common.back}</a>
   <form method="get" action="${action}" class="inline">
     ${Object.entries(hidden || {}).map(([k, v]) => (v === '' || v === null || v === undefined || v === false ? '' : html`<input type="hidden" name="${k}" value="${v === true ? '1' : v}">`))}
+    ${fixedLanguage ? '' : html`<label>${T.print.language} <select name="lang" data-autosubmit>${i18n.LANGUAGES.map((l) => html`<option value="${l}"${l === currentLang() ? raw(' selected') : ''}>${i18n.NAMES[l]}</option>`)}</select></label>`}
     ${withExemplar ? html`<label>${T.print.copy} <input name="exemplar" value="${exemplar || ''}" maxlength="20" class="short"></label> <button class="btn" type="submit">${T.print.apply}</button>` : ''}
   </form>
   <button type="button" class="btn primary" data-print>${T.print.print}</button>

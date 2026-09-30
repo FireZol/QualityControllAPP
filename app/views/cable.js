@@ -2,6 +2,7 @@
 // Finished cable: test entry (batch tests and type tests), batches, drums.
 const { html, raw, jsonBlock } = require('../lib/html');
 const { T, f } = require('../i18n');
+const i18n = require('../i18n');
 const calc = require('../domain/calc');
 const tests = require('../domain/tests');
 const { displayDate, displayDateTime } = require('../lib/time');
@@ -216,6 +217,7 @@ ${certificates.length ? html`<ul>${certificates.map((c) => html`<li><a href="/ce
 ${canIssue ? html`<form method="post" action="/loturi/${b.id}/certificat/emite" class="card" data-confirm="${T.cable.issue_confirm}">${csrf(ctx)}
   ${o.measurements.length ? '' : html`<p class="muted">${T.cable.no_results_yet}</p>`}
   ${preview && !preview.conforming && preview.row_count ? html`<p class="flash flash-err">${T.cable.override_needed}</p>${textField({ label: T.cable.override_reason, name: 'override_reason', value: '', errors, required: true })}` : ''}
+  <label>${T.cable.cert_language} <select name="lang">${i18n.LANGUAGES.map((l) => html`<option value="${l}"${l === i18n.current() ? raw(' selected') : ''}>${i18n.NAMES[l]}</option>`)}</select></label>
   <button class="btn primary" type="submit"${o.measurements.length ? '' : raw(' disabled')}>${T.cable.issue}</button> <span class="muted">${T.cable.issue_hint}</span></form>` : ''}`,
   });
 }

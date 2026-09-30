@@ -93,7 +93,7 @@ module.exports = {
   },
 
   cable: {
-    batch: 'Batch', batches: 'Batches', batch_no: 'Batch number', new_batch: 'New batch', order: 'Order', design: 'Cable type', drum: 'Drum', drums: 'Drums', length_m: 'Length [m]', standard: 'Standard',
+    cert_language: 'Certificate language (frozen with it)', batch: 'Batch', batches: 'Batches', batch_no: 'Batch number', new_batch: 'New batch', order: 'Order', design: 'Cable type', drum: 'Drum', drums: 'Drums', length_m: 'Length [m]', standard: 'Standard',
     produced_length: 'Produced length [m]', produced_on: 'Production date', created: 'Created', sheet: 'Data sheet', search: 'Search (batch or order)', session: 'Test type',
     st: { deschis: 'open', inchis: 'closed' }, tests_done: 'Tests', certificates: 'Certificates', no_batches: 'No batches.', no_drums: 'No drum added yet.',
     no_designs: 'There are no cable types in the active data sheet for finished cable. An engineer has to add the types under Data sheets → Low-voltage cable and activate the revision.',
@@ -124,7 +124,7 @@ module.exports = {
     g_cu: 'Copper', g_al: 'Aluminium', g_al_carrier: 'Carrier aluminium', g_al_evn: 'EVN aluminium', g_cl5_small: 'Sections 0.5 – 6 mm²', g_cl5_large: 'Sections 10 – 400 mm²',
     wire_in_strand: 'Wire Ø in the bunched conductor [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pitch / tension', g_re: 'Round conductors (RE)', g_se: 'Sector conductors (SE)',
     die_drawing: 'Drawing die', no_filters: 'No filters: all current records.', truncated: 'the first {n} are printed; narrow the filters',
-    printed_by: 'Printed by {user}, {when}', open_print: 'Print', register_print: 'Print the register',
+    language: 'Language', printed_by: 'Printed by {user}, {when}', open_print: 'Print', register_print: 'Print the register',
   },
 
   verdict: { ok: 'Within limits', sub: 'Below minimum', peste: 'Above maximum', nedeterminat: 'Undetermined', info: 'Informative', neconform: 'Nonconforming' },

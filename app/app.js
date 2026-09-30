@@ -92,6 +92,8 @@ function send(res, result, extraCookies) {
 
 function notFoundPage(ctx) { return H.page(errorPage(ctx, 'not_found'), 404); }
 
+const PRINT_PATHS = /^\/(fise\/\d+\/revizii\/\d+\/tipar|masuratori\/tipar|loturi\/\d+\/certificat|proiecte-cablu\/\d+\/raport-tip)$/;
+
 /** Every request runs inside its own language scope (the user's language is set as soon as the session is known). */
 function handle(app, req, res) {
   return i18n.run(i18n.DEFAULT, (store) => handleRequest(app, req, res, store));
@@ -142,6 +144,8 @@ async function handleRequest(app, req, res, langStore) {
   }
 
   langStore.lang = ctx.user && i18n.valid(ctx.user.language) ? ctx.user.language : (i18n.valid(cookies.ctc_lang) ? cookies.ctc_lang : i18n.DEFAULT);
+  // printed documents can be shown in another language than the viewer's (a customer copy): ?lang=en on the print pages
+  if (method === 'GET' && PRINT_PATHS.test(pathname) && i18n.valid(url.searchParams.get('lang'))) langStore.lang = url.searchParams.get('lang');
   ctx.modules = modules.get(db);
   const mod = modules.moduleOf(pathname);
   if (mod && !ctx.modules[mod]) return send(res, notFoundPage(ctx), extra);

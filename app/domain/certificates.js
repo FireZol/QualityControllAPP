@@ -9,6 +9,7 @@ const batches = require('./batches');
 const settings = require('./settings');
 const { nowIso } = require('../lib/time');
 const { S } = require('../i18n');
+const i18n = require('../i18n');
 
 const OUT = ['sub', 'peste', 'neconform'];
 
@@ -53,6 +54,7 @@ function build(db, batchId) {
   const out = rows.filter((r) => OUT.includes(r.verdict));
   const client = o.batch.client_name || null;
   return {
+    lang: i18n.current(), // the language the certificate is written in (frozen with it)
     company: settings.get(db, 'company.name'),
     batch: { batch_no: o.batch.batch_no, order_no: o.batch.order_no, client, standard: o.batch.standard, produced_length_m: o.batch.produced_length_m, produced_on: o.batch.produced_on, status: o.batch.status },
     design: { label: o.design.label, material: o.design.material_code, section: o.design.section, data: o.design.data },

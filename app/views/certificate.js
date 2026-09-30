@@ -53,7 +53,7 @@ function certificatePage(ctx, d) {
   const metaHtml = html`<dl class="doc-meta"><div><dt>${T.cable.cert_no}</dt><dd>${cert ? cert.cert_no : T.cable.draft}</dd></div><div><dt>${T.common.date}</dt><dd>${displayDate(cert ? cert.issued_at : new Date().toISOString())}</dd></div></dl>`;
   return P.page({
     title: `${T.cable.certificate} ${cert ? cert.cert_no : b.batch_no}`,
-    toolbar: P.toolbar(ctx, { backHref: back, action: cert ? `/certificate/${cert.id}` : `/loturi/${d.batchId}/certificat`, withExemplar: true, exemplar }),
+    toolbar: P.toolbar(ctx, { backHref: back, action: cert ? `/certificate/${cert.id}` : `/loturi/${d.batchId}/certificat`, withExemplar: true, exemplar, fixedLanguage: !!cert }),
     body: P.frame({ company: snap.company, title: T.cable.certificate_title, metaHtml, statusNote, footer: footer({ by: cert ? cert.issued_by_name : ctx.user.full_name, at: cert ? cert.issued_at : new Date().toISOString(), exemplar }), content }),
   });
 }

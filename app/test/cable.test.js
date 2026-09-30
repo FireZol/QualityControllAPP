@@ -361,3 +361,32 @@ test('cable pages keep the language rules', async () => {
     assert.ok(!bad.test(t) && !/⟦|undefined|NaN|\[object/.test(t), `${u}: ${(/.{25}(⟦|undefined|NaN|\[object).{25}/.exec(t) || [''])[0]}`);
   }
 });
+
+test('print language: any printed page can be shown in another language; a certificate is frozen in the language it was issued in', async () => {
+  // a printed data sheet follows ?lang= (the toolbar has the language choice)
+  const sheetUrl = `/fise/${ids.doc}/revizii/${ids.rev}/tipar`;
+  const ro = (await engA.get(sheetUrl)).text;
+  const en = (await engA.get(`${sheetUrl}?lang=en`)).text;
+  assert.ok(ro.includes('lang="ro"') && en.includes('lang="en"'));
+  assert.match(textOf(ro), /Semnătura/);
+  assert.match(textOf(en), /Signature/);
+  assert.ok(!/Semnătura/.test(textOf(en)));
+  assert.ok(en.includes('name="lang"') && en.includes('data-autosubmit'), 'the toolbar offers the language choice');
+  assert.ok((await engA.get(`${sheetUrl}?lang=xx`)).text.includes('lang="ro"'), 'an unknown language is ignored');
+  // the preview follows ?lang= too
+  assert.match(textOf((await ctc.get(`/loturi/${ids.batch}/certificat?lang=en`)).text), /PREVIEW/);
+  // the issue form has a language choice; the certificate keeps it for every viewer
+  assert.ok((await engA.get(`/loturi/${ids.batch}`)).text.includes('name="lang"'));
+  const r = await engA.postForm(`/loturi/${ids.batch}`, `/loturi/${ids.batch}/certificat/emite`, { lang: 'en', override_reason: 'Accepted by the customer' });
+  assert.equal(r.status, 303, textOf(r.text).slice(0, 300));
+  const c = app.db.get('SELECT * FROM batch_certificates ORDER BY id DESC');
+  assert.equal(JSON.parse(c.snapshot).lang, 'en');
+  const viewer = textOf((await ctc.get(`/certificate/${c.id}`)).text); // a Romanian-language user
+  assert.match(viewer, /Batch test certificate/);
+  assert.match(viewer, /Certificate no\./);
+  assert.ok(!/Certificat de încercări|Elaborat/.test(viewer));
+  assert.ok(!(await ctc.get(`/certificate/${c.id}`)).text.includes('name="lang"'), 'no language switch on an issued certificate');
+  // an older certificate stays Romanian
+  const old = app.db.get('SELECT * FROM batch_certificates ORDER BY id ASC');
+  assert.match(textOf((await ctc.get(`/certificate/${old.id}`)).text), /Certificat de încercări pe lot/);
+});

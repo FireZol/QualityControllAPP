@@ -3,6 +3,7 @@
 const { page, redirect } = require('../lib/http');
 const B = require('../domain/batches');
 const C = require('../domain/certificates');
+const i18n = require('../i18n');
 const views = require('../views/cable');
 const cert = require('../views/certificate');
 const { errorPage } = require('../views/errors');
@@ -108,7 +109,9 @@ module.exports = function register(app) {
 
   router.post('/loturi/:id/certificat/emite', { roles: ENG }, (ctx) => {
     const id = idOf(ctx.params.id);
-    const r = C.issue(db, ctx.user, id, ctx.form.get('override_reason'));
+    // the certificate is frozen in one language: the one chosen on the issue form
+    const lang = i18n.valid(ctx.form.get('lang')) ? ctx.form.get('lang') : i18n.current();
+    const r = i18n.run(lang, () => C.issue(db, ctx.user, id, ctx.form.get('override_reason')));
     if (r.ok) return redirect(`/certificate/${r.id}`, { flash: { key: 'cert_issued' } });
     if (r.code === 'not_found') return page(errorPage(ctx, 'not_found'), 404);
     if (r.code === 'override_required') return detail(ctx, { errors: { override_reason: 'required' } }, 422);
@@ -118,7 +121,8 @@ module.exports = function register(app) {
   router.get('/certificate/:id', {}, (ctx) => {
     const c = C.get(db, idOf(ctx.params.id));
     if (!c) return page(errorPage(ctx, 'not_found'), 404);
-    return page(cert.certificatePage(ctx, { snap: c.snapshot, preview: false, cert: c, exemplar: exemplar(ctx), back: `/loturi/${c.batch_id}`, batchId: c.batch_id }));
+    // an issued certificate is always shown in the language it was issued in
+    return i18n.run(c.snapshot.lang || 'ro', () => page(cert.certificatePage(ctx, { snap: c.snapshot, preview: false, cert: c, exemplar: exemplar(ctx), back: `/loturi/${c.batch_id}`, batchId: c.batch_id })));
   });
 
   router.get('/proiecte-cablu/:cid/raport-tip', {}, (ctx) => {

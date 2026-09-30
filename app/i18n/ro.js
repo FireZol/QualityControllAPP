@@ -93,7 +93,7 @@ const S = {
   },
 
   cable: {
-    batch: 'Lot', batches: 'Loturi', batch_no: 'Număr lot', new_batch: 'Lot nou', order: 'Comandă', design: 'Tip de cablu', drum: 'Toba', drums: 'Tobe', length_m: 'Lungime [m]', standard: 'Standard',
+    cert_language: 'Limba certificatului (se îngheață odată cu el)', batch: 'Lot', batches: 'Loturi', batch_no: 'Număr lot', new_batch: 'Lot nou', order: 'Comandă', design: 'Tip de cablu', drum: 'Toba', drums: 'Tobe', length_m: 'Lungime [m]', standard: 'Standard',
     produced_length: 'Lungime produsă [m]', produced_on: 'Data producției', created: 'Creat', sheet: 'Fișa tehnică', search: 'Caută (lot sau comandă)', session: 'Tip încercare',
     st: { deschis: 'deschis', inchis: 'închis' }, tests_done: 'Încercări', certificates: 'Certificate', no_batches: 'Niciun lot.', no_drums: 'Nicio tobă adăugată încă.',
     no_designs: 'Nu există tipuri de cablu în fișa tehnică activă a cablului finit. Un inginer trebuie să adauge tipurile în Fișe tehnice → Cablu de joasă tensiune și să activeze revizia.',
@@ -124,7 +124,7 @@ const S = {
     g_cu: 'Cupru', g_al: 'Aluminiu', g_al_carrier: 'Aluminiu purtător', g_al_evn: 'Aluminiu EVN', g_cl5_small: 'Secțiuni 0,5 – 6 mm²', g_cl5_large: 'Secțiuni 10 – 400 mm²',
     wire_in_strand: 'Ø sârmă în liță [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pas / tens.', g_re: 'Conductori rotunzi (RE)', g_se: 'Conductori sector (SE)',
     die_drawing: 'Filieră trefilare', no_filters: 'Fără filtre: toate înregistrările curente.', truncated: 'se tipăresc primele {n}; restrângeți filtrele',
-    printed_by: 'Tipărit de {user}, {when}', open_print: 'Tipărește', register_print: 'Tipărește registrul',
+    language: 'Limba', printed_by: 'Tipărit de {user}, {when}', open_print: 'Tipărește', register_print: 'Tipărește registrul',
   },
 
   verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ', neconform: 'Neconform' },
