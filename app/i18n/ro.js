@@ -10,6 +10,22 @@ const S = {
     lists: 'Nomenclatoare', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
+  // short tips behind the "?" button at the top right, one list per screen (layout key = nav key)
+  help: {
+    label: 'Ajutor', title: 'Despre această pagină',
+    default: ['Dacă ceva nu este clar, întrebați un Inginer sau Administratorul.'],
+    home: ['Aici vedeți măsurătorile de azi și valorile în afara limitelor din ultimele 24 de ore.', 'Apăsați «Măsurătoare nouă» pentru a începe o probă.', 'Un număr de măsurătoare deschide detaliile, istoricul și corecția.'],
+    new: ['Alegeți familia, utilajul și produsul; data viitoare aplicația le reține pe cele folosite ultima dată.', 'Introduceți valorile: Enter trece la câmpul următor, Ctrl+Enter salvează.', 'Verde = în limite, roșu = în afara limitelor. O valoare în afara limitelor se marchează, dar nu blochează salvarea.', 'Rezistența se compară la 20 °C: cu cât este mai mică, cu atât mai bine.'],
+    register: ['Filtrați după dată, tură, produs, utilaj sau client; «Doar în afara limitelor» arată problemele.', 'Pentru a corecta o măsurătoare, deschideți-o: corecția creează o versiune nouă, iar cea veche rămâne în istoric.', 'Tipărirea folosește filtrele alese.'],
+    specs: ['Fișa tehnică conține limitele fiecărui produs. Măsurătorile se pot introduce doar pe o fișă activă.', 'Un Inginer elaborează sau modifică o revizie și o trimite la verificare; un alt Inginer o verifică și o activează.', 'O fișă activă nu se modifică: se pornește o revizie nouă, iar măsurătorile vechi păstrează limitele din momentul lor.'],
+    lists: ['Nomenclatoarele sunt listele din formulare: utilaje, operatori, clienți, tipuri de probă, materiale.', 'Țintele, familiile de produse și valorile IEC se modifică aici; fiecare modificare apare în Jurnal.', 'Nu se șterge nimic: o intrare se dezactivează, dispare din formulare, dar rămâne în istoric.'],
+    users: ['Personal introduce măsurători, Inginer lucrează cu fișele și nomenclatoarele, Administrator poate tot.', 'Parola unică se afișează o singură dată; utilizatorul o schimbă la prima autentificare.'],
+    settings: ['Portul și adresa se aplică după repornirea serviciului.', 'Backup-ul se face automat zilnic; restaurarea cere scrierea numelui fișierului.', 'Părțile opționale (cablu finit, analize) se pornesc la «Module».'],
+    audit: ['Jurnalul arată cine ce a făcut și când. Nu se poate modifica sau șterge.'],
+    batches: ['Un lot grupează tobele unui cablu finit; încercările și certificatul se fac pe lot.'],
+    analyses: ['Analizele folosesc măsurătorile salvate; alegeți produsul și mărimea, apoi perioada.'],
+  },
+
   roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
   shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
   material: { Cu: 'Cupru', Al: 'Aluminiu' },

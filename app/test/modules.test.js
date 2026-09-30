@@ -34,3 +34,12 @@ test('the Administrator switches the modules on in Setări and they appear; off 
   assert.equal(app.db.value("SELECT active FROM product_families WHERE code = 'CABLE_LV'"), 0);
   assert.ok(app.db.value("SELECT count(*) FROM audit_log WHERE action = 'setting_change'") >= 2);
 });
+
+test('the "?" tip button is on every page and shows tips for that screen', async () => {
+  const pages = { '/': 'Aici vedeți măsurătorile de azi', '/masuratori/nou': 'Ctrl+Enter salvează', '/masuratori': 'Filtrați după dată', '/fise': 'Fișa tehnică conține limitele', '/liste': 'Nomenclatoarele sunt listele', '/admin/utilizatori': 'Personal introduce măsurători', '/admin/setari': 'Portul și adresa', '/admin/jurnal': 'Jurnalul arată cine' };
+  for (const [url, tip] of Object.entries(pages)) {
+    const r = await admin.get(url);
+    assert.equal(r.status, 200, url);
+    assert.ok(r.text.includes('<details class="help">') && r.text.includes(tip), `${url} shows its tips`);
+  }
+});

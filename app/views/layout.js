@@ -17,6 +17,13 @@ function nav(user, active, modules) {
     html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`)}</nav>`;
 }
 
+/** The "?" button at the top right: a short tip list for the current screen. No script needed to open it. */
+function helpBox(active) {
+  const lines = opt('help', active, null) || T.help.default;
+  return html`<details class="help"><summary title="${T.help.label}" aria-label="${T.help.label}">?</summary>
+    <div class="help-box" role="region" aria-label="${T.help.title}"><strong>${T.help.title}</strong><ul>${lines.map((l) => html`<li>${l}</li>`)}</ul></div></details>`;
+}
+
 function flashBox(flash) {
   if (!flash) return '';
   const msg = T.flash[flash.key];
@@ -46,7 +53,7 @@ function layout(ctx, opts) {
   ${user ? nav(user, opts.active, ctx.modules) : ''}
   ${user ? html`<div class="who"><span class="who-name">${user.full_name}</span> <span class="who-role">${T.roles[user.role]}</span>
     <a href="/parola">${T.nav.password}</a>
-    <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form></div>` : ''}
+    <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form>${helpBox(opts.active)}</div>` : ''}
 </header>
 <main class="${opts.wide ? 'wide' : ''}">
 ${flashBox(ctx.flash)}
