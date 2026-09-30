@@ -38,9 +38,13 @@ function parseCookies(header) {
   return out;
 }
 
+// With HTTPS in front of the application (config.json "secureCookies": true) cookies are marked Secure.
+let secureCookies = false;
+function setSecureCookies(on) { secureCookies = !!on; }
+
 function cookie(name, value, opts) {
   const o = opts || {};
-  let s = `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Strict`;
+  let s = `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Strict${secureCookies ? '; Secure' : ''}`;
   if (o.maxAge !== undefined) s += `; Max-Age=${o.maxAge}`;
   return s;
 }
@@ -134,4 +138,4 @@ function safeEqual(a, b) {
   return x.length === y.length && crypto.timingSafeEqual(x, y);
 }
 
-module.exports = { download, SECURITY_HEADERS, parseCookies, cookie, Form, readBody, page, redirect, json, text, staticFile, safeJoin, randomToken, sha256, safeEqual };
+module.exports = { setSecureCookies, download, SECURITY_HEADERS, parseCookies, cookie, Form, readBody, page, redirect, json, text, staticFile, safeJoin, randomToken, sha256, safeEqual };

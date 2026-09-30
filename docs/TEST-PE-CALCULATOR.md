@@ -38,3 +38,11 @@ The task runs as the **SYSTEM** account. On a network share SYSTEM is the *compu
 ## C. Result
 
 Send back: the browser versions used, which lines failed, and a photo or PDF of a printed sheet that looks wrong.
+
+## D. Restore drill (once, before the pilot starts)
+
+1. In the application note the number of measurements in the register (for example 12).
+2. **Setări → Backup acum.** The new file `ctc-….db` appears in the list.
+3. Add one more measurement (13).
+4. **Setări →** the backup **Restaurează**, type the file name, confirm.
+5. Log in again if asked. The register shows 12 measurements again, and a safety copy of the state before the restore is in the backup list.

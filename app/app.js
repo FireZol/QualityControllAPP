@@ -27,6 +27,7 @@ const DOMAIN_DIR = path.join(__dirname, 'domain');
 async function createApp(config, opts) {
   const o = opts || {};
   const log = o.log || ((m) => console.log(m));
+  H.setSecureCookies(config.secureCookies);
   const db = new Db(path.join(config.dataDir, 'ctc.db'));
   const state = { maintenance: false };
   const mig = migrate(db, { dir: o.migrationsDir || path.join(__dirname, 'db', 'migrations'), backupDir: () => backup.backupDir(db, config) });

@@ -35,6 +35,7 @@ function loadConfig(file, root) {
     port: Number(cfg.port) || DEFAULTS.port,
     bind: String(cfg.bind || DEFAULTS.bind),
     publicName: String(cfg.publicName || ''),
+    secureCookies: cfg.secureCookies === true,
     dataDir: abs(cfg.dataDir),
     backupDir: abs(cfg.backupDir),
     seedDir: abs(cfg.seedDir),

@@ -53,20 +53,20 @@ module.exports = function register(app) {
     };
     const lock = auth.isLocked(db, username);
     if (lock.locked) {
-      audit.log(db, null, 'login_blocked', 'users', null, { username });
+      audit.log(db, null, 'login_blocked', 'users', null, { username, ip: ctx.req.socket.remoteAddress });
       return fail({ lockedMinutes: lock.minutes });
     }
     const user = db.get('SELECT * FROM users WHERE username = ? AND active = 1', username);
     const ok = await auth.verifyPassword(password, user ? user.password_hash : DUMMY_HASH);
     if (!user || !ok) {
       auth.recordAttempt(db, username, false);
-      audit.log(db, user ? user.id : null, 'login_failed', 'users', user ? user.id : null, { username });
+      audit.log(db, user ? user.id : null, 'login_failed', 'users', user ? user.id : null, { username, ip: ctx.req.socket.remoteAddress });
       const after = auth.isLocked(db, username);
       return fail(after.locked ? { lockedMinutes: after.minutes } : { error: T.login.failed });
     }
     auth.recordAttempt(db, username, true);
     const token = auth.createSession(db, user.id);
-    audit.log(db, user.id, 'login', 'users', user.id, {});
+    audit.log(db, user.id, 'login', 'users', user.id, { ip: ctx.req.socket.remoteAddress });
     const res = redirect(user.must_change_password ? '/parola' : next);
     res.cookies = [cookie('ctc_sid', token), cookie('ctc_lt', '', { maxAge: 0 })];
     return res;

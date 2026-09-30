@@ -3,5 +3,6 @@
   "bind": "0.0.0.0",
   "publicName": "ctc.romcab.local",
   "dataDir": "data",
-  "backupDir": "backups"
+  "backupDir": "backups",
+  "secureCookies": false
 }
