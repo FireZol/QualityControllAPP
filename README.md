@@ -16,6 +16,6 @@ npm test                # unit + integration tests (node:test)
 | 3 — flexible class 5, analyses, CSV/Excel export | done |
 | 4 — finished LV cable (IEC 60502-1 / HD 603 / VDE 0276-603): batches, drums, batch and type tests, certificates, SPC control charts | done |
 
-Adapting: `docs/ADAPTARE.md` (what is editable and where). Read first: `CLAUDE.md`, `docs/DECISIONS.md`, `docs/SPECIFICATIE.md`, `docs/DATA-MODEL.md`, `docs/ETAPA-1.md` … `docs/ETAPA-4.md`, `docs/INTREBARI.md` (open questions), `README-INSTALARE.md` (Windows install, in Romanian).
+Adapting: `docs/ADAPTARE.md` (what is editable and where). Read first: `CLAUDE.md`, `docs/DECISIONS.md`, `docs/SPECIFICATIE.md`, `docs/DATA-MODEL.md`, `docs/ETAPA-1.md` … `docs/ETAPA-4.md`, `docs/INTREBARI.md` (open questions), `docs/GHID-CONFIGURARE.md` (first setup), `docs/TEST-PE-CALCULATOR.md` (factory PC checklist), `README-INSTALARE.md` (Windows install, in Romanian).
 
 Development tools (not part of the app; need Playwright): `tools/walkthrough.js` (browser walk-through with screenshots), `tools/print-check.js` (printed pages in Chromium).

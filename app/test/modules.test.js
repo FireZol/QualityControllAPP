@@ -61,3 +61,29 @@ test('Setări: the crew cycle is editable and validated; the mass-vs-wires band 
   assert.equal(t.mass_ratio_min, 0.99);
   assert.equal(t.mass_ratio_max, 1.01);
 });
+
+test('first-setup checklist: shown to Administrator and Inginer, ticks itself off, disappears when done; never shown to Personal', async () => {
+  const { makeUser } = require('./helpers');
+  const fresh = await startApp({ modulesOff: true });
+  try {
+    const a = await adminClient(fresh);
+    const steps = (text) => Array.from(text.matchAll(/<li class="(done|todo)"><span class="mark"/g)).map((m) => m[1]);
+    let home = (await a.get('/')).text;
+    assert.ok(home.includes('Prima configurare'));
+    assert.deepEqual(steps(home), ['todo', 'todo', 'todo', 'todo']);
+    assert.match(home, /0 din \d+ active/);
+    const ctc = await makeUser(fresh, a, 'ctc.setup', 'personal', 'CTC');
+    assert.ok(!(await ctc.get('/')).text.includes('Prima configurare'));
+    await makeUser(fresh, a, 'ing.s1', 'inginer', 'Ing 1');
+    const e2 = await makeUser(fresh, a, 'ing.s2', 'inginer', 'Ing 2');
+    assert.deepEqual(steps((await e2.get('/')).text), ['done', 'todo', 'todo', 'todo'], 'two engineers: step 1 done; an Inginer sees the panel too');
+    // sheets active, crews edited, a backup made
+    fresh.db.run("UPDATE spec_revisions SET status = 'activa' WHERE status = 'ciorna'");
+    const crew = fresh.db.get('SELECT * FROM crews ORDER BY id');
+    const r = await e2.postForm('/liste/schimburi', `/liste/schimburi/${crew.id}/salveaza`, { name: crew.name, cycle_start: '2026-09-01' });
+    assert.equal(r.status, 303);
+    assert.equal((await a.postForm('/admin/setari', '/admin/setari/backup', {})).status, 303);
+    home = (await a.get('/')).text;
+    assert.ok(!home.includes('Prima configurare'), 'all steps done: the panel is gone');
+  } finally { await fresh.cleanup(); }
+});

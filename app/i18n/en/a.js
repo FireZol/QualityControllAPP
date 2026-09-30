@@ -14,7 +14,7 @@ module.exports = {
   help: {
     label: 'Help', title: 'About this page',
     default: ['If something is unclear, ask an Engineer or the Administrator.'],
-    home: ['Here you see today\'s measurements and the out-of-limit values of the last 24 hours.', 'Press “New measurement” to start a sample.', 'A measurement number opens its details, history and correction.'],
+    home: ['Here you see today\'s measurements and the out-of-limit values of the last 24 hours. Engineers and the Administrator also see the first-setup steps until they are done.', 'Press “New measurement” to start a sample.', 'A measurement number opens its details, history and correction.'],
     new: ['Pick the family, machine and product; next time the app remembers the ones you used last.', 'Enter the values: Enter moves to the next field, Ctrl+Enter saves.', 'Green = within limits, red = out of limits. An out-of-limit value is flagged but never blocks saving.', 'Resistance is compared at 20 °C: the lower, the better.'],
     register: ['Filter by date, shift, product, machine or client; “Out of limits only” shows the problems.', 'To correct a measurement, open it: a correction creates a new version and the old one stays in the history.', 'Printing uses the chosen filters.'],
     specs: ['The data sheet holds the limits of each product. Measurements can only be entered against an active sheet.', 'An Engineer drafts or changes a revision and submits it for verification; a second Engineer verifies and activates it.', 'An active sheet is never edited: a new revision is started, and earlier measurements keep the limits of their time.'],

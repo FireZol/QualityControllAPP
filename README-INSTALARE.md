@@ -47,6 +47,7 @@ C:\ROMCAB-CTC\
 - **Restaurare**: Setări → alegeți fișierul → scrieți numele lui pentru confirmare. Înainte se face automat o copie de siguranță a bazei curente.
 - Un backup se face automat și înaintea oricărei migrări a structurii bazei de date.
 - Pentru siguranță suplimentară, includeți folderul de backup în copiile de siguranță ale serverului.
+- Sarcina rulează ca **SYSTEM**. Pentru un folder de rețea, dați drept de scriere pe share contului calculatorului (`DOMENIU\NUME-SERVER$`), nu unui utilizator; verificați cu **Backup acum**.
 
 ## 6. Actualizare
 

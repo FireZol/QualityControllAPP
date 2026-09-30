@@ -32,6 +32,8 @@ function homePage(ctx, d) {
     title: T.home.title, active: 'home', wide: true,
     body: html`<div class="hero"><h1>${T.home.title}</h1>
   <a class="btn primary big" href="/masuratori/nou">${T.home.new_measurement}</a></div>
+${d.setup.length ? html`<section class="card setup"><h2>${T.home.setup_title}</h2><p class="muted">${T.home.setup_hint}</p>
+  <ul class="checklist-steps">${d.setup.map((s) => html`<li class="${s.done ? 'done' : 'todo'}"><span class="mark" aria-hidden="true">${s.done ? '✓' : '○'}</span> <span>${T.home['setup_' + s.key]}${s.total !== undefined ? ` (${f(T.home.setup_sheets_n, { n: s.n, total: s.total })})` : (s.n !== undefined ? ` (${f(T.home.setup_now, { n: s.n })})` : '')}</span> ${s.done ? '' : html`<a class="btn small" href="${s.href}">${T.common.open}</a>`}</li>`)}</ul></section>` : ''}
 <p class="muted">${f(T.home.current_shift, { shift: T.shift[cur.shift], crew: cur.crew ? cur.crew.name : T.common.none })}</p>
 <section class="card"><h2>${T.home.today}</h2>
   <div class="scroll"><table class="grid">${head()}<tbody>${d.today.rows.length ? d.today.rows.map(quickRow) : html`<tr><td colspan="9" class="empty">${T.home.today_empty} <a href="/masuratori/nou">${T.home.start_first}</a></td></tr>`}</tbody></table></div>

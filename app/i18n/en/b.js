@@ -58,6 +58,10 @@ module.exports = {
 
   home: {
     title: 'Home', new_measurement: 'New measurement', current_shift: 'Current shift: {shift} · crew {crew}',
+    setup_title: 'First setup', setup_hint: 'The steps below tick themselves off. The panel disappears once all are done.',
+    setup_engineers: 'At least two Engineers (one drafts a sheet, the other verifies and activates it)', setup_sheets: 'Active data sheets, so that measurements can be entered',
+    setup_crews: 'The start dates of crews A / B / C (until then they are placeholders)', setup_backup: 'At least one backup (Settings → Back up now)',
+    setup_now: 'now {n}', setup_sheets_n: '{n} of {total} active',
     today: 'Today\'s measurements (current shift first)', today_empty: 'No measurement recorded today.', start_first: 'Start the first measurement »',
     spc: 'SPC signals (process drift)', spc_hint: 'Products whose latest values break a control rule, even though they are still within limits. The control limits are calculated from the earlier values.',
     out_of_limit: 'Results out of limits — last 24 hours', out_empty: 'No out-of-limit value in the last 24 hours.', results: 'Values',

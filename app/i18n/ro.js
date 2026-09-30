@@ -14,7 +14,7 @@ const S = {
   help: {
     label: 'Ajutor', title: 'Despre această pagină',
     default: ['Dacă ceva nu este clar, întrebați un Inginer sau Administratorul.'],
-    home: ['Aici vedeți măsurătorile de azi și valorile în afara limitelor din ultimele 24 de ore.', 'Apăsați «Măsurătoare nouă» pentru a începe o probă.', 'Un număr de măsurătoare deschide detaliile, istoricul și corecția.'],
+    home: ['Aici vedeți măsurătorile de azi și valorile în afara limitelor din ultimele 24 de ore. Inginerii și Administratorul văd și pașii de prima configurare, până sunt făcuți.', 'Apăsați «Măsurătoare nouă» pentru a începe o probă.', 'Un număr de măsurătoare deschide detaliile, istoricul și corecția.'],
     new: ['Alegeți familia, utilajul și produsul; data viitoare aplicația le reține pe cele folosite ultima dată.', 'Introduceți valorile: Enter trece la câmpul următor, Ctrl+Enter salvează.', 'Verde = în limite, roșu = în afara limitelor. O valoare în afara limitelor se marchează, dar nu blochează salvarea.', 'Rezistența se compară la 20 °C: cu cât este mai mică, cu atât mai bine.'],
     register: ['Filtrați după dată, tură, produs, utilaj sau client; «Doar în afara limitelor» arată problemele.', 'Pentru a corecta o măsurătoare, deschideți-o: corecția creează o versiune nouă, iar cea veche rămâne în istoric.', 'Tipărirea folosește filtrele alese.'],
     specs: ['Fișa tehnică conține limitele fiecărui produs. Măsurătorile se pot introduce doar pe o fișă activă.', 'Un Inginer elaborează sau modifică o revizie și o trimite la verificare; un alt Inginer o verifică și o activează.', 'O fișă activă nu se modifică: se pornește o revizie nouă, iar măsurătorile vechi păstrează limitele din momentul lor.'],
@@ -185,6 +185,10 @@ const S = {
 
   home: {
     title: 'Acasă', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
+    setup_title: 'Prima configurare', setup_hint: 'Pașii de mai jos se bifează singuri. Panoul dispare când toți sunt făcuți.',
+    setup_engineers: 'Cel puțin doi Ingineri (unul elaborează o fișă, celălalt o verifică și o activează)', setup_sheets: 'Fișe tehnice active, ca să se poată introduce măsurători',
+    setup_crews: 'Datele de start ale schimburilor A / B / C (până atunci sunt orientative)', setup_backup: 'Cel puțin o copie de siguranță (Setări → Backup acum)',
+    setup_now: 'acum {n}', setup_sheets_n: '{n} din {total} active',
     today: 'Măsurătorile de azi (tura curentă prima)', today_empty: 'Nicio măsurătoare înregistrată azi.', start_first: 'Începeți prima măsurătoare »',
     spc: 'Semnale SPC (deriva procesului)', spc_hint: 'Produse la care ultimele valori încalcă o regulă de control, chiar dacă încă sunt în limite. Limitele de control se calculează din valorile anterioare.',
     out_of_limit: 'Rezultate în afara limitelor — ultimele 24 de ore', out_empty: 'Nicio valoare în afara limitelor în ultimele 24 de ore.', results: 'Valori',
