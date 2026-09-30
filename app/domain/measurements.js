@@ -35,7 +35,7 @@ function contextFor(db, construction, family, levelWanted, mode) {
   const own = db.get("SELECT max FROM limits WHERE construction_id = ? AND level = ? AND quantity = 'r20'", construction.id, isFlex ? 'lita' : level);
   let r = iecClass ? iec.resistanceLimit(db, iecClass, material.code, construction.section, construction.coated) : null;
   if (own && own.max !== null && own.max !== undefined) r = { r_max: own.max, source: 'fisa' };
-  const measuresR = (family.measures.resistance_measured || []).includes(material.code) && (family.code !== 'SARMA_CL12' || iecClass === 1 || !!r) && (!isFlex || level !== 'suvita');
+  const measuresR = (family.measures.resistance_measured || []).includes(material.code) && (!isFlex || level !== 'suvita');
   let nStrands = null;
   if (isFlex && level === 'toron') {
     const data = typeof construction.data === 'string' ? JSON.parse(construction.data || '{}') : (construction.data || {});

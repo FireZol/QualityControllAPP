@@ -88,14 +88,14 @@ test('class I–II wire: diameter (two readings) and mass in kg/km, no theoretic
   assert.match(reg.text, /2,78/);
 });
 
-test('copper unifilar RE wire: measured resistance against IEC Tab. 3; multifilar wire has none', async () => {
+test('copper unifilar RE wire: measured resistance against IEC Tab. 3; multifilar wire: optional, judged only against an R max from the sheet', async () => {
   const mach = app.db.get("SELECT id FROM machines WHERE name = 'TREFILARE 1'").id;
   const uni = construction(ids.wireRev, "m.code = 'Cu' AND s.code = 'RE' AND d.name = 'Unifilar'");
   const mul = construction(ids.wireRev, "m.code = 'Cu' AND s.code = 'RE' AND d.name = 'Multifilar'");
   const pageU = await ctc.get(`/masuratori/nou?family=${ids.famWire}&machine=${mach}&construction=${uni.id}`);
   assert.match(pageU.text, /name="r_value"/);
   const pageM = await ctc.get(`/masuratori/nou?family=${ids.famWire}&machine=${mach}&construction=${mul.id}`);
-  assert.ok(!/name="r_value"/.test(pageM.text));
+  assert.match(pageM.text, /name="r_value"/, 'class 2 multi-wire wire may optionally be measured for resistance');
   const lim = app.db.get("SELECT r_max FROM iec_limits WHERE iec_class = 1 AND material = 'Cu' AND coated = 0 AND section = ?", uni.section).r_max;
   const post = (rv) => ctc.postForm('/masuratori/nou', '/masuratori/nou', {
     family_id: String(ids.famWire), machine_id: String(mach), construction_id: String(uni.id), sample_type_id: String(ids.sample),
@@ -108,6 +108,24 @@ test('copper unifilar RE wire: measured resistance against IEC Tab. 3; multifila
   res = results(record(await post(lim * 1.02)));
   assert.equal(res.r20.verdict, 'peste');
   assert.ok(Math.abs(res.r20.deviation_pct - 2) < 1e-6);
+  // multi-wire wire: no IEC limit, so a measured value is stored without a verdict ...
+  const postM = (rv) => ctc.postForm('/masuratori/nou', '/masuratori/nou', {
+    family_id: String(ids.famWire), machine_id: String(mach), construction_id: String(mul.id), sample_type_id: String(ids.sample),
+    d1: String(mul.wire_d), d2: String(mul.wire_d), mass_g: '10', r_value: String(rv), r_unit: 'ohm_km', temp_c: '20',
+  });
+  res = results(record(await postM(20)));
+  assert.equal(res.r20.verdict, 'nedeterminat');
+  assert.equal(res.r20.lim_max, null);
+  // ... and leaving the field empty is fine
+  res = results(record(await ctc.postForm('/masuratori/nou', '/masuratori/nou', { family_id: String(ids.famWire), machine_id: String(mach), construction_id: String(mul.id), sample_type_id: String(ids.sample), d1: String(mul.wire_d), d2: String(mul.wire_d), mass_g: '10' })));
+  assert.ok(!res.r20);
+  // ... until the engineers give the row its own R max on the sheet: lower is better, above it is red
+  app.db.run("INSERT INTO limits(construction_id, level, quantity, nominal, min, max, unit) VALUES (?, 'sarma', 'r20', NULL, NULL, 19, 'ohm_km')", mul.id);
+  res = results(record(await postM(18)));
+  assert.equal(res.r20.verdict, 'ok');
+  assert.equal(res.r20.lim_max, 19);
+  res = results(record(await postM(20)));
+  assert.equal(res.r20.verdict, 'peste');
 });
 
 test('class V: IEC wire diameter blocks activation until an exception is recorded; wire diameter is checked, no mass', async () => {
