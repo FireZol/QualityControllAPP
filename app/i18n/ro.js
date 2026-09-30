@@ -7,7 +7,7 @@ const S = {
 
   nav: {
     label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
-    lists: 'Nomenclatoare', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
+    lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
   // short tips behind the "?" button at the top right, one list per screen (layout key = nav key)
@@ -18,8 +18,8 @@ const S = {
     new: ['Alegeți familia, utilajul și produsul; data viitoare aplicația le reține pe cele folosite ultima dată.', 'Introduceți valorile: Enter trece la câmpul următor, Ctrl+Enter salvează.', 'Verde = în limite, roșu = în afara limitelor. O valoare în afara limitelor se marchează, dar nu blochează salvarea.', 'Rezistența se compară la 20 °C: cu cât este mai mică, cu atât mai bine.'],
     register: ['Filtrați după dată, tură, produs, utilaj sau client; «Doar în afara limitelor» arată problemele.', 'Pentru a corecta o măsurătoare, deschideți-o: corecția creează o versiune nouă, iar cea veche rămâne în istoric.', 'Tipărirea folosește filtrele alese.'],
     specs: ['Fișa tehnică conține limitele fiecărui produs. Măsurătorile se pot introduce doar pe o fișă activă.', 'Un Inginer elaborează sau modifică o revizie și o trimite la verificare; un alt Inginer o verifică și o activează.', 'O fișă activă nu se modifică: se pornește o revizie nouă, iar măsurătorile vechi păstrează limitele din momentul lor.'],
-    lists: ['Nomenclatoarele sunt listele din formulare: utilaje, operatori, clienți, tipuri de probă, materiale.', 'Țintele, familiile de produse și valorile IEC se modifică aici; fiecare modificare apare în Jurnal.', 'Nu se șterge nimic: o intrare se dezactivează, dispare din formulare, dar rămâne în istoric.'],
-    users: ['Personal introduce măsurători, Inginer lucrează cu fișele și nomenclatoarele, Administrator poate tot.', 'Parola unică se afișează o singură dată; utilizatorul o schimbă la prima autentificare.'],
+    lists: ['Datele de bază sunt listele din formulare: utilaje, operatori, clienți, tipuri de probă, materiale.', 'Țintele, familiile de produse și valorile IEC se modifică aici; fiecare modificare apare în Jurnal.', 'Nu se șterge nimic: o intrare se dezactivează, dispare din formulare, dar rămâne în istoric.'],
+    users: ['Personal introduce măsurători, Inginer lucrează cu fișele și datele de bază, Administrator poate tot.', 'Parola unică se afișează o singură dată; utilizatorul o schimbă la prima autentificare.'],
     settings: ['Portul și adresa se aplică după repornirea serviciului.', 'Backup-ul se face automat zilnic; restaurarea cere scrierea numelui fișierului.', 'Părțile opționale (cablu finit, analize) se pornesc la «Module».'],
     audit: ['Jurnalul arată cine ce a făcut și când. Nu se poate modifica sau șterge.'],
     batches: ['Un lot grupează tobele unui cablu finit; încercările și certificatul se fac pe lot.'],
@@ -142,7 +142,7 @@ const S = {
   flash: {
     saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
     measurement_saved: 'Măsurătoarea a fost salvată.',
-    measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului admis (Nomenclatoare → Ținte și praguri); corecția a fost calculată, dar verificați valoarea.',
+    measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului admis (Date de bază → Ținte și praguri); corecția a fost calculată, dar verificați valoarea.',
     measurement_corrected: 'Corecția a fost salvată ca versiune nouă; versiunea anterioară rămâne în istoric.',
     rev_created: 'Revizia nouă (ciornă) a fost creată din cea activă.', rev_submitted: 'Revizia a fost trimisă la verificare.',
     rev_verified: 'Revizia a fost verificată și activată; revizia anterioară a fost arhivată.', rev_rejected: 'Revizia a fost respinsă și a revenit la ciornă.',
@@ -206,13 +206,13 @@ const S = {
 
   measure: {
     level: 'Nivel măsurat', title: 'Măsurătoare nouă', family: 'Familie de produs', machine: 'Utilaj', construction: 'Produs (secțiune și formă)', choose: '— alegeți —',
-    no_machines: 'Pentru această familie nu există niciun utilaj activ. Un Inginer sau Administrator trebuie să adauge unul în Nomenclatoare → Utilaje.',
+    no_machines: 'Pentru această familie nu există niciun utilaj activ. Un Inginer sau Administrator trebuie să adauge unul în Date de bază → Utilaje.',
     no_constructions: 'Nu există produse în fișa tehnică activă potrivite pentru acest utilaj. Cel mai des fișa nu are încă o revizie activă: un Inginer o verifică și un al doilea Inginer o activează. Vedeți:',
     active_revision: 'Fișa tehnică activă: Ed. {edition}, Rev. {revision} — {doc}',
     limits_caption: 'Limite din fișa tehnică activă', nominal: 'Nominal', limits: 'Limite', source: 'Sursă', source_sheet: 'fișa tehnică', informative_note: 'informativ, fără verdict',
     sample_data: 'Datele probei', operator: 'Operator', client: 'Client', sample_type: 'Tip de probă', none_selected: '— nespecificat —',
     length_no: 'Nr. lungime', length_no_hint: 'Se propune automat pentru probele numerotate.',
-    values: 'Valori măsurate', sample_mm_hint: 'Implicit {n} mm.', r_optional: 'Opțional. Rezistența se măsoară la materialele activate pentru familie (Nomenclatoare → Familii de produs).', r_sample_hint: 'Implicit {n} m, 2 m la secțiuni mari.',
+    values: 'Valori măsurate', sample_mm_hint: 'Implicit {n} mm.', r_optional: 'Opțional. Rezistența se măsoară la materialele activate pentru familie (Date de bază → Familii de produs).', r_sample_hint: 'Implicit {n} m, 2 m la secțiuni mari.',
     produced_length: 'Lungime produsă [m]', optional: 'Opțional.', notes: 'Observații',
     live_title: 'Rezultat înainte de salvare', live_hint: 'Rezultatele apar aici pe măsură ce introduceți valorile. Valorile în afara limitelor se marchează, dar nu blochează salvarea.',
     wire_mass_hint: 'Masa firului: g/m este egal cu kg/km (unitatea din fișă).',
@@ -296,7 +296,7 @@ const S = {
   },
 
   lists: {
-    title: 'Nomenclatoare', intro: 'Listele se pot completa, redenumi și dezactiva. O intrare folosită în măsurători nu se șterge, doar se dezactivează.',
+    title: 'Date de bază', intro: 'Listele se pot completa, redenumi și dezactiva. O intrare folosită în măsurători nu se șterge, doar se dezactivează.',
     names: {
       machine_types: 'Tipuri de utilaj', machines: 'Utilaje', operators: 'Operatori', clients: 'Clienți', sample_types: 'Tipuri de probă', crews: 'Schimburi',
       shapes: 'Forme', destinations: 'Destinații', materials: 'Constante material', compounds: 'Compuși (izolație / manta)', cable_standards: 'Standarde cablu',

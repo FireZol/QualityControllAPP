@@ -6,7 +6,7 @@ Read first: `CLAUDE.md`, `docs/SPECIFICATIE.md` (Romanian, functional truth), `d
 
 ## Scope
 
-In: accounts and roles · all lists (nomenclatoare) · technical data sheets with revisions and the two-person rule for families FUNIE_RIGIDA and EXTRUDAT_AL · measurement entry for those two families · measurement register with version history and corrections · home page · settings · backup/restore · audit log · first-start seeding · Windows start-up scripts.
+In: accounts and roles · all lists (Date de bază) · technical data sheets with revisions and the two-person rule for families FUNIE_RIGIDA and EXTRUDAT_AL · measurement entry for those two families · measurement register with version history and corrections · home page · settings · backup/restore · audit log · first-start seeding · Windows start-up scripts.
 
 Out (later stages): drawn-wire and class 5 measurement screens, printing of A6 annexes, trend/Cp/Cpk charts, CSV/Excel export. **Seed their data now anyway** (ADR / DATA-MODEL seed table) so stage 2–3 are screens only.
 
@@ -38,7 +38,7 @@ start.bat, instalare-serviciu.bat, dezinstalare-serviciu.bat, config.example.jso
 | Fișe tehnice | `/fise` | all read; Inginer write | documents list with active revision; revision list with status; construction table like the paper sheet; values changed vs previous revision in red |
 | Editor revizie | `/fise/:doc/revizii/:id` | Inginer | only in `ciorna`: add/edit/deactivate constructions, limits, process params; "Revizie nouă" copies the active one; "Trimite la verificare"; IEC checks listed (blocking unless `iec_exception_reason`) |
 | Verificare revizie | same | Inginer ≠ author | "Verifică și activează" (archives previous active) or "Respinge" with reason |
-| Nomenclatoare | `/liste/*` | Inginer, Admin | machine types (+ allowed families), machines (+ rotor config), operators, clients, sample types, crews (cycle start), shapes, destinations; add / rename / deactivate — no delete if referenced |
+| Date de bază | `/liste/*` | Inginer, Admin | machine types (+ allowed families), machines (+ rotor config), operators, clients, sample types, crews (cycle start), shapes, destinations; add / rename / deactivate — no delete if referenced |
 | Constante material | `/liste/materiale` | Inginer | ρ20, density, α20 per material; change is audited |
 | Utilizatori | `/admin/utilizatori` | Administrator | create, role, reset password (sets `must_change_password`), deactivate |
 | Setări | `/admin/setari` | Administrator | port, bind address, public name (restart notice), session idle hours, backup dir/auto/time/keep, "Backup acum", restore list with confirmation |

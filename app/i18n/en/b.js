@@ -65,7 +65,7 @@ module.exports = {
 
   quantity: {
     d: 'Ø', d1: 'Ø reading 1', d2: 'Ø reading 2', d_avg: 'Mean Ø', ovality: 'Ovality', h: 'Height H', l: 'Width W', mass_gm: 'Mass [g/m]',
-    r_max_finished: 'R max of the finished conductor [Ω/km]', d_ech: 'Equivalent Ø from mass', r20_theor: 'Theoretical R20 [Ω/km]', r20: 'Measured R20 [Ω/km]', r20_echiv: 'R20 of the strand reported to the conductor [Ω/km]', r_max: 'R max at 20 °C [Ω/km]',
+    r_max_finished: 'R max of the finished conductor [Ω/km]', d_ech: 'Equivalent Ø from mass', r20_theor: 'Theoretical R20 [Ω/km]', r20: 'Measured R20 [Ω/km]', r20_echiv: 'R20 of the strand reported to the bunched conductor [Ω/km]', r_max: 'R max at 20 °C [Ω/km]',
   },
 
   input: {
@@ -75,7 +75,7 @@ module.exports = {
 
   tests: { parts: { avg: 'average', min: 'minimum', max: 'maximum' } },
 
-  level: { suvita: 'Wire', toron: 'Strand', lita: 'Conductor' },
+  level: { suvita: 'Wire', toron: 'Strand', lita: 'Bunched conductor' },
 
   measure: {
     level: 'Measured level', title: 'New measurement', family: 'Product family', machine: 'Machine', construction: 'Product (section and shape)', choose: '— choose —',

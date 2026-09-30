@@ -1,7 +1,7 @@
 'use strict';
 // English texts, part A. Same keys and {placeholders} as ../ro.js (a test compares them).
 // Terms: fișă tehnică = data sheet, revizie = revision, utilaj = machine, probă = sample, tură = shift, schimb = crew,
-// suviță = wire, toron = strand, liță = conductor (flexible class 5), Nomenclatoare = Master data.
+// suviță = wire, toron = strand, liță = bunched conductor (flexible class 5), Nomenclatoare / Date de bază = Master data.
 
 module.exports = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Technological Quality Control' },
@@ -47,7 +47,7 @@ module.exports = {
     kinds: { numeric: 'value', readings: 'multiple readings', passfail: 'pass / fail', resistance: 'resistance (corrected to 20 °C)' },
     iec: 'IEC 60228 table', iec_desc: 'The reference limit values: R max, minimum number of wires, maximum wire Ø',
     families_intro: 'Here you set what is measured for each family and whether the family is active for measurements. It applies to new measurements; existing records do not change. Every change is written to the audit log.',
-    families_rule: 'Resistance: lower is better. Up to the limit (R max from the sheet or, if missing, from IEC 60228) the result is green, above the limit red — whether the value is measured, calculated theoretically from the mass, or a strand reported to the conductor.',
+    families_rule: 'Resistance: lower is better. Up to the limit (R max from the sheet or, if missing, from IEC 60228) the result is green, above the limit red — whether the value is measured, calculated theoretically from the mass, or a strand reported to the bunched conductor.',
     families_nothing: 'An active family must measure at least something (mass, resistance or diameter).',
     f_active: 'Active for measurements', f_mass: 'Mass', f_theor: 'Theoretical R from mass', f_r_cu: 'Measured R for Cu', f_r_al: 'Measured R for Al',
     targets_intro: 'Values that used to be fixed in the application. They apply immediately to new measurements and analyses.', range: 'Between {min} and {max}',
@@ -76,7 +76,7 @@ module.exports = {
     rule: 'Signal', rules: { 1: 'one point outside the control limits (±3σ)', 2: '2 of 3 consecutive points beyond 2σ, on the same side', 3: '4 of 5 consecutive points beyond 1σ, on the same side', 4: '8 consecutive points on the same side of the centre line', 5: '6 consecutive points rising or falling' },
     signals: 'Signals', mr_chart: 'Moving range (MR)', base_n: 'Limits from the first N values', base_hint: 'Empty = all values; use a stable period as the reference.', spc_too_few: 'At least 3 values are needed.',
     spc_small: 'Below {n} values the control limits are only indicative.', spc_hint: 'The control limits (CL ± 3σ, σ = MR̄ / 1.128) describe the process, not the sheet requirement; the dotted yellow lines are the sheet limits. Marked points carry the number of the rule they break.',
-    need_product: 'Choose a product (and, where relevant, the quantity) for this analysis.', need_level: 'The product has measurements at several levels; choose the level (wire, strand or conductor).',
+    need_product: 'Choose a product (and, where relevant, the quantity) for this analysis.', need_level: 'The product has measurements at several levels; choose the level (wire, strand or bunched conductor).',
     no_data: 'There are no measurements for the chosen filters.', limits_changed: 'The limits changed between revisions in the chosen period; each point is judged against the limits of the moment it was measured, while Cp / Cpk use the most recent limits.',
     limits_changed_short: 'limits changed', small_n: 'n < {n}: indicative', cpk_hint: 'Cp = (max − min) / 6s; Cpk = distance between the mean and the nearest limit / 3s. The standard deviation is the sample one (n − 1). Informative results and those without a limit have no Cp / Cpk.',
     pick_product_for_histogram: 'Choose a product to see the histogram.', summary: 'Summary', points: 'Measured values', mean: 'Mean', sd: 'Standard deviation', lsl: 'Min limit', usl: 'Max limit',
@@ -122,7 +122,7 @@ module.exports = {
     not_in_force: 'Revision {status} — not a document in force', red_note: 'Values written in red changed from the previous revision.',
     iec_notes: 'Accepted exceptions from IEC 60228:', pitch_legend: 'On the rotor: pitch [mm] / tension. Tension at acceptance as per the sheet.',
     g_cu: 'Copper', g_al: 'Aluminium', g_al_carrier: 'Carrier aluminium', g_al_evn: 'EVN aluminium', g_cl5_small: 'Sections 0.5 – 6 mm²', g_cl5_large: 'Sections 10 – 400 mm²',
-    wire_in_strand: 'Wire Ø in the conductor [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pitch / tension', g_re: 'Round conductors (RE)', g_se: 'Sector conductors (SE)',
+    wire_in_strand: 'Wire Ø in the bunched conductor [mm]', g_strander: 'Strander {config}', rotor_col: 'Rotor {rotor}: pitch / tension', g_re: 'Round conductors (RE)', g_se: 'Sector conductors (SE)',
     die_drawing: 'Drawing die', no_filters: 'No filters: all current records.', truncated: 'the first {n} are printed; narrow the filters',
     printed_by: 'Printed by {user}, {when}', open_print: 'Print', register_print: 'Print the register',
   },

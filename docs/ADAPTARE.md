@@ -5,14 +5,14 @@ Design rule: nothing that engineers may want to change is hard-coded. Everything
 | What | Where in the app | Who |
 | --- | --- | --- |
 | Product limits: Ø, Î × L, mass (min / max / tolerance), **R max at 20 °C** per construction, stranding parameters | Fișe tehnice → revision editor (two-person rule) | Inginer |
-| IEC 60228 reference values: R max at 20 °C, minimum wires, max wire Ø (add rows, edit values) | Nomenclatoare → Tabel IEC 60228 | Inginer |
-| Material constants ρ20, density, α20 (with a check of the formula against IEC Tab. A.1) | Nomenclatoare → Constante material | Inginer |
-| What each product family measures: mass, measured R for Cu / Al, theoretical R, active for measurement | Nomenclatoare → Familii de produs | Inginer |
-| Sample-length defaults, temperature range, Cpk colours, minimum n, mass-vs-wires band, SPC minimum values / window / alert horizon | Nomenclatoare → Ținte și praguri | Inginer |
-| Finished-cable tests: catalogue (name, unit, category routine / sample / type, compounds it applies to, internal or external lab, standard reference) | Nomenclatoare → Tipuri de încercări | Inginer |
+| IEC 60228 reference values: R max at 20 °C, minimum wires, max wire Ø (add rows, edit values) | Date de bază → Tabel IEC 60228 | Inginer |
+| Material constants ρ20, density, α20 (with a check of the formula against IEC Tab. A.1) | Date de bază → Constante material | Inginer |
+| What each product family measures: mass, measured R for Cu / Al, theoretical R, active for measurement | Date de bază → Familii de produs | Inginer |
+| Sample-length defaults, temperature range, Cpk colours, minimum n, mass-vs-wires band, SPC minimum values / window / alert horizon | Date de bază → Ținte și praguri | Inginer |
+| Finished-cable tests: catalogue (name, unit, category routine / sample / type, compounds it applies to, internal or external lab, standard reference) | Date de bază → Tipuri de încercări | Inginer |
 | Cable design: required tests, limits per test result, compounds, standard, voltage, conductor class | Fișe tehnice → Cablu de joasă tensiune (two-person rule) | Inginer |
-| Compounds (PVC, XLPE, HFFR …) and cable standards (IEC 60502-1, HD 603, VDE 0276-603 …) | Nomenclatoare | Inginer, Administrator |
-| Machines, machine types (and allowed families), operators, clients, sample types, shapes, destinations, crews and cycle start | Nomenclatoare | Inginer, Administrator |
+| Compounds (PVC, XLPE, HFFR …) and cable standards (IEC 60502-1, HD 603, VDE 0276-603 …) | Date de bază | Inginer, Administrator |
+| Machines, machine types (and allowed families), operators, clients, sample types, shapes, destinations, crews and cycle start | Date de bază | Inginer, Administrator |
 | Shift start times, backup, port, sessions | Setări | Administrator |
 
 ## Rules that hold everywhere

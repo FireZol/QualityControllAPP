@@ -22,7 +22,7 @@ module.exports = {
     shape: 'Shape', destination: 'Destination', coated_label: 'Tinned', printed_label: 'Name (as on the sheet)', printed_label_hint: 'If left empty it is generated from the section and shape.',
     wires: 'Number of wires', wire_d: 'Wire Ø [mm]', die: 'Die', die_hint: 'Free text, for example 3.21 / 3.215.',
     iec_exception_reason: 'Reason for the exception from IEC 60228', iec_exception_hint: 'If filled in, deviations from IEC become warnings and the reason is printed on the sheet.',
-    r20_hint: 'R max at 20 °C: the resistance target of the finished conductor. If left empty, the value from IEC 60228 is used. Lower is better: green up to the limit, red above it — however the value was obtained (measured, theoretical from mass, or strand reported to the conductor).',
+    r20_hint: 'R max at 20 °C: the resistance target of the finished conductor. If left empty, the value from IEC 60228 is used. Lower is better: green up to the limit, red above it — however the value was obtained (measured, theoretical from mass, or strand reported to the bunched conductor).',
     limits: 'Limits', tolerance: 'Tolerance ±', limits_hint: 'If the nominal and the tolerance are filled in and min / max are left empty, they are calculated. Empty rows stay “undetermined”.',
     process_params: 'Stranding parameters', strander: 'Strander', rotor: 'Rotor', pitch: 'Pitch [mm]', tension: 'Tension',
     params_hint: 'On the rotor: 6, 12, 18, 24 or “receptie” for the tension at acceptance. Empty rows are ignored.',
@@ -32,12 +32,12 @@ module.exports = {
     construction: 'Construction', wires_x_d: 'Wires × wire Ø [mm]', rope_d: 'Rope Ø / H × W [mm]', mass: 'Mass [g/m]', stranding: 'Stranding: pitch / tension on the rotor',
     reception: 'Tension at acceptance', die: 'Die', d_nominal: 'Nominal Ø [mm]', d_range: 'Ø min … max [mm]', h_l: 'H × W [mm]', destination: 'Destination', wires: 'No. of wires',
     cable_design: 'Conductor', cable_voltage: 'Voltage', cable_compounds: 'Insulation / sheath', cable_standard: 'Standard', cable_tests: 'Tests', cable_report: 'Report',
-    r_max: 'R max [Ω/km]', mass_kgkm: 'Mass [kg/km]', wires_lita: 'Wires in the conductor', strands: 'Strands × wires', wire_d5: 'Wire Ø [mm]', suvita: 'Wire mass [g/m]', toron: 'Strand mass [g/m]', lita: 'Conductor mass [g/m]',
+    r_max: 'R max [Ω/km]', mass_kgkm: 'Mass [kg/km]', wires_lita: 'Wires in the bunched conductor', strands: 'Strands × wires', wire_d5: 'Wire Ø [mm]', suvita: 'Wire mass [g/m]', toron: 'Strand mass [g/m]', lita: 'Bunched conductor mass [g/m]',
   },
 
   limitq: {
     r20: 'R max at 20 °C', funie_r20: 'R max at 20 °C', conductor_r20: 'R max at 20 °C', sarma_r20: 'R max at 20 °C', lita_r20: 'R max at 20 °C (finished conductor)',
-    d: 'Ø', h: 'Height H', l: 'Width W', mass: 'Mass', suvita_mass: 'Wire mass', toron_mass: 'Strand mass', lita_mass: 'Conductor mass (approx.)', sarma_d: 'Wire Ø', sarma_mass: 'Wire mass',
+    d: 'Ø', h: 'Height H', l: 'Width W', mass: 'Mass', suvita_mass: 'Wire mass', toron_mass: 'Strand mass', lita_mass: 'Bunched conductor mass (approx.)', sarma_d: 'Wire Ø', sarma_mass: 'Wire mass',
   },
 
   iec: {

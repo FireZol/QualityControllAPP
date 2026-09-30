@@ -36,7 +36,7 @@ test('the Administrator switches the modules on in Setări and they appear; off 
 });
 
 test('the "?" tip button is on every page and shows tips for that screen', async () => {
-  const pages = { '/': 'Aici vedeți măsurătorile de azi', '/masuratori/nou': 'Ctrl+Enter salvează', '/masuratori': 'Filtrați după dată', '/fise': 'Fișa tehnică conține limitele', '/liste': 'Nomenclatoarele sunt listele', '/admin/utilizatori': 'Personal introduce măsurători', '/admin/setari': 'Portul și adresa', '/admin/jurnal': 'Jurnalul arată cine' };
+  const pages = { '/': 'Aici vedeți măsurătorile de azi', '/masuratori/nou': 'Ctrl+Enter salvează', '/masuratori': 'Filtrați după dată', '/fise': 'Fișa tehnică conține limitele', '/liste': 'Datele de bază sunt listele', '/admin/utilizatori': 'Personal introduce măsurători', '/admin/setari': 'Portul și adresa', '/admin/jurnal': 'Jurnalul arată cine' };
   for (const [url, tip] of Object.entries(pages)) {
     const r = await admin.get(url);
     assert.equal(r.status, 200, url);

@@ -105,7 +105,7 @@ test('every main screen renders in English without a missing key or a leftover R
   await switchTo(eng, 'en');
   await switchTo(admin, 'en');
   const screens = ['/', '/masuratori/nou', '/masuratori', '/fise', '/liste', '/liste/familii', '/liste/tinte', '/liste/iec', '/liste/utilaje', '/liste/materiale', '/admin/utilizatori', '/admin/setari', '/admin/jurnal', '/parola', '/loturi', '/analize/tendinta', '/analize/control'];
-  const ro = /Măsurătoare|Înapoi|Salvează|Caută|Registru|Fișe tehnice|Nomenclatoare|Utilizatori|Setări|Jurnal de audit|Renunță|Acasă|Ieșire/;
+  const ro = /Măsurătoare|Înapoi|Salvează|Caută|Registru|Fișe tehnice|Date de bază|Utilizatori|Setări|Jurnal de audit|Renunță|Acasă|Ieșire/;
   for (const url of screens) {
     const c = ['/admin/utilizatori', '/admin/setari', '/admin/jurnal', '/loturi', '/analize/tendinta', '/analize/control'].includes(url) ? admin : eng;
     const r = await c.get(url);

@@ -1,5 +1,5 @@
 'use strict';
-// Engineering targets and thresholds that used to be constants. Editable by an Inginer (Nomenclatoare -> Ținte și praguri),
+// Engineering targets and thresholds that used to be constants. Editable by an Inginer (Date de bază -> Ținte și praguri),
 // stored as one JSON value in `settings` and audited. Everything that needs one reads it from here.
 const settings = require('./settings');
 const audit = require('./audit');

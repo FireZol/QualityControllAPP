@@ -15,5 +15,5 @@ Scope from `docs/SPECIFICATIE.md` §10: drawn wire (class I–II and class V mul
 ## Notes / assumptions
 
 - "Pag. x / y" is produced by `print-paginate.js` (browser-side pagination), so it is identical in Chrome, Edge and Firefox; `node tools/print-check.js` verifies it in headless Chromium.
-- Default machines `TREFILARE 1` (Trefilare) and `TREFILARE MF 1` (Trefilare multifilară) are seeded so every process has one (owner request); rename or add more in Nomenclatoare → Utilaje.
+- Default machines `TREFILARE 1` (Trefilare) and `TREFILARE MF 1` (Trefilare multifilară) are seeded so every process has one (owner request); rename or add more in Date de bază → Utilaje.
 - The wire sheets are drafts transcribed from scans; the engineers must verify and a second engineer activate them before measurements can be saved (same two-person rule as stage 1).
