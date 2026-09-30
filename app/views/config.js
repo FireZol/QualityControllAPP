@@ -3,9 +3,10 @@
 const { html, raw } = require('../lib/html');
 const { T, f } = require('../i18n');
 const { layout, csrf, textField, selectField, errText } = require('./layout');
+const calc = require('../domain/calc');
 const { LIMITS } = require('../domain/targets');
 
-const comma = (v) => (v === null || v === undefined ? '' : String(v).replace('.', ','));
+const comma = (v) => (v === null || v === undefined ? '' : calc.dec(String(v)));
 
 function familiesPage(ctx, d) {
   const { rows, err } = d;

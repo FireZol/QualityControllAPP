@@ -9,6 +9,7 @@
   const cfg = JSON.parse(dataEl.textContent);
   const out = document.getElementById('live-out');
   if (cfg.formats && C.registerQuantities) C.registerQuantities(cfg.formats);
+  if (cfg.decimal && C.setDecimal) C.setDecimal(cfg.decimal);
 
   function inputs() {
     const o = {};

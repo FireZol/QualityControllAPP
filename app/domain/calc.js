@@ -83,21 +83,29 @@
     return f.length ? i + '.' + f : i;
   }
 
-  /** Fixed decimals between min and max (trailing zeros trimmed down to min). Decimal comma. */
+  // The decimal separator follows the language of the viewer: the server plugs in a provider per request, the browser
+  // gets the separator from the page. Default: comma (Romanian).
+  let decimalSource = () => ',';
+  function setDecimal(src) { decimalSource = typeof src === 'function' ? src : () => src; }
+  function decimal() { return decimalSource(); }
+  /** "1.05" -> "1,05" (or left as it is when the current separator is the dot). */
+  function dec(text) { return decimal() === ',' ? String(text).replace('.', ',') : String(text); }
+
+  /** Fixed decimals between min and max (trailing zeros trimmed down to min). Uses the current decimal separator. */
   function formatNumber(v, minDecimals, maxDecimals) {
     if (v === null || v === undefined || Number.isNaN(v)) return '';
     const mn = minDecimals === undefined ? 0 : minDecimals;
     const mx = maxDecimals === undefined ? mn : maxDecimals;
-    return trimTo(Number(v).toFixed(mx), mn).replace('.', ',');
+    return dec(trimTo(Number(v).toFixed(mx), mn));
   }
 
-  /** Significant digits (resistance: 4). Decimal comma. */
+  /** Significant digits (resistance: 4). Uses the current decimal separator. */
   function formatSignificant(v, digits) {
     if (v === null || v === undefined || Number.isNaN(v)) return '';
     if (v === 0) return '0';
     const d = digits === undefined ? 4 : digits;
     const decimals = Math.max(0, d - 1 - Math.floor(Math.log10(Math.abs(v))));
-    return Number(v).toFixed(Math.min(decimals, 12)).replace('.', ',');
+    return dec(Number(v).toFixed(Math.min(decimals, 12)));
   }
 
   const SIGNED = (v, dec) => (v > 0 ? '+' : '') + formatNumber(v, dec, dec);
@@ -314,7 +322,7 @@
     resistancePerKm, resistanceAt20, resistanceEquivalent,
     areaFromMass, equivalentDiameter, theoreticalResistance,
     verdict, deviationPercent, isOut,
-    formatNumber, formatSignificant, formatQuantity, signed: SIGNED,
+    formatNumber, formatSignificant, formatQuantity, signed: SIGNED, setDecimal, decimal, dec,
     evaluate,
   };
 });

@@ -1,26 +1,34 @@
 'use strict';
 // CSV and Excel (.xlsx) export without any library.
-// CSV: UTF-8 with BOM, ';' separator and decimal comma (opens correctly in Romanian-locale Excel).
+// CSV: UTF-8 with BOM. Romanian: ';' separator and decimal comma (opens correctly in Romanian-locale Excel);
+// English: ',' separator and decimal dot (see csvStyle). Formula-injection guard on text cells.
 // XLSX: a minimal OOXML workbook written by hand (zip via node:zlib), real numbers, bold frozen header row.
 const zlib = require('node:zlib');
 
 /** columns: [{key, header, type?: 'number'|'text', width?}] ; rows: objects */
-function csvCell(v, type) {
+const RO_CSV = { delimiter: ';', decimal: ',' };
+const EN_CSV = { delimiter: ',', decimal: '.' };
+/** CSV conventions of a language (what that language's Excel expects). */
+const csvStyle = (lang) => (lang === 'en' ? EN_CSV : RO_CSV);
+
+function csvCell(v, type, style) {
+  const st = style || RO_CSV;
   if (v === null || v === undefined || v === '') return '';
   if (typeof v === 'number' || type === 'number') {
     const n = Number(v);
-    return Number.isFinite(n) ? String(n).replace('.', ',') : '';
+    return Number.isFinite(n) ? (st.decimal === ',' ? String(n).replace('.', ',') : String(n)) : '';
   }
   let s = String(v);
   // spreadsheet formula injection: text starting with = + - @ (or tab / CR) is prefixed with an apostrophe
   if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
-  if (/[";\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  if (s.includes(st.delimiter) || /["\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
 
-function toCsv(columns, rows) {
-  const lines = [columns.map((c) => csvCell(c.header)).join(';')];
-  for (const r of rows) lines.push(columns.map((c) => csvCell(r[c.key], c.type)).join(';'));
+function toCsv(columns, rows, style) {
+  const st = style || RO_CSV;
+  const lines = [columns.map((c) => csvCell(c.header, undefined, st)).join(st.delimiter)];
+  for (const r of rows) lines.push(columns.map((c) => csvCell(r[c.key], c.type, st)).join(st.delimiter));
   return '﻿' + lines.join('\r\n') + '\r\n';
 }
 
@@ -141,4 +149,4 @@ function unzip(buf) {
   return out;
 }
 
-module.exports = { toCsv, toXlsx, csvCell, zip, unzip, colName };
+module.exports = { toCsv, toXlsx, csvCell, csvStyle, zip, unzip, colName };

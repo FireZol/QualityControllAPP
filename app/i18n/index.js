@@ -12,6 +12,7 @@ const en = require('./en');
 const DEFAULT = 'ro';
 const LANGUAGES = ['ro', 'en']; // order of the switcher
 const NAMES = { ro: 'RO', en: 'EN' };
+const DECIMALS = { ro: ',', en: '.' }; // decimal separator shown in each language (input accepts both)
 const STRICT = process.env.CTC_STRICT_I18N === '1';
 
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
@@ -84,4 +85,7 @@ function opt(section, key, fallback) {
   return d[section] && Object.prototype.hasOwnProperty.call(d[section], key) ? d[section][key] : fallback;
 }
 
-module.exports = { T, S, f, opt, run, current, valid, LANGUAGES, NAMES, DEFAULT, DICTS, raw: { ro, en } };
+/** Decimal separator of the language being served. */
+const decimal = () => DECIMALS[current()];
+
+module.exports = { T, S, f, opt, run, current, valid, decimal, DECIMALS, LANGUAGES, NAMES, DEFAULT, DICTS, raw: { ro, en } };

@@ -266,3 +266,12 @@ test('UX: the entry page resumes the product the user measured last; a user with
   const other = (await ctc.get(`/masuratori/nou?family=${last.family_id}`)).text;
   assert.ok(!other.includes('id="entry"'));
 });
+
+test('the live preview gets the viewer\'s decimal separator', async () => {
+  assert.match((await ctc.get('/masuratori/nou')).text, /"decimal":","/);
+  await ctc.postForm('/masuratori/nou', '/limba', { lang: 'en', back: '/' });
+  const page = (await ctc.get('/masuratori/nou')).text;
+  assert.match(page, /"decimal":"\."/);
+  assert.match((await ctc.get('/static/calc.js')).text, /setDecimal/);
+  await ctc.postForm('/', '/limba', { lang: 'ro', back: '/' });
+});

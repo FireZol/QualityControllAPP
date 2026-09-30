@@ -1,6 +1,7 @@
 'use strict';
 const { html } = require('../lib/html');
 const { T, f, S } = require('../i18n');
+const calc = require('../domain/calc');
 const { displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, checkField, pager } = require('./layout');
 
@@ -84,7 +85,7 @@ function settingsPage(ctx, d) {
   ${backupError ? html`<div class="flash flash-err" role="alert">${T.settings.backup_failed}: ${backupError}</div>` : ''}
   <form method="post" action="/admin/setari/backup" class="inline">${csrf(ctx)}<button class="btn primary" type="submit">${T.settings.backup_now}</button></form>
   <div class="scroll"><table class="grid"><thead><tr><th>${T.settings.file}</th><th>${T.settings.size}</th><th>${T.common.date}</th><th></th></tr></thead>
-  <tbody>${backups.length ? backups.map((b) => html`<tr><td><code>${b.name}</code></td><td>${(b.size / 1024 / 1024).toFixed(2).replace('.', ',')} MB</td><td>${displayDateTime(b.mtime.toISOString().slice(0, 19))}</td>
+  <tbody>${backups.length ? backups.map((b) => html`<tr><td><code>${b.name}</code></td><td>${calc.dec((b.size / 1024 / 1024).toFixed(2))} MB</td><td>${displayDateTime(b.mtime.toISOString().slice(0, 19))}</td>
     <td><a class="btn small" href="/admin/setari/restaurare?f=${encodeURIComponent(b.name)}">${T.settings.restore}</a></td></tr>`) : html`<tr><td colspan="4" class="empty">${T.settings.no_backups}</td></tr>`}</tbody></table></div>
 </section>`,
   });

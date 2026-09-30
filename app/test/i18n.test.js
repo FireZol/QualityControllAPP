@@ -118,3 +118,30 @@ test('every main screen renders in English without a missing key or a leftover R
     assert.ok(!ro.test(shown), `${url} still shows Romanian UI text: ${(ro.exec(shown) || [])[0]}`);
   }
 });
+
+test('numbers follow the language: decimal comma in Romanian, decimal dot in English; typing accepts both', async () => {
+  const calc = require('../domain/calc');
+  assert.equal(calc.formatNumber(1.05, 2), '1,05');
+  assert.equal(calc.formatSignificant(0.12345, 4), '0,1235');
+  i18n.run('en', () => { assert.equal(calc.formatNumber(1.05, 2), '1.05'); assert.equal(calc.formatSignificant(0.12345, 4), '0.1235'); assert.equal(calc.signed(2.5, 2), '+2.50'); });
+  assert.equal(calc.parseDecimal('1,05'), 1.05);
+  assert.equal(calc.parseDecimal('1.05'), 1.05);
+  // CSV: Romanian Excel wants ';' and a comma, English Excel ',' and a dot
+  const xp = require('../lib/export');
+  const cols = [{ key: 'a', header: 'a' }, { key: 'v', header: 'v', type: 'number' }, { key: 't', header: 't' }];
+  const rows = [{ a: 'x', v: 1.5, t: 'p,q;r' }];
+  assert.equal(xp.toCsv(cols, rows, xp.csvStyle('ro')).split('\r\n')[1], 'x;1,5;"p,q;r"');
+  assert.equal(xp.toCsv(cols, rows, xp.csvStyle('en')).split('\r\n')[1], 'x,1.5,"p,q;r"');
+  assert.equal(xp.toCsv(cols, rows).split('\r\n')[1], 'x;1,5;"p,q;r"');
+});
+
+test('an English user sees dotted numbers on the entry page and in the live preview data; a Romanian user sees commas', async () => {
+  const en = await makeUser(app, admin, 'num.en', 'inginer', 'Num En');
+  const ro = await makeUser(app, admin, 'num.ro', 'inginer', 'Num Ro');
+  await switchTo(en, 'en');
+  const pick = async (c) => (await c.get('/liste/iec')).text;
+  const a = await pick(en); const b = await pick(ro);
+  assert.ok(/\d\.\d/.test(a.replace(/<[^>]+>/g, ' ')) && !/\d,\d{2,}/.test(a.replace(/<[^>]+>/g, ' ')), 'English IEC table uses dots');
+  assert.ok(/\d,\d/.test(b.replace(/<[^>]+>/g, ' ')), 'Romanian IEC table uses commas');
+  assert.ok(app.db.get('SELECT 1 FROM users WHERE language = ?', 'en'));
+});

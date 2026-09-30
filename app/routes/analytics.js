@@ -9,6 +9,7 @@ const xp = require('../lib/export');
 const views = require('../views/analytics');
 const { displayDateTime } = require('../lib/time');
 const { T, f } = require('../i18n');
+const i18n = require('../i18n');
 const fill = f;
 const tests = require('../domain/tests');
 
@@ -212,7 +213,7 @@ module.exports = function register(app) {
         const main = tables.find((t) => t.main) || tables[0];
         if (!main) return page(views.analysisPage(ctx, { tab, f, res, ...meta(f) }), 200);
         const name = `analiza-${tab}-${stamp()}`;
-        if (fmt === 'csv') return download(xp.toCsv(main.columns, main.rows), `${name}.csv`, 'text/csv; charset=utf-8');
+        if (fmt === 'csv') return download(xp.toCsv(main.columns, main.rows, xp.csvStyle(i18n.current())), `${name}.csv`, 'text/csv; charset=utf-8');
         return download(xp.toXlsx(tables.map((t) => ({ name: t.title, columns: t.columns, rows: t.rows }))), `${name}.xlsx`, XLSX_TYPE);
       }
       return page(views.analysisPage(ctx, { tab, f, res, ...meta(f) }));
@@ -264,7 +265,7 @@ module.exports = function register(app) {
     ];
     const fmt = q.get('format') === 'xlsx' ? 'xlsx' : 'csv';
     const name = `registru-masuratori-${stamp()}`;
-    if (fmt === 'csv') return download(xp.toCsv(wide, rows), `${name}.csv`, 'text/csv; charset=utf-8');
+    if (fmt === 'csv') return download(xp.toCsv(wide, rows, xp.csvStyle(i18n.current())), `${name}.csv`, 'text/csv; charset=utf-8');
     const long = [];
     const inputs = [];
     for (const r of data.rows) {

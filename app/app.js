@@ -2,6 +2,7 @@
 // Application assembly: database, migrations, seed, router, HTTP server.
 const modules = require('./domain/modules');
 const i18n = require('./i18n');
+require('./domain/calc').setDecimal(i18n.decimal); // numbers are shown with the decimal separator of the viewer's language
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');

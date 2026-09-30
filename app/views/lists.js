@@ -67,7 +67,7 @@ function materialsPage(ctx, d) {
 <div class="scroll"><table class="grid"><thead><tr><th>${T.lists.fields.material}</th><th>${T.lists.fields.grade}</th><th>${T.lists.fields.rho20}</th><th>${T.lists.fields.density}</th><th>${T.lists.fields.alpha20}</th><th></th></tr></thead>
 <tbody>${rows.map((r) => {
     const e = err && err.id === r.id ? err : null;
-    const val = (k) => (e ? e.values[k] : (typeof r[k] === 'number' ? String(r[k]).replace('.', ',') : r[k]));
+    const val = (k) => (e ? e.values[k] : (typeof r[k] === 'number' ? calc.dec(String(r[k])) : r[k]));
     return html`<tr><th scope="row">${r.name} (${r.code})</th>
   <td><input name="grade" value="${val('grade')}" form="m${r.id}" maxlength="20"></td>
   <td><input name="rho20" value="${val('rho20')}" form="m${r.id}" inputmode="decimal">${e ? errText(e.errors, 'rho20') : ''}</td>

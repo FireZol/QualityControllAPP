@@ -46,7 +46,7 @@ function entryForm(ctx, sel, model, data) {
   <input type="hidden" name="construction_id" value="${sel.construction.id}">
   <input type="hidden" name="level" value="${sel.level}">
   ${data.correction ? '' : html`<input type="hidden" name="machine_id" value="${sel.machine.id}">`}
-  <script type="application/json" id="live-ctx">${jsonBlock({ ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(model.ctx.targets.temp_min, 0, 1), max: calc.formatNumber(model.ctx.targets.temp_max, 0, 1) }) } })}</script>
+  <script type="application/json" id="live-ctx">${jsonBlock({ decimal: calc.decimal(), ctx: live, numbered: numberedIds, proposal: data.lengthProposal || 1, quantities: T.quantity, verdicts: T.verdict, messages: { empty: T.measure.cell_empty, temp_warning: f(T.measure.temp_warning, { min: calc.formatNumber(model.ctx.targets.temp_min, 0, 1), max: calc.formatNumber(model.ctx.targets.temp_max, 0, 1) }) } })}</script>
 
   <fieldset class="card">
     <legend>${T.measure.sample_data}</legend>
@@ -210,7 +210,7 @@ function inputsLine(v) {
     const code = k.slice(2).replace(/_(unit|len|temp)$/, '');
     const t = cat.get(code);
     const suffix = k.slice(2).slice(code.length + 1);
-    const val = v.inputs[k] === 'pass' ? T.cable.pass : v.inputs[k] === 'fail' ? T.cable.fail : suffix === 'unit' ? (v.inputs[k] === 'ohm' ? 'Ω' : 'Ω/km') : String(v.inputs[k]).replace('.', ',');
+    const val = v.inputs[k] === 'pass' ? T.cable.pass : v.inputs[k] === 'fail' ? T.cable.fail : suffix === 'unit' ? (v.inputs[k] === 'ohm' ? 'Ω' : 'Ω/km') : calc.dec(String(v.inputs[k]));
     parts.push(html`<span class="in"><span class="muted">${(t ? t.name : code) + (suffix ? ` (${T.cable.suffix[suffix]})` : '')}:</span> ${val}</span>`);
   }
   for (const k of ['d1', 'd2', 'h', 'l', 'mass_g', 'sample_mm', 'r_value', 'r_unit', 'r_sample_m', 'temp_c']) {

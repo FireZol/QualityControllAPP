@@ -54,7 +54,7 @@ function testFields(model, values, errors) {
 function liveCtx(model, sel) {
   const c = model.ctx;
   return {
-    mode: 'tests',
+    mode: 'tests', decimal: calc.decimal(),
     ctx: { tests: c.tests.map((t) => ({ code: t.code, kind: t.kind })), limits: c.limits, iec: c.iec, material: { alpha20: c.material.alpha20 }, targets: c.targets },
     numbered: [], proposal: 1,
     quantities: { ...T.quantity, ...tests.labelsFor(c.tests) }, formats: tests.formatsFor(c.tests), verdicts: T.verdict,
@@ -195,7 +195,7 @@ ${open ? html`<details class="card"><summary>${T.cable.edit_batch}</summary><for
 <h2>${T.cable.drums}</h2>
 <div class="scroll"><table class="grid"><thead><tr><th>${T.cable.drum}</th><th>${T.cable.length_m}</th><th>${T.common.notes}</th><th>${T.cable.tests_done}</th><th></th></tr></thead><tbody>
 ${o.drums.map((dr) => html`<tr><td>${open ? html`<input name="drum_no" value="${dr.drum_no}" form="dr${dr.id}" maxlength="30">` : dr.drum_no}${drumErrors && drumErrors.id === dr.id ? errText(drumErrors.errors, 'drum_no') : ''}</td>
-  <td>${open ? html`<input name="length_m" value="${dr.length_m === null ? '' : String(dr.length_m).replace('.', ',')}" form="dr${dr.id}" inputmode="decimal">` : (dr.length_m ? calc.formatNumber(dr.length_m, 0, 1) : '')}</td>
+  <td>${open ? html`<input name="length_m" value="${dr.length_m === null ? '' : calc.dec(String(dr.length_m))}" form="dr${dr.id}" inputmode="decimal">` : (dr.length_m ? calc.formatNumber(dr.length_m, 0, 1) : '')}</td>
   <td>${open ? html`<input name="notes" value="${dr.notes || ''}" form="dr${dr.id}" maxlength="300">` : (dr.notes || '')}</td>
   <td>${testsByDrum(dr.id).map((m) => html`<a href="/masuratori/${m.record_no}">#${m.record_no}</a> `)}</td>
   <td class="nowrap">${open ? html`<form method="post" action="/loturi/${b.id}/tobe/${dr.id}" id="dr${dr.id}" class="inline">${csrf(ctx)}<button class="btn small" type="submit">${T.common.save}</button></form>
