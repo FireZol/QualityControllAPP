@@ -66,6 +66,10 @@ function settingsPage(ctx, d) {
     ${textField({ label: T.settings.day_start, name: 'shift.day_start', value: values['shift.day_start'], errors, cls: 'num', required: true, hint: 'HH:MM' })}
     ${textField({ label: T.settings.night_start, name: 'shift.night_start', value: values['shift.night_start'], errors, cls: 'num', required: true, hint: 'HH:MM' })}
   </div>
+  <h2>${T.settings.modules}</h2>
+  <p class="muted">${T.settings.modules_hint}</p>
+  ${checkField({ label: T.settings.mod_cable, name: 'modules.cable', checked: !!values['modules.cable'] })}
+  ${checkField({ label: T.settings.mod_analytics, name: 'modules.analytics', checked: !!values['modules.analytics'] })}
   <h2>${T.settings.backup}</h2>
   <div class="row">
     ${textField({ label: T.settings.backup_dir, name: 'backup.dir', value: values['backup.dir'], errors, hint: T.settings.backup_dir_hint, cls: 'grow' })}

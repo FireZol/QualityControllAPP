@@ -16,6 +16,7 @@ async function startApp(extra) {
   const logs = [];
   const app = await createApp(config, { listen: { port: 0, host: '127.0.0.1' }, log: (m) => logs.push(m), noScheduler: true, ...(extra || {}) });
   await app.start();
+  if (!(extra && extra.modulesOff)) { const mods = require('../domain/modules'); for (const m of mods.MODULES) mods.set(app.db, m, true); }
   app.base = `http://127.0.0.1:${app.address.port}`;
   app.logs = logs;
   app.root = root;

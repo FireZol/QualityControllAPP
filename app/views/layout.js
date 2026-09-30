@@ -4,8 +4,11 @@ const { html, h, raw } = require('../lib/html');
 const { T, f, opt } = require('../i18n/ro');
 const calc = require('../domain/calc');
 
-function nav(user, active) {
-  const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register], ['batches', '/loturi', T.nav.batches], ['analyses', '/analize', T.nav.analyses], ['specs', '/fise', T.nav.specs]];
+function nav(user, active, modules) {
+  const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register]];
+  if (modules && modules.cable) items.push(['batches', '/loturi', T.nav.batches]);
+  if (modules && modules.analytics) items.push(['analyses', '/analize', T.nav.analyses]);
+  items.push(['specs', '/fise', T.nav.specs]);
   if (user.role === 'inginer' || user.role === 'administrator') items.push(['lists', '/liste', T.nav.lists]);
   if (user.role === 'administrator') {
     items.push(['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]);
@@ -40,7 +43,7 @@ function layout(ctx, opts) {
 <body>
 <header class="top">
   <a class="brand" href="/">${T.app.name}</a>
-  ${user ? nav(user, opts.active) : ''}
+  ${user ? nav(user, opts.active, ctx.modules) : ''}
   ${user ? html`<div class="who"><span class="who-name">${user.full_name}</span> <span class="who-role">${T.roles[user.role]}</span>
     <a href="/parola">${T.nav.password}</a>
     <form method="post" action="/iesire" class="inline">${csrf(ctx)}<button type="submit" class="link">${T.nav.logout}</button></form></div>` : ''}

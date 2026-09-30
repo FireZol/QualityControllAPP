@@ -12,6 +12,8 @@ const DEFAULTS = {
   'shift.day_start': '06:00',
   'shift.night_start': '18:00',
   'company.name': 'S.C. ROMCAB S.A.',
+  'modules.cable': false, // finished-cable tests, batches, certificates
+  'modules.analytics': false, // analyses, SPC control charts and home-page alerts
 };
 
 function get(db, key) {

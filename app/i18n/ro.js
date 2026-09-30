@@ -311,7 +311,7 @@ const S = {
   },
 
   settings: {
-    title: 'Setări', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
+    title: 'Setări', modules: 'Module', modules_hint: 'Aplicația de bază este măsurarea CTC pentru conductoare. Părțile de mai jos sunt oprite până le porniți; datele existente nu se pierd.', mod_cable: 'Cablu finit: încercări, loturi și certificate', mod_analytics: 'Analize: tendințe, capabilitate, diagrame de control și alerte pe pagina principală', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
     bind_hint: '0.0.0.0 = toate interfețele; 127.0.0.1 = doar acest calculator.', public_name: 'Nume public', public_name_hint: 'De exemplu ctc.romcab.local (înregistrat de IT în DNS).',
     sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
     backup: 'Backup', backup_dir: 'Folder de backup', backup_dir_hint: 'Local sau de rețea (\\\\server\\backup\\ctc). Gol = folderul implicit.', backup_time: 'Ora backup-ului zilnic',

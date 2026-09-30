@@ -5,6 +5,7 @@ const { page, redirect } = require('../lib/http');
 const auth = require('../lib/auth');
 const audit = require('../domain/audit');
 const settings = require('../domain/settings');
+const modules = require('../domain/modules');
 const backup = require('../lib/backup');
 const { nowIso } = require('../lib/time');
 const views = require('../views/admin');
@@ -105,6 +106,8 @@ module.exports = function register(app) {
     const raw = {};
     for (const k of SETTING_KEYS) raw[k] = ctx.form.get(k).trim();
     raw['backup.auto'] = ctx.form.bool('backup.auto');
+    raw['modules.cable'] = ctx.form.bool('modules.cable');
+    raw['modules.analytics'] = ctx.form.bool('modules.analytics');
     const parsed = {};
     const port = /^\d{1,5}$/.test(raw['server.port']) ? Number(raw['server.port']) : 0;
     if (port < 1 || port > 65535) errors['server.port'] = 'invalid'; else parsed['server.port'] = port;
@@ -119,13 +122,18 @@ module.exports = function register(app) {
     const keep = /^\d{1,3}$/.test(raw['backup.keep']) ? Number(raw['backup.keep']) : 0;
     if (keep < 1 || keep > 365) errors['backup.keep'] = 'invalid'; else parsed['backup.keep'] = keep;
     parsed['backup.auto'] = raw['backup.auto'];
+    parsed['modules.cable'] = raw['modules.cable'];
+    parsed['modules.analytics'] = raw['modules.analytics'];
     if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
     if (Object.keys(errors).length) return page(settingsView(ctx, { values: { ...raw }, errors }), 422);
     const before = settings.all(db);
     const changed = {};
     db.tx(() => {
       for (const [k, v] of Object.entries(parsed)) {
-        if (JSON.stringify(before[k]) !== JSON.stringify(v)) { changed[k] = { from: before[k], to: v }; settings.set(db, k, v); }
+        if (JSON.stringify(before[k]) !== JSON.stringify(v)) {
+          changed[k] = { from: before[k], to: v };
+          if (k.startsWith('modules.')) modules.set(db, k.slice('modules.'.length), v); else settings.set(db, k, v);
+        }
       }
       if (Object.keys(changed).length) audit.log(db, ctx.user.id, 'setting_change', 'settings', null, changed);
     });

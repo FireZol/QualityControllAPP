@@ -1,5 +1,6 @@
 'use strict';
 // Application assembly: database, migrations, seed, router, HTTP server.
+const modules = require('./domain/modules');
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -132,6 +133,10 @@ async function handle(app, req, res) {
     const s = auth.findSession(db, cookies.ctc_sid);
     if (s) { ctx.user = s.user; ctx.session = s.session; }
   }
+
+  ctx.modules = modules.get(db);
+  const mod = modules.moduleOf(pathname);
+  if (mod && !ctx.modules[mod]) return send(res, notFoundPage(ctx), extra);
 
   const m = app.router.match(method, pathname);
   if (!m.route) {
