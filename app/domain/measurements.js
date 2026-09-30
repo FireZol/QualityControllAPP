@@ -356,21 +356,30 @@ const SELECT_MEAS = `
   LEFT JOIN batches bt ON bt.id = m.batch_id
   LEFT JOIN drums dr ON dr.id = m.drum_id`;
 
+// SQLite allows a limited number of ? per statement (32766): a long list (the "export everything" of a big register) goes in chunks.
+const CHUNK = 500;
+function inChunks(list, fn) { for (let i = 0; i < list.length; i += CHUNK) fn(list.slice(i, i + CHUNK)); }
+const marks = (list) => list.map(() => '?').join(',');
+
 function attachResults(db, rows) {
   if (!rows.length) return rows;
-  const ids = rows.map((r) => r.id);
-  const res = db.all(`SELECT * FROM measurement_results WHERE measurement_id IN (${ids.map(() => '?').join(',')}) ORDER BY rowid`, ...ids);
   const byId = new Map(rows.map((r) => [r.id, r]));
   for (const r of rows) { r.results = []; r.resultMap = {}; }
-  for (const x of res) {
-    const row = byId.get(x.measurement_id);
-    row.results.push(x); row.resultMap[x.quantity] = x;
-  }
+  inChunks(rows.map((r) => r.id), (ids) => {
+    for (const x of db.all(`SELECT * FROM measurement_results WHERE measurement_id IN (${marks(ids)}) ORDER BY rowid`, ...ids)) {
+      const row = byId.get(x.measurement_id);
+      row.results.push(x); row.resultMap[x.quantity] = x;
+    }
+  });
   return rows;
 }
 
 function attachVersionCounts(db, rows) {
-  for (const r of rows) r.versions = db.value('SELECT count(*) FROM measurements WHERE record_no = ?', r.record_no);
+  const counts = new Map();
+  inChunks([...new Set(rows.map((r) => r.record_no))], (nos) => {
+    for (const x of db.all(`SELECT record_no, count(*) AS n FROM measurements WHERE record_no IN (${marks(nos)}) GROUP BY record_no`, ...nos)) counts.set(x.record_no, x.n);
+  });
+  for (const r of rows) r.versions = counts.get(r.record_no) || 1;
   return rows;
 }
 

@@ -215,7 +215,18 @@ function controlChart(values, baseN) {
  * Alerts for the home page: products / quantities measured in the last days whose latest values break a pattern rule.
  * Needs at least `minN` values; only signals inside the last `recent` values are reported.
  */
+// The alerts only change when a measurement is saved or the 3-day window moves on, so they are worked out once per hour bucket / new measurement.
+const alertCache = new Map();
 function spcAlerts(db, targets, now) {
+  const key = `${db.value('SELECT max(id) FROM measurements')}|${Math.floor((now || new Date()).getTime() / 3600000)}|${JSON.stringify(targets)}`;
+  const hit = alertCache.get(db.file);
+  if (hit && hit.key === key) return hit.value;
+  const value = computeSpcAlerts(db, targets, now);
+  alertCache.set(db.file, { key, value });
+  return value;
+}
+
+function computeSpcAlerts(db, targets, now) {
   const days = 3;
   const since = new Date((now || new Date()).getTime() - days * 86400 * 1000);
   const { isoLocal } = require('../lib/time');
@@ -225,9 +236,11 @@ function spcAlerts(db, targets, now) {
   const alerts = [];
   for (const p of pairs) {
     const rows = db.all(`SELECT r.value, r.verdict, m.record_no, m.created_at, c.label, mat.code AS material, mc.name AS machine
-      FROM measurement_results r JOIN measurements m ON m.id = r.measurement_id AND m.is_current = 1 JOIN constructions c ON c.id = m.construction_id
+      FROM measurements m JOIN constructions c ON c.id = m.construction_id
+      JOIN measurement_results r ON r.measurement_id = m.id AND r.quantity = ?
       JOIN materials mat ON mat.id = c.material_id JOIN machines mc ON mc.id = m.machine_id
-      WHERE c.stable_key = ? AND m.level = ? AND r.quantity = ? ORDER BY m.created_at DESC, m.id DESC LIMIT ?`, p.stable_key, p.level, p.quantity, targets.spc_window).reverse();
+      WHERE m.construction_id IN (SELECT id FROM constructions WHERE stable_key = ?) AND m.is_current = 1 AND m.level = ?
+      ORDER BY m.created_at DESC, m.id DESC LIMIT ?`, p.quantity, p.stable_key, p.level, targets.spc_window).reverse();
     if (rows.length < targets.spc_min_n) continue;
     const ch = controlChart(rows.map((r) => r.value), rows.length - targets.spc_recent); // limits from the values before the recent ones, so a fresh drift does not stretch them
     if (!ch) continue;
