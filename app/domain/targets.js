@@ -9,7 +9,7 @@ const DEFAULTS = {
   sample_mm: 1000, r_sample_m: 5,   // default mass sample length [mm] and resistance sample length [m]
   cpk_good: 1.33, cpk_min: 1.0,     // Cpk colouring: >= good green, >= min amber, below red
   min_n: 30,                        // below this many values Cp / Cpk are marked indicative
-  mass_ratio_min: 0.85, mass_ratio_max: 1.15, // wires x wire mass vs sheet mass: outside this band a warning is raised
+  mass_ratio_min: 0.99, mass_ratio_max: 1.01, // ±1 % (owner, 2026-09-30); // wires x wire mass vs sheet mass: outside this band a warning is raised
   spc_min_n: 20, spc_window: 100, spc_recent: 10, // control charts: values needed before alerts, how far back, how many latest values raise an alert
 };
 

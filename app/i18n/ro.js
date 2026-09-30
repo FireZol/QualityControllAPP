@@ -311,7 +311,7 @@ const S = {
       cycle_start: 'Prima zi de tură de zi a ciclului', code: 'Cod', kind: 'Tip', iec_group: 'Grup IEC', material: 'Material', grade: 'Calitate', rho20: 'ρ20 [Ω·mm²/m]',
       compounds_code: 'Cod', compounds_name: 'Denumire', density: 'Densitate δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Denumire completă', crews_name: 'Schimb',
     },
-    families: 'Familii de produs permise', crews_hint: 'Fiecare schimb are un ciclu de 12 zile: 4 zile de zi, 2 libere, 4 nopți, 2 libere. Introduceți prima zi de tură de zi a fiecărui schimb; schimburile A, B, C pornesc la 4 zile distanță.',
+    families: 'Familii de produs permise', crews_hint: 'Ciclul schimburilor (implicit 12 zile: 4 de zi, 2 libere, 4 nopți, 2 libere) se stabilește în Setări → Ture. Introduceți prima zi de tură de zi a fiecărui schimb; cu ciclul implicit, schimburile A, B, C pornesc la 4 zile distanță.',
     machines_hint: 'Configurația rotoarelor (de exemplu 1+6+12+18) limitează construcțiile la cele cu suficiente fire; dacă rămâne goală nu se aplică nicio limită de capacitate.',
     materials_hint: 'Modificările se înregistrează în jurnal și se aplică măsurătorilor noi. Toate valorile de referință (R max, ρ20) sunt la 20 °C, ca în standard.',
     kt_title: 'Corecția de temperatură (IEC 60228, Anexa B)', kt_rule: 'Punctul de referință este 20 °C: o rezistență măsurată la temperatura t se aduce la 20 °C cu R20 = Rt × kt, kt = 1 / (1 + α20 · (t − 20)), cu α20 al materialului. Rezistența teoretică din masă se calculează direct la 20 °C (R20 = ρ20 / A). Celelalte mărimi derivate folosesc formulele din standard.',
@@ -329,7 +329,7 @@ const S = {
   settings: {
     title: 'Setări', modules: 'Module', modules_hint: 'Aplicația de bază este măsurarea CTC pentru conductoare. Părțile de mai jos sunt oprite până le porniți; datele existente nu se pierd.', mod_cable: 'Cablu finit: încercări, loturi și certificate', mod_analytics: 'Analize: tendințe, capabilitate, diagrame de control și alerte pe pagina principală', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
     bind_hint: '0.0.0.0 = toate interfețele; 127.0.0.1 = doar acest calculator.', public_name: 'Nume public', public_name_hint: 'De exemplu ctc.romcab.local (înregistrat de IT în DNS).',
-    sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
+    sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', cycle_hint: 'Ciclul unui schimb, în zile. Implicit 4 zile de zi, 2 libere, 4 nopți, 2 libere (12 zile). Se aplică măsurătorilor noi; înregistrările existente păstrează schimbul lor.', cycle_day: 'Zile de tură de zi', cycle_off1: 'Zile libere (după zi)', cycle_night: 'Nopți', cycle_off2: 'Zile libere (după noapte)', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
     backup: 'Backup', backup_dir: 'Folder de backup', backup_dir_hint: 'Local sau de rețea (\\\\server\\backup\\ctc). Gol = folderul implicit.', backup_time: 'Ora backup-ului zilnic',
     backup_keep: 'Număr de copii păstrate', backup_auto: 'Backup automat zilnic', backups: 'Copii de siguranță', backup_folder: 'Folder curent: {dir}', backup_now: 'Backup acum',
     backup_failed: 'Backup-ul a eșuat', file: 'Fișier', size: 'Mărime', restore: 'Restaurează', no_backups: 'Nu există încă niciun backup.',

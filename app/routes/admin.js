@@ -95,6 +95,7 @@ module.exports = function register(app) {
 
   function settingsView(ctx, extra) {
     const values = extra && extra.values ? extra.values : settings.all(db);
+    if (!extra || !extra.values) [values['cycle.day'], values['cycle.off1'], values['cycle.night'], values['cycle.off2']] = values['shift.cycle'];
     const dir = backup.backupDir(db, config);
     return views.settingsPage(ctx, { values, errors: extra && extra.errors, backups: backup.listBackups(dir), backupDir: dir, backupError: extra && extra.backupError });
   }
@@ -106,6 +107,8 @@ module.exports = function register(app) {
     const raw = {};
     for (const k of SETTING_KEYS) raw[k] = ctx.form.get(k).trim();
     raw['backup.auto'] = ctx.form.bool('backup.auto');
+    const CYCLE = ['day', 'off1', 'night', 'off2'];
+    for (const k of CYCLE) raw['cycle.' + k] = ctx.form.get('cycle.' + k).trim();
     raw['modules.cable'] = ctx.form.bool('modules.cable');
     raw['modules.analytics'] = ctx.form.bool('modules.analytics');
     const parsed = {};
@@ -125,6 +128,15 @@ module.exports = function register(app) {
     parsed['modules.cable'] = raw['modules.cable'];
     parsed['modules.analytics'] = raw['modules.analytics'];
     if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
+    const cycleSent = CYCLE.some((k) => ctx.form.params.has('cycle.' + k)); // an older form without the cycle fields leaves it unchanged
+    const cyc = CYCLE.map((k) => (/^\d{1,2}$/.test(raw['cycle.' + k]) ? Number(raw['cycle.' + k]) : -1));
+    if (cycleSent) CYCLE.forEach((k, i) => { if (cyc[i] < 0 || cyc[i] > 30) errors['cycle.' + k] = 'invalid'; });
+    if (cycleSent && !CYCLE.some((k) => errors['cycle.' + k])) {
+      if (cyc[0] < 1) errors['cycle.day'] = 'invalid';
+      if (cyc[2] < 1) errors['cycle.night'] = 'invalid';
+      if (cyc.reduce((a, b) => a + b, 0) > 60) errors['cycle.off2'] = 'invalid';
+    }
+    if (cycleSent && !Object.keys(errors).some((k) => k.startsWith('cycle.'))) parsed['shift.cycle'] = cyc;
     if (Object.keys(errors).length) return page(settingsView(ctx, { values: { ...raw }, errors }), 422);
     const before = settings.all(db);
     const changed = {};

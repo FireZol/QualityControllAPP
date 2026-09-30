@@ -76,7 +76,7 @@ module.exports = {
       cycle_start: 'First day-shift day of the cycle', code: 'Code', kind: 'Kind', iec_group: 'IEC group', material: 'Material', grade: 'Grade', rho20: 'ρ20 [Ω·mm²/m]',
       compounds_code: 'Code', compounds_name: 'Name', density: 'Density δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Full name', crews_name: 'Crew',
     },
-    families: 'Allowed product families', crews_hint: 'Each crew has a 12-day cycle: 4 days, 2 off, 4 nights, 2 off. Enter the first day-shift day of each crew; crews A, B, C start 4 days apart.',
+    families: 'Allowed product families', crews_hint: 'The crew cycle (default 12 days: 4 days, 2 off, 4 nights, 2 off) is set under Settings → Shifts. Enter the first day-shift day of each crew; with the default cycle, crews A, B, C start 4 days apart.',
     machines_hint: 'The rotor configuration (for example 1+6+12+18) limits the constructions to those with enough wires; if left empty no capacity limit applies.',
     materials_hint: 'Changes are written to the audit log and apply to new measurements. All reference values (R max, ρ20) are at 20 °C, as in the standard.',
     kt_title: 'Temperature correction (IEC 60228, Annex B)', kt_rule: 'The reference point is 20 °C: a resistance measured at temperature t is brought to 20 °C with R20 = Rt × kt, kt = 1 / (1 + α20 · (t − 20)), with the α20 of the material. The theoretical resistance from mass is calculated directly at 20 °C (R20 = ρ20 / A). The other derived quantities use the formulas of the standard.',
@@ -94,7 +94,7 @@ module.exports = {
   settings: {
     title: 'Settings', modules: 'Modules', modules_hint: 'The base application is QC measuring for conductors. The parts below are off until you switch them on; existing data is not lost.', mod_cable: 'Finished cable: tests, batches and certificates', mod_analytics: 'Analyses: trends, capability, control charts and alerts on the home page', server: 'Server', restart_notice: 'The port, the network address and the public name apply after the service restarts.', port: 'Port', bind: 'Network address',
     bind_hint: '0.0.0.0 = all interfaces; 127.0.0.1 = this computer only.', public_name: 'Public name', public_name_hint: 'For example ctc.romcab.local (registered by IT in DNS).',
-    sessions: 'Sessions', idle_hours: 'Expiry after inactivity [hours]', shifts: 'Shifts', day_start: 'Start of the day shift', night_start: 'Start of the night shift',
+    sessions: 'Sessions', idle_hours: 'Expiry after inactivity [hours]', shifts: 'Shifts', cycle_hint: 'The working cycle of a crew, in days. Default 4 day shifts, 2 days off, 4 nights, 2 days off (12 days). It applies to new measurements; existing records keep their crew.', cycle_day: 'Day-shift days', cycle_off1: 'Days off (after days)', cycle_night: 'Night shifts', cycle_off2: 'Days off (after nights)', day_start: 'Start of the day shift', night_start: 'Start of the night shift',
     backup: 'Backup', backup_dir: 'Backup folder', backup_dir_hint: 'Local or network (\\\\server\\backup\\ctc). Empty = the default folder.', backup_time: 'Time of the daily backup',
     backup_keep: 'Number of copies kept', backup_auto: 'Automatic daily backup', backups: 'Backups', backup_folder: 'Current folder: {dir}', backup_now: 'Back up now',
     backup_failed: 'The backup failed', file: 'File', size: 'Size', restore: 'Restore', no_backups: 'There is no backup yet.',

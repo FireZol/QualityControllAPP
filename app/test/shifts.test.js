@@ -47,3 +47,17 @@ test('crew cycle: 4 days, 2 off, 4 nights, 2 off', () => {
   assert.equal(S.crewShift('2026-08-31', start), null);
   assert.equal(S.crewShift('2026-08-28', start), 'noapte');
 });
+
+test('the crew cycle can be changed: default 4-2-4-2, or any [day, off, night, off]', () => {
+  const s = require('../domain/shifts');
+  assert.deepEqual(s.DEFAULT_CYCLE, [4, 2, 4, 2]);
+  assert.equal(s.crewShift('2026-01-01', '2026-01-01'), 'zi');
+  assert.equal(s.crewShift('2026-01-05', '2026-01-01'), null);
+  assert.equal(s.crewShift('2026-01-07', '2026-01-01'), 'noapte');
+  assert.equal(s.crewShift('2026-01-13', '2026-01-01'), 'zi'); // 12 days later
+  // a 2 + 1 + 2 + 1 cycle repeats every 6 days
+  const c = [2, 1, 2, 1];
+  assert.equal(s.cycleLength(c), 6);
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6].map((d) => s.crewShift(`2026-01-0${1 + d}`, '2026-01-01', c)), ['zi', 'zi', null, 'noapte', 'noapte', null, 'zi']);
+  assert.equal(s.crewOnDuty('2026-01-04', 'noapte', [{ name: 'A', cycle_start: '2026-01-01' }, { name: 'B', cycle_start: '2026-01-03' }], c).name, 'A');
+});

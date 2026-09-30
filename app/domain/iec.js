@@ -27,7 +27,7 @@ const MIN_WIRES_FIELD = { circular: 'min_wires_circular', compactat: 'min_wires_
  * @param limits  {quantity: {min,max,nominal}} for the construction
  */
 function checkConstruction(db, family, c, limits, targets) {
-  const band = targets || { mass_ratio_min: 0.85, mass_ratio_max: 1.15 };
+  const band = targets || { mass_ratio_min: 0.99, mass_ratio_max: 1.01 };
   const out = [];
   const exception = !!(c.iec_exception_reason && String(c.iec_exception_reason).trim());
   const iecFinding = (code, params) => {

@@ -109,7 +109,7 @@ function proposeLengthNo(db, { machineId, shiftDate, shift, stableKey }) {
 function currentShift(db, date) {
   const cfg = settings.shiftConfig(db);
   const s = shifts.shiftFor(date || new Date(), cfg);
-  const crew = shifts.crewOnDuty(s.shift_date, s.shift, db.all('SELECT * FROM crews ORDER BY name'));
+  const crew = shifts.crewOnDuty(s.shift_date, s.shift, db.all('SELECT * FROM crews ORDER BY name'), cfg.cycle);
   return { ...s, crew };
 }
 

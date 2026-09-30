@@ -71,6 +71,10 @@ function settingsPage(ctx, d) {
   <p class="muted">${T.settings.modules_hint}</p>
   ${checkField({ label: T.settings.mod_cable, name: 'modules.cable', checked: !!values['modules.cable'] })}
   ${checkField({ label: T.settings.mod_analytics, name: 'modules.analytics', checked: !!values['modules.analytics'] })}
+  <p class="muted">${T.settings.cycle_hint}</p>
+  <div class="row">
+    ${['day', 'off1', 'night', 'off2'].map((k) => textField({ label: T.settings['cycle_' + k], name: 'cycle.' + k, value: values['cycle.' + k], errors, inputmode: 'numeric', cls: 'num', required: true }))}
+  </div>
   <h2>${T.settings.backup}</h2>
   <div class="row">
     ${textField({ label: T.settings.backup_dir, name: 'backup.dir', value: values['backup.dir'], errors, hint: T.settings.backup_dir_hint, cls: 'grow' })}

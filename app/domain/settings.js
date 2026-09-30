@@ -11,6 +11,7 @@ const DEFAULTS = {
   'backup.keep': 14,
   'shift.day_start': '06:00',
   'shift.night_start': '18:00',
+  'shift.cycle': [4, 2, 4, 2], // crew cycle in days: day shifts, days off, night shifts, days off
   'company.name': 'S.C. ROMCAB S.A.',
   'modules.cable': false, // finished-cable tests, batches, certificates
   'modules.analytics': false, // analyses, SPC control charts and home-page alerts
@@ -34,6 +35,6 @@ function all(db) {
   return out;
 }
 
-const shiftConfig = (db) => ({ dayStart: get(db, 'shift.day_start'), nightStart: get(db, 'shift.night_start') });
+const shiftConfig = (db) => ({ dayStart: get(db, 'shift.day_start'), nightStart: get(db, 'shift.night_start'), cycle: get(db, 'shift.cycle') });
 
 module.exports = { DEFAULTS, get, set, all, shiftConfig };

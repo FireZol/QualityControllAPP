@@ -38,25 +38,31 @@ function dayNumber(isoDate) {
   return Math.round(Date.UTC(y, m - 1, d) / 86400000);
 }
 
-/** Position of a date inside a crew's 12-day cycle: 0..3 day, 4..5 off, 6..9 night, 10..11 off. */
-function cycleIndex(shiftDate, cycleStart) {
-  const n = (dayNumber(shiftDate) - dayNumber(cycleStart)) % 12;
-  return (n + 12) % 12;
+/** The working cycle of a crew as days: [day shifts, days off, night shifts, days off]. Default 4 + 2 + 4 + 2 = 12 days. Editable in Setări. */
+const DEFAULT_CYCLE = [4, 2, 4, 2];
+const cycleLength = (cycle) => (cycle || DEFAULT_CYCLE).reduce((a, b) => a + b, 0);
+
+/** Position of a date inside a crew's cycle (default: 0..3 day, 4..5 off, 6..9 night, 10..11 off). */
+function cycleIndex(shiftDate, cycleStart, cycle) {
+  const len = cycleLength(cycle);
+  const n = (dayNumber(shiftDate) - dayNumber(cycleStart)) % len;
+  return (n + len) % len;
 }
 
-function crewShift(shiftDate, cycleStart) {
-  const n = cycleIndex(shiftDate, cycleStart);
-  if (n <= 3) return 'zi';
-  if (n >= 6 && n <= 9) return 'noapte';
+function crewShift(shiftDate, cycleStart, cycle) {
+  const [day, off1, night] = cycle || DEFAULT_CYCLE;
+  const n = cycleIndex(shiftDate, cycleStart, cycle);
+  if (n < day) return 'zi';
+  if (n >= day + off1 && n < day + off1 + night) return 'noapte';
   return null;
 }
 
 /** The crew on duty for a (shift_date, shift): the one whose cycle puts it on that shift. */
-function crewOnDuty(shiftDate, shift, crews) {
+function crewOnDuty(shiftDate, shift, crews, cycle) {
   for (const c of crews) {
-    if (crewShift(shiftDate, c.cycle_start) === shift) return c;
+    if (crewShift(shiftDate, c.cycle_start, cycle) === shift) return c;
   }
   return null;
 }
 
-module.exports = { shiftFor, crewOnDuty, crewShift, cycleIndex, dateKey, parseHm, pad };
+module.exports = { shiftFor, crewOnDuty, crewShift, cycleIndex, cycleLength, DEFAULT_CYCLE, dateKey, parseHm, pad };

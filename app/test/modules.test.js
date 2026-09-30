@@ -43,3 +43,21 @@ test('the "?" tip button is on every page and shows tips for that screen', async
     assert.ok(r.text.includes('<details class="help">') && r.text.includes(tip), `${url} shows its tips`);
   }
 });
+
+test('Setări: the crew cycle is editable and validated; the mass-vs-wires band defaults to ±1 %', async () => {
+  const base = { 'server.port': '8080', 'server.bind': '0.0.0.0', 'server.public_name': '', 'session.idle_hours': '8', 'backup.dir': '', 'backup.time': '02:00', 'backup.keep': '14', 'shift.day_start': '06:00', 'shift.night_start': '18:00', 'backup.auto': '1' };
+  assert.deepEqual(require('../domain/settings').get(app.db, 'shift.cycle'), [4, 2, 4, 2]);
+  assert.ok((await admin.get('/admin/setari')).text.includes('name="cycle.day"'));
+  let r = await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'cycle.day': '3', 'cycle.off1': '1', 'cycle.night': '3', 'cycle.off2': '1' });
+  assert.equal(r.status, 303);
+  assert.deepEqual(require('../domain/settings').get(app.db, 'shift.cycle'), [3, 1, 3, 1]);
+  r = await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'cycle.day': '0', 'cycle.off1': '1', 'cycle.night': '3', 'cycle.off2': '1' });
+  assert.equal(r.status, 422);
+  r = await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'cycle.day': 'x', 'cycle.off1': '1', 'cycle.night': '3', 'cycle.off2': '1' });
+  assert.equal(r.status, 422);
+  assert.deepEqual(require('../domain/settings').get(app.db, 'shift.cycle'), [3, 1, 3, 1], 'an invalid form changes nothing');
+  await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'cycle.day': '4', 'cycle.off1': '2', 'cycle.night': '4', 'cycle.off2': '2' });
+  const t = require('../domain/targets').get(app.db);
+  assert.equal(t.mass_ratio_min, 0.99);
+  assert.equal(t.mass_ratio_max, 1.01);
+});
