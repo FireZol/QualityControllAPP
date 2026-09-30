@@ -89,7 +89,16 @@ module.exports = function register(app) {
   }
 
   router.get('/masuratori/nou', {}, (ctx) => {
-    const d = newContext(ctx.query);
+    // opening the page bare resumes the product this user measured last (they can still change it)
+    let query = ctx.query;
+    if (!['family', 'machine', 'construction', 'batch', 'design'].some((k) => ctx.query.has(k))) {
+      const last = db.get(`SELECT m.family_id, m.machine_id, m.construction_id, m.level FROM measurements m
+        JOIN product_families f ON f.id = m.family_id AND f.active = 1 JOIN constructions c ON c.id = m.construction_id AND c.active = 1
+        JOIN spec_revisions r ON r.id = c.revision_id AND r.status = 'activa'
+        WHERE m.created_by = ? AND m.batch_id IS NULL ORDER BY m.id DESC LIMIT 1`, ctx.user.id);
+      if (last) query = new URLSearchParams({ family: last.family_id, machine: last.machine_id, construction: last.construction_id, level: last.level });
+    }
+    const d = newContext(query);
     return page(d.cable ? cableViews.cableNewPage(ctx, d) : views.newPage(ctx, d));
   });
 

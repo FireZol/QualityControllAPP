@@ -169,7 +169,7 @@ const S = {
 
   home: {
     title: 'Acasă', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
-    today: 'Măsurătorile de azi (tura curentă prima)', today_empty: 'Nicio măsurătoare înregistrată azi.',
+    today: 'Măsurătorile de azi (tura curentă prima)', today_empty: 'Nicio măsurătoare înregistrată azi.', start_first: 'Începeți prima măsurătoare »',
     spc: 'Semnale SPC (deriva procesului)', spc_hint: 'Produse la care ultimele valori încalcă o regulă de control, chiar dacă încă sunt în limite. Limitele de control se calculează din valorile anterioare.',
     out_of_limit: 'Rezultate în afara limitelor — ultimele 24 de ore', out_empty: 'Nicio valoare în afara limitelor în ultimele 24 de ore.', results: 'Valori',
   },
@@ -191,7 +191,7 @@ const S = {
   measure: {
     level: 'Nivel măsurat', title: 'Măsurătoare nouă', family: 'Familie de produs', machine: 'Utilaj', construction: 'Produs (secțiune și formă)', choose: '— alegeți —',
     no_machines: 'Pentru această familie nu există niciun utilaj activ. Un Inginer sau Administrator trebuie să adauge unul în Nomenclatoare → Utilaje.',
-    no_constructions: 'Nu există construcții în fișa tehnică activă potrivite pentru acest utilaj. Verificați dacă fișa are o revizie activă și configurația rotoarelor utilajului.',
+    no_constructions: 'Nu există produse în fișa tehnică activă potrivite pentru acest utilaj. Cel mai des fișa nu are încă o revizie activă: un Inginer o verifică și un al doilea Inginer o activează. Vedeți:',
     active_revision: 'Fișa tehnică activă: Ed. {edition}, Rev. {revision} — {doc}',
     limits_caption: 'Limite din fișa tehnică activă', nominal: 'Nominal', limits: 'Limite', source: 'Sursă', source_sheet: 'fișa tehnică', informative_note: 'informativ, fără verdict',
     sample_data: 'Datele probei', operator: 'Operator', client: 'Client', sample_type: 'Tip de probă', none_selected: '— nespecificat —',
@@ -206,7 +206,7 @@ const S = {
   register: {
     title: 'Registru măsurători', shift: 'Tura', crew: 'Schimb', product: 'Produs', only_out: 'Doar cu valori în afara limitelor', all_versions: 'Arată și versiunile vechi',
     count: '{total} înregistrări', no: 'Nr.', diameter: 'Ø / Î × L [mm]', versions: '{n} versiuni', versions_title: 'Înregistrarea are mai multe versiuni (corecturi)',
-    empty: 'Nicio înregistrare pentru filtrele alese.',
+    empty: 'Nicio înregistrare pentru filtrele alese.', clear_filters: 'Ștergeți filtrele', add_first: 'Adăugați o măsurătoare',
   },
 
   detail: {

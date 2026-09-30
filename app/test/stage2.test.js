@@ -254,3 +254,15 @@ test('stage 2 pages keep the language rules', async () => {
   }
   assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', 'print.css')));
 });
+
+test('UX: the entry page resumes the product the user measured last; a user without history starts blank', async () => {
+  const last = app.db.get('SELECT * FROM measurements WHERE created_by = (SELECT id FROM users WHERE username = ?) ORDER BY id DESC LIMIT 1', 'ctc1');
+  assert.ok(last, 'ctc1 has saved measurements earlier in this file');
+  const page = (await ctc.get('/masuratori/nou')).text;
+  assert.match(page, new RegExp(`<option value="${last.construction_id}" selected`));
+  assert.ok(page.includes('id="entry"'), 'the entry form is shown straight away');
+  assert.ok(!(await engB.get('/masuratori/nou')).text.includes('id="entry"'));
+  // an explicit choice always wins over the remembered one
+  const other = (await ctc.get(`/masuratori/nou?family=${last.family_id}`)).text;
+  assert.ok(!other.includes('id="entry"'));
+});

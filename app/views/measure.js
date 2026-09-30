@@ -122,7 +122,7 @@ function newPage(ctx, d) {
     <noscript><button class="btn" type="submit">${T.common.continue}</button></noscript>
   </div>
   ${family_id && !machines.length ? html`<p class="notice">${T.measure.no_machines}</p>` : ''}
-  ${family_id && machine_id && !constructions.length ? html`<p class="notice">${T.measure.no_constructions}</p>` : ''}
+  ${family_id && machine_id && !constructions.length ? html`<p class="notice">${T.measure.no_constructions} <a href="/fise">${T.specs.title}</a></p>` : ''}
 </form>
 ${sel && model ? html`
 <section class="card product">
@@ -188,7 +188,7 @@ function registerPage(ctx, d) {
     <td>${r.family_name}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}${r.drum_no ? ' / ' + r.drum_no : ''}</a>` : ''}${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td>
     <td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
     <td class="nowrap">${cellD(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td>
-    <td class="notes">${r.notes || ''}</td></tr>`) : html`<tr><td colspan="15" class="empty">${T.register.empty}</td></tr>`}</tbody>
+    <td class="notes">${r.notes || ''}</td></tr>`) : html`<tr><td colspan="15" class="empty">${T.register.empty} <a href="/masuratori">${T.register.clear_filters}</a> · <a href="/masuratori/nou">${T.register.add_first}</a></td></tr>`}</tbody>
 </table></div>
 ${pager('/masuratori', data.page, data.pages, Object.fromEntries(qs))}`,
   });
@@ -243,7 +243,7 @@ function detailPage(ctx, d) {
   </dl>
   <div class="actions">
     ${canCorrect ? html`<a class="btn primary" href="/masuratori/${cur.record_no}/corecteaza">${T.detail.correct}</a>` : html`<span class="muted">${opt('detail', 'denied_' + denied, '')}</span>`}
-    <a class="btn" href="/masuratori/nou?family=${cur.family_id}&amp;machine=${cur.machine_id}&amp;construction=${cur.construction_id}">${T.detail.new_same}</a>
+    <a class="btn" href="/masuratori/nou?family=${cur.family_id}&amp;machine=${cur.machine_id}&amp;construction=${cur.construction_id}&amp;level=${cur.level}">${T.detail.new_same}</a>
     <a class="btn" href="/masuratori">${T.common.back}</a>
   </div>
 </section>

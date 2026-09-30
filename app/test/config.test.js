@@ -161,9 +161,10 @@ test('families: switch what is measured and which resistance, per family', async
   assert.equal(r.status, 422);
   // deactivated family disappears from the entry form
   const sarma = app.db.get("SELECT id FROM product_families WHERE code = 'SARMA_CL5'").id;
-  assert.match((await ctc.get('/masuratori/nou')).text, new RegExp(`value="${sarma}"`));
+  const familySelect = async () => /name="family"[\s\S]*?<\/select>/.exec((await ctc.get('/masuratori/nou')).text)[0];
+  assert.match(await familySelect(), new RegExp(`<option value="${sarma}"`));
   await engA.postForm('/liste/familii', `/liste/familii/${sarma}`, { mass: '1' });
-  assert.ok(!new RegExp(`value="${sarma}"`).test((await ctc.get('/masuratori/nou')).text));
+  assert.ok(!new RegExp(`<option value="${sarma}"`).test(await familySelect()));
   assert.ok(app.db.value("SELECT count(*) FROM audit_log WHERE action = 'family_change'") >= 3);
   // put the switches back for the next tests
   await engA.postForm('/liste/familii', `/liste/familii/${fam}`, { active: '1', mass: '1', theor: '1', r_cu: '1' });

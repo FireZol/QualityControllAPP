@@ -76,9 +76,16 @@
   form.addEventListener('change', render);
   render();
 
+  // start typing at once: the first empty measured value (not the selects) takes the focus
+  const firstEmpty = Array.prototype.find.call(form.querySelectorAll('input[data-in]:not([type=hidden])'), function (x) {
+    return x.value === '' && !x.disabled && x.getAttribute('data-in') !== 'length_no';
+  });
+  if (firstEmpty && !form.querySelector('.has-error')) firstEmpty.focus();
+
   // keyboard-only entry: Enter moves to the next field, the last Enter saves
   form.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
+    if (e.ctrlKey || e.metaKey) { e.preventDefault(); form.requestSubmit(); return; }
     const t = e.target;
     if (!(t instanceof HTMLInputElement) || t.type === 'checkbox' || t.type === 'submit') return;
     e.preventDefault();
