@@ -27,3 +27,26 @@ test('the release package: app, seed, scripts (CRLF) and guides; no tests, data,
     assert.equal(sha, crypto.createHash('sha256').update(buf).digest('hex'));
   } finally { fs.rmSync(out, { recursive: true, force: true }); }
 });
+
+test('zero dependencies: package.json lists none and every require() in the application is a Node built-in or a local file', () => {
+  const pkg = require('../../package.json');
+  assert.ok(!pkg.dependencies && !pkg.devDependencies, 'no npm dependencies');
+  const root = path.join(__dirname, '..');
+  const offenders = [];
+  const walk = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const f = path.join(dir, e.name);
+      if (e.isDirectory()) { if (e.name !== 'test') walk(f); continue; }
+      if (!/\.js$/.test(e.name)) continue;
+      for (const m of fs.readFileSync(f, 'utf8').matchAll(/require\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+        if (!m[1].startsWith('.') && !m[1].startsWith('node:')) offenders.push(`${path.relative(root, f)}: ${m[1]}`);
+      }
+    }
+  };
+  walk(root);
+  assert.deepEqual(offenders, []);
+  // the front-end loads nothing from outside either (CSP default-src 'self' is tested elsewhere): no http(s):// script or style links in the sources
+  for (const f of fs.readdirSync(path.join(root, 'public'))) {
+    if (/\.(js|css)$/.test(f)) assert.ok(!/(src|href)=["']https?:\/\//.test(fs.readFileSync(path.join(root, 'public', f), 'utf8')), f);
+  }
+});

@@ -4,7 +4,7 @@ Aplicația este un singur folder pe serverul Windows. Nu se instalează nimic al
 
 ```
 C:\ROMCAB-CTC\
-  node\      Node.js portabil (LTS, versiunea 22.13 sau mai nouă), dezarhivat, fără instalare
+  node\      Node.js portabil (LTS; testat cu 24.21 și 22.22; minim 22.13), dezarhivat, fără instalare
   app\       codul aplicației
   seed\      datele inițiale (folosite doar la prima pornire)
   data\      baza de date ctc.db (se creează singură)
@@ -17,7 +17,7 @@ C:\ROMCAB-CTC\
 Pachetul de instalare este `ROMCAB-CTC-<versiune>.zip` (verificati suma `.sha256`); se dezarhiveaza in `C:\`, rezultand `C:\ROMCAB-CTC\`. Se construieste cu `node tools/make-release.js`.
 
 1. Copiați folderul `ROMCAB-CTC` pe server (de exemplu `C:\ROMCAB-CTC`).
-2. Descărcați o singură dată, de pe un calculator cu internet, arhiva **Windows x64 (.zip)** de la nodejs.org (versiunea LTS, cel puțin 22.13) și dezarhivați-o în `C:\ROMCAB-CTC\node\`, astfel încât să existe `C:\ROMCAB-CTC\node\node.exe`.
+2. Descărcați o singură dată, de pe un calculator cu internet, arhiva **Windows x64 (.zip)** de la nodejs.org (versiunea LTS; recomandat **24.x**, cel puțin 22.13) și dezarhivați-o în `C:\ROMCAB-CTC\node\`, astfel încât să existe `C:\ROMCAB-CTC\node\node.exe`.
 3. (Opțional) Copiați `config.example.json` ca `config.json` și ajustați portul, adresa și numele. `start.bat` face această copie automat dacă lipsește.
 
 ## 2. Prima pornire
@@ -59,4 +59,13 @@ Pachetul de instalare este `ROMCAB-CTC-<versiune>.zip` (verificati suma `.sha256
 
 ## 7. Cerințe
 
-Windows Server / Windows 10–11 x64, Node.js LTS ≥ 22.13 (modulul `node:sqlite` este inclus), un browser actual (Chrome, Edge sau Firefox) pe calculatoarele din laborator și din hală. Fără internet la rulare: nu se încarcă fonturi, scripturi sau imagini externe.
+Windows Server / Windows 10–11 x64, Node.js LTS ≥ 22.13, recomandat 24.x (modulul `node:sqlite` este inclus), un browser actual (Chrome, Edge sau Firefox) pe calculatoarele din laborator și din hală. Fără internet la rulare: nu se încarcă fonturi, scripturi sau imagini externe.
+
+## 8. Actualizări de securitate
+
+Aplicația **nu are biblioteci externe** (nici npm, nici scripturi încărcate din internet), deci singurul lucru de ținut la zi este Node.js:
+
+1. Urmăriți versiunile LTS de pe nodejs.org (actualizări de securitate apar la câteva săptămâni).
+2. Oprire: `schtasks /end /tn ROMCAB-CTC`. Faceți **Backup acum** înainte.
+3. Înlocuiți conținutul folderului `node\` cu noua versiune (același LTS sau următorul), pornire: `schtasks /run /tn ROMCAB-CTC`.
+4. Verificați pagina de start și o măsurătoare de probă. Dacă ceva nu merge, puneți înapoi vechiul `node\`.
