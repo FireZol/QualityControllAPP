@@ -4,11 +4,10 @@ param([Parameter(Mandatory = $true)][string]$Root)
 $ErrorActionPreference = 'Stop'
 $Root = $Root.TrimEnd('\')
 $node = Join-Path $Root 'node\node.exe'
-$server = Join-Path $Root 'app\server.js'
-$log = Join-Path $Root 'data\server.log'
 New-Item -ItemType Directory -Force -Path (Join-Path $Root 'data') | Out-Null
 
-$argument = '/c ""' + $node + '" --no-warnings "' + $server + '" >> "' + $log + '" 2>&1"'
+$runner = Join-Path $Root 'run-server.bat'
+$argument = '/c ""' + $runner + '""'
 $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument $argument -WorkingDirectory $Root
 $trigger = New-ScheduledTaskTrigger -AtStartup
 $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) `

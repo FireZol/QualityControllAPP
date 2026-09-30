@@ -26,6 +26,8 @@ module.exports = {
     analyses: ['Analyses use the saved measurements; choose the product and the quantity, then the period.'],
   },
 
+  layout: { report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
+
   roles: { administrator: 'Administrator', inginer: 'Engineer', personal: 'Staff' },
   shift: { zi: 'Day shift', noapte: 'Night shift' },
   material: { Cu: 'Copper', Al: 'Aluminium' },

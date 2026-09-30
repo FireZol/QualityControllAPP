@@ -13,6 +13,7 @@ const DEFAULTS = {
   'shift.night_start': '18:00',
   'shift.cycle': [4, 2, 4, 2], // crew cycle in days: day shifts, days off, night shifts, days off
   'company.name': 'S.C. ROMCAB S.A.',
+  'feedback.email': '', // where the "Report a problem" link writes to (empty = no link)
   'modules.cable': false, // finished-cable tests, batches, certificates
   'modules.analytics': false, // analyses, SPC control charts and home-page alerts
 };

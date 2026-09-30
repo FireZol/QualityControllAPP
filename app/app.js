@@ -147,6 +147,7 @@ async function handleRequest(app, req, res, langStore) {
   // printed documents can be shown in another language than the viewer's (a customer copy): ?lang=en on the print pages
   if (method === 'GET' && PRINT_PATHS.test(pathname) && i18n.valid(url.searchParams.get('lang'))) langStore.lang = url.searchParams.get('lang');
   ctx.modules = modules.get(db);
+  ctx.feedbackEmail = settings.get(db, 'feedback.email');
   const mod = modules.moduleOf(pathname);
   if (mod && !ctx.modules[mod]) return send(res, notFoundPage(ctx), extra);
 

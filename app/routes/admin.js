@@ -107,6 +107,7 @@ module.exports = function register(app) {
     const raw = {};
     for (const k of SETTING_KEYS) raw[k] = ctx.form.get(k).trim();
     raw['backup.auto'] = ctx.form.bool('backup.auto');
+    raw['feedback.email'] = ctx.form.get('feedback.email').trim();
     const CYCLE = ['day', 'off1', 'night', 'off2'];
     for (const k of CYCLE) raw['cycle.' + k] = ctx.form.get('cycle.' + k).trim();
     raw['modules.cable'] = ctx.form.bool('modules.cable');
@@ -125,6 +126,7 @@ module.exports = function register(app) {
     const keep = /^\d{1,3}$/.test(raw['backup.keep']) ? Number(raw['backup.keep']) : 0;
     if (keep < 1 || keep > 365) errors['backup.keep'] = 'invalid'; else parsed['backup.keep'] = keep;
     parsed['backup.auto'] = raw['backup.auto'];
+    if (raw['feedback.email'] && !/^[^\s@]{1,64}@[^\s@]{1,120}$/.test(raw['feedback.email'])) errors['feedback.email'] = 'invalid'; else parsed['feedback.email'] = raw['feedback.email'];
     parsed['modules.cable'] = raw['modules.cable'];
     parsed['modules.analytics'] = raw['modules.analytics'];
     if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';

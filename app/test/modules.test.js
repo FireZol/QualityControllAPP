@@ -87,3 +87,20 @@ test('first-setup checklist: shown to Administrator and Inginer, ticks itself of
     assert.ok(!home.includes('Prima configurare'), 'all steps done: the panel is gone');
   } finally { await fresh.cleanup(); }
 });
+
+test('the footer shows the version and the BETA tag; the "Report a problem" link appears once an address is set', async () => {
+  const v = require('../version').version;
+  assert.match(v, /^\d+\.\d+\.\d+/);
+  let home = (await admin.get('/')).text;
+  assert.ok(home.includes(`ROMCAB CTC ${v}`) && home.includes('BETA'));
+  assert.ok(!home.includes('mailto:'), 'no address set: no link');
+  const base = { 'server.port': '8080', 'server.bind': '0.0.0.0', 'server.public_name': '', 'session.idle_hours': '8', 'backup.dir': '', 'backup.time': '02:00', 'backup.keep': '14', 'shift.day_start': '06:00', 'shift.night_start': '18:00', 'backup.auto': '1', 'cycle.day': '4', 'cycle.off1': '2', 'cycle.night': '4', 'cycle.off2': '2' };
+  assert.equal((await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'feedback.email': 'not an address' })).status, 422);
+  assert.equal((await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'feedback.email': 'qa@romcab.example' })).status, 303);
+  home = (await admin.get('/masuratori')).text;
+  const m = /href="(mailto:qa@romcab\.example\?[^"]+)"/.exec(home);
+  assert.ok(m, 'the report link is in the footer');
+  const link = decodeURIComponent(m[1].replace(/&amp;/g, '&'));
+  assert.ok(link.includes(v) && link.includes('/masuratori'), 'the mail carries the version and the page');
+  await admin.postForm('/admin/setari', '/admin/setari', { ...base, 'feedback.email': '' });
+});

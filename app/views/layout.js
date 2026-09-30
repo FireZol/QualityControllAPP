@@ -25,6 +25,17 @@ function helpBox(active) {
     <div class="help-box" role="region" aria-label="${T.help.title}"><strong>${T.help.title}</strong><ul>${lines.map((l) => html`<li>${l}</li>`)}</ul></div></details>`;
 }
 
+const version = require('../version');
+
+/** Version, BETA tag and the "Report a problem" link (only when an address is set in Settings). */
+function footer(ctx) {
+  const who = ctx.user ? ctx.user.username : '-';
+  const page = ctx.url ? `http://${(ctx.req && ctx.req.headers.host) || 'localhost'}${ctx.url.pathname}${ctx.url.search}` : '';
+  const mail = ctx.feedbackEmail
+    ? `mailto:${ctx.feedbackEmail}?subject=${encodeURIComponent(`${T.app.name} ${version.version}`)}&body=${encodeURIComponent(`${T.layout.report_body}\n\n${page}\n${T.app.name} ${version.version} (${who})`)}` : '';
+  return html`<footer class="foot"><span>${T.app.name} ${version.version}</span>${version.beta ? html` <span class="beta-tag" title="${T.layout.beta_title}">BETA</span>` : ''}${mail ? html` · <a href="${mail}">${T.layout.report_problem}</a>` : ''}</footer>`;
+}
+
 const LANG_TITLE = { ro: 'Română', en: 'English' };
 
 /** RO | EN buttons: they post the choice and come back to the same page. */
@@ -70,6 +81,7 @@ function layout(ctx, opts) {
 ${flashBox(ctx.flash)}
 ${opts.body}
 </main>
+${footer(ctx)}
 ${scripts.map((s) => html`<script src="${s}"></script>`)}
 </body>
 </html>`;

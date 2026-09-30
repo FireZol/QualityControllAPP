@@ -14,6 +14,8 @@ C:\ROMCAB-CTC\
 
 ## 1. Instalare
 
+Pachetul de instalare este `ROMCAB-CTC-<versiune>.zip` (verificati suma `.sha256`); se dezarhiveaza in `C:\`, rezultand `C:\ROMCAB-CTC\`. Se construieste cu `node tools/make-release.js`.
+
 1. Copiați folderul `ROMCAB-CTC` pe server (de exemplu `C:\ROMCAB-CTC`).
 2. Descărcați o singură dată, de pe un calculator cu internet, arhiva **Windows x64 (.zip)** de la nodejs.org (versiunea LTS, cel puțin 22.13) și dezarhivați-o în `C:\ROMCAB-CTC\node\`, astfel încât să existe `C:\ROMCAB-CTC\node\node.exe`.
 3. (Opțional) Copiați `config.example.json` ca `config.json` și ajustați portul, adresa și numele. `start.bat` face această copie automat dacă lipsește.
@@ -29,8 +31,8 @@ C:\ROMCAB-CTC\
 ## 3. Pornire automată la boot
 
 1. Opriți consola de la `start.bat` (Ctrl+C) după ce ați notat parola de la prima pornire.
-2. Click dreapta pe `instalare-serviciu.bat` → **Run as administrator**. Se înregistrează sarcina programată **ROMCAB-CTC** (pornește la boot, rulează chiar dacă nimeni nu este autentificat, se repornește automat la oprire). Aceasta folosește doar Task Scheduler din Windows, fără programe externe.
-3. Pornire imediată: `schtasks /run /tn ROMCAB-CTC`. Jurnalul consolei este în `data\server.log`.
+2. Click dreapta pe `instalare-serviciu.bat` → **Run as administrator**. Se înregistrează sarcina programată **ROMCAB-CTC** (rulează `run-server.bat`; pornește la boot, rulează chiar dacă nimeni nu este autentificat, se repornește automat la oprire). Aceasta folosește doar Task Scheduler din Windows, fără programe externe.
+3. Pornire imediată: `schtasks /run /tn ROMCAB-CTC`. Jurnalul consolei este în `data\server.log` (peste 5 MB se mută la pornire în `data\server.old.log`).
 4. Ștergere: `dezinstalare-serviciu.bat` (datele nu se modifică).
 5. Deschideți în firewall-ul Windows portul ales (implicit TCP 8080) pentru rețeaua internă.
 

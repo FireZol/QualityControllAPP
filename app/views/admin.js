@@ -75,6 +75,8 @@ function settingsPage(ctx, d) {
   <div class="row">
     ${['day', 'off1', 'night', 'off2'].map((k) => textField({ label: T.settings['cycle_' + k], name: 'cycle.' + k, value: values['cycle.' + k], errors, inputmode: 'numeric', cls: 'num', required: true }))}
   </div>
+  <h2>${T.settings.feedback}</h2>
+  <div class="row">${textField({ label: T.settings.feedback_email, name: 'feedback.email', value: values['feedback.email'], errors, hint: T.settings.feedback_hint, cls: 'grow' })}</div>
   <h2>${T.settings.backup}</h2>
   <div class="row">
     ${textField({ label: T.settings.backup_dir, name: 'backup.dir', value: values['backup.dir'], errors, hint: T.settings.backup_dir_hint, cls: 'grow' })}

@@ -26,6 +26,8 @@ const S = {
     analyses: ['Analizele folosesc măsurătorile salvate; alegeți produsul și mărimea, apoi perioada.'],
   },
 
+  layout: { report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
+
   roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
   shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
   material: { Cu: 'Cupru', Al: 'Aluminiu' },
@@ -334,6 +336,7 @@ const S = {
     title: 'Setări', modules: 'Module', modules_hint: 'Aplicația de bază este măsurarea CTC pentru conductoare. Părțile de mai jos sunt oprite până le porniți; datele existente nu se pierd.', mod_cable: 'Cablu finit: încercări, loturi și certificate', mod_analytics: 'Analize: tendințe, capabilitate, diagrame de control și alerte pe pagina principală', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
     bind_hint: '0.0.0.0 = toate interfețele; 127.0.0.1 = doar acest calculator.', public_name: 'Nume public', public_name_hint: 'De exemplu ctc.romcab.local (înregistrat de IT în DNS).',
     sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', cycle_hint: 'Ciclul unui schimb, în zile. Implicit 4 zile de zi, 2 libere, 4 nopți, 2 libere (12 zile). Se aplică măsurătorilor noi; înregistrările existente păstrează schimbul lor.', cycle_day: 'Zile de tură de zi', cycle_off1: 'Zile libere (după zi)', cycle_night: 'Nopți', cycle_off2: 'Zile libere (după noapte)', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
+    feedback: 'Raportarea problemelor', feedback_email: 'Adresa de e-mail pentru raportări', feedback_hint: 'Gol = fără legătura „Raportați o problemă” din subsolul paginilor.',
     backup: 'Backup', backup_dir: 'Folder de backup', backup_dir_hint: 'Local sau de rețea (\\\\server\\backup\\ctc). Gol = folderul implicit.', backup_time: 'Ora backup-ului zilnic',
     backup_keep: 'Număr de copii păstrate', backup_auto: 'Backup automat zilnic', backups: 'Copii de siguranță', backup_folder: 'Folder curent: {dir}', backup_now: 'Backup acum',
     backup_failed: 'Backup-ul a eșuat', file: 'Fișier', size: 'Mărime', restore: 'Restaurează', no_backups: 'Nu există încă niciun backup.',
