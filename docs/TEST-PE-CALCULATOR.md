@@ -46,3 +46,16 @@ Send back: the browser versions used, which lines failed, and a photo or PDF of 
 3. Add one more measurement (13).
 4. **Setări →** the backup **Restaurează**, type the file name, confirm.
 5. Log in again if asked. The register shows 12 measurements again, and a safety copy of the state before the restore is in the backup list.
+
+## E. Touch screens (hall PCs and tablets)
+
+Try on the real touch screen, once with the **A+** button off and once on (a touch screen starts with it on):
+
+| # | Step | Expected |
+|---|------|----------|
+| 1 | Enter a measurement with the on-screen keyboard (numeric keypad should appear for the value fields) | Every field and button is easy to hit with a finger; the keypad does not hide the field being typed in |
+| 2 | Open the register, use the filters, open a record | No control is too small or too close to another |
+| 3 | Open a data sheet → **Verificare față de original** and tick a few rows | Same |
+| 4 | Open the **Administrare** and account menus | They open on tap and close when you tap elsewhere |
+
+`node tools/touch-audit.js` lists any control under 44 px on the main screens (development PC with Playwright).

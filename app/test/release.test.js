@@ -50,3 +50,10 @@ test('zero dependencies: package.json lists none and every require() in the appl
     if (/\.(js|css)$/.test(f)) assert.ok(!/(src|href)=["']https?:\/\//.test(fs.readFileSync(path.join(root, 'public', f), 'utf8')), f);
   }
 });
+
+test('touch targets: the 44 px rules, the touch-screen default for larger text and the audit tool are in place', () => {
+  const css = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.css'), 'utf8');
+  for (const rule of ['.btn.small { min-height: 44px', '.lang button { min-height: 44px; min-width: 44px', '.help summary { width: 44px; height: 44px', '.check { min-height: 44px']) assert.ok(css.includes(rule), rule);
+  assert.match(fs.readFileSync(path.join(__dirname, '..', 'public', 'prefs.js'), 'utf8'), /pointer: coarse/);
+  assert.ok(fs.existsSync(path.join(__dirname, '..', '..', 'tools', 'touch-audit.js')));
+});

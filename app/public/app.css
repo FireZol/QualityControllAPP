@@ -87,8 +87,8 @@ table.verify tr.bad th, table.verify tr.bad td { background: var(--bad-bg); }
 .banner.bad { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
 .banner.undef { background: var(--undef-bg); color: var(--undef); border-color: var(--undef); }
 .banner small { display: block; font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
-@media (min-width: 1100px) {
-  form.entry { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(400px, 0.9fr); column-gap: var(--gap); align-items: start; }
+@media (min-width: 900px) {
+  form.entry { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr); column-gap: var(--gap); align-items: start; }
   form.entry > fieldset, form.entry > .actions { grid-column: 1; }
   form.entry > .live { grid-column: 2; grid-row: 1 / span 6; position: sticky; top: 12px; }
 }
@@ -288,3 +288,20 @@ tr.group-row th { background: #dfe7ef; text-align: left; }
 .checklist { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
 @media (max-width: 720px) { .test-row { grid-template-columns: 1fr; } .res-group { grid-template-columns: 1fr 1fr; } }
 .chart .ch-spec { stroke: #b58900; stroke-width: 1.2; stroke-dasharray: 2 4; }
+
+/* touch targets: everything a finger has to hit is at least 44 x 44 px (checked by tools/touch-audit.js) */
+.btn, input:not([type=checkbox]):not([type=radio]), select, textarea { min-height: 44px; }
+.btn.small { min-height: 44px; padding: 6px 14px; display: inline-flex; align-items: center; justify-content: center; }
+.brand { display: inline-flex; align-items: center; min-height: 44px; }
+.nav a, .navmore summary { display: inline-flex; align-items: center; min-height: 44px; padding-top: 0; padding-bottom: 0; }
+.account summary { min-height: 44px; }
+.lang button { min-height: 44px; min-width: 44px; font-size: 0.9rem; }
+.comfort-btn { min-height: 44px; min-width: 44px; }
+.help summary { width: 44px; height: 44px; }
+.help-box { top: 52px; }
+details:not(.help):not(.navmore) > summary { display: flex; align-items: center; min-height: 44px; }
+.check { min-height: 44px; }
+.chip { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; }
+.navmore-box a, .navmore-box button { min-height: 44px; display: flex; align-items: center; }
+table.grid td > a:only-child, td.nowrap > a:first-child { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; }
+input[type=checkbox] { width: 24px; height: 24px; min-height: 24px; }
