@@ -3,6 +3,7 @@ const { page, redirect } = require('../lib/http');
 const rev = require('../domain/revisions');
 const calc = require('../domain/calc');
 const views = require('../views/specs');
+const ver = require('../domain/verification');
 const { errorPage } = require('../views/errors');
 
 const ENGINEER = ['inginer'];
@@ -26,6 +27,7 @@ module.exports = function register(app) {
       canEdit,
       canSubmit: canEdit,
       canVerify: engineer && r.status === 'in_verificare' && full.family.docActive && r.elaborated_by !== user.id,
+      canCheck: engineer && ver.OPEN.includes(r.status) && full.family.docActive,
       viewerIsAuthor: engineer && r.status === 'in_verificare' && r.elaborated_by === user.id,
       authorWaits: false,
     };
@@ -85,8 +87,61 @@ module.exports = function register(app) {
     const diff = rev.diffAgainst(full.constructions.filter((c) => c.active), prev);
     const findings = full.family.docActive && (full.rev.status === 'ciorna' || full.rev.status === 'in_verificare') ? rev.checkRevision(db, full.rev.id) : [];
     const warnings = db.all('SELECT * FROM seed_warnings WHERE revision_id = ? ORDER BY level, id', full.rev.id);
-    return page(views.revisionPage(ctx, { full, diff, findings, warnings, perms: permsFor(ctx.user, full) }));
+    return page(views.revisionPage(ctx, { full, diff, findings, warnings, perms: permsFor(ctx.user, full), checks: ver.map(db, full.rev.id), progress: ver.progress(db, full.rev.id) }));
   });
+
+  // ---------- checking the sheet against the paper original, row by row ----------
+
+  const rows = (full) => full.constructions.filter((x) => x.active);
+
+  function renderVerify(ctx, l, base, cid, state, status) {
+    const full = l.full;
+    const idx = rows(full).findIndex((x) => x.id === cid);
+    if (idx < 0) return page(errorPage(ctx, 'not_found'), 404);
+    const c = rows(full)[idx];
+    const checks = ver.map(db, full.rev.id);
+    const warn = db.all('SELECT * FROM seed_warnings WHERE revision_id = ? AND instr(lower(location), lower(?)) > 0 ORDER BY level, id', full.rev.id, c.label);
+    return page(views.verifyPage(ctx, {
+      full, base, c, idx, total: rows(full).length, points: ver.checkpoints(c), check: checks.get(c.id) || null, warn, state: state || null,
+      progress: ver.progress(db, full.rev.id), perms: permsFor(ctx.user, full),
+      prev: idx > 0 ? rows(full)[idx - 1].id : null, next: idx < rows(full).length - 1 ? rows(full)[idx + 1].id : null,
+      order: rows(full).map((x) => ({ id: x.id, label: x.label, done: checks.has(x.id) })),
+    }), status || 200);
+  }
+
+  router.get('/fise/:doc/revizii/:id/verificare', {}, (ctx) => {
+    const l = loadFor(ctx);
+    if (!l) return page(errorPage(ctx, 'not_found'), 404);
+    const base = `/fise/${l.doc.id}/revizii/${l.full.rev.id}`;
+    const first = ver.nextUnchecked(db, l.full.rev.id, 0) || (rows(l.full)[0] && rows(l.full)[0].id);
+    return first ? redirect(`${base}/verificare/${first}`) : redirect(base);
+  });
+
+  router.get('/fise/:doc/revizii/:id/verificare/:cid', {}, (ctx) => {
+    const l = loadFor(ctx);
+    if (!l) return page(errorPage(ctx, 'not_found'), 404);
+    return renderVerify(ctx, l, `/fise/${l.doc.id}/revizii/${l.full.rev.id}`, idOf(ctx.params.cid));
+  });
+
+  router.post('/fise/:doc/revizii/:id/verificare/:cid', { roles: ENGINEER }, guarded((ctx, l, base) => {
+    const cid = idOf(ctx.params.cid);
+    const full = l.full;
+    const idx = rows(full).findIndex((x) => x.id === cid);
+    if (idx < 0) return page(errorPage(ctx, 'not_found'), 404);
+    const here = `${base}/verificare/${cid}`;
+    const action = ctx.form.get('action');
+    if (action === 'uncheck') { const r = ver.unmark(db, ctx.user, full.rev.id, cid); return r.ok ? redirect(here) : fail(base, r.code); }
+    if (action === 'skip') { const n = rows(full)[idx + 1]; return redirect(n ? `${base}/verificare/${n.id}` : base); }
+    const points = ver.checkpoints(rows(full)[idx]);
+    const cmp = ver.compare(points, ctx.form);
+    if (cmp.mismatched.length || cmp.unreadable.length) {
+      return renderVerify(ctx, l, base, cid, { typed: Object.fromEntries(points.map((_, i) => [i, ctx.form.get(`paper_${i}`)])), cmp, note: ctx.form.get('note') }, 422);
+    }
+    const r = ver.mark(db, ctx.user, full.rev.id, cid, cmp.typed ? 'typed' : 'visual', ctx.form.get('note'));
+    if (!r.ok) return fail(base, r.code);
+    const next = ver.nextUnchecked(db, full.rev.id, cid);
+    return next ? redirect(`${base}/verificare/${next}`, { flash: { key: 'verify_checked' } }) : redirect(base, { flash: { key: 'verify_all' } });
+  }, 'canCheck'));
 
   function guarded(handler, need) {
     return (ctx) => {
@@ -260,7 +315,13 @@ module.exports = function register(app) {
       values.params = Array.from({ length: n }, (_, i) => ({ strander_config: state.values[`p${i}_config`], rotor: state.values[`p${i}_rotor`], pitch_mm: state.values[`p${i}_pitch`], tension: state.values[`p${i}_tension`] }));
     }
     const paramRows = Math.max(6, (values.params ? values.params.length : 0) + (state ? 0 : 2));
-    return page(views.constructionForm(ctx, { full: l.full, cons: c, values, errors: state ? state.errors : {}, lists, base, paramRows }), status || 200);
+    // position among the active rows, for the previous / next links and "Save and next"
+    const order = rows(l.full);
+    const at = c ? order.findIndex((x) => x.id === c.id) : -1;
+    const nav = c && at >= 0 ? { idx: at, total: order.length, prev: at > 0 ? order[at - 1].id : null, next: at < order.length - 1 ? order[at + 1].id : null } : null;
+    const from = (ctx.method === 'POST' ? ctx.form.get('from') : ctx.query.get('from')) === 'verificare' ? 'verificare' : '';
+    const checked = c ? ver.map(db, l.full.rev.id).has(c.id) : false;
+    return page(views.constructionForm(ctx, { full: l.full, cons: c, values, errors: state ? state.errors : {}, lists, base, paramRows, nav, from, checked }), status || 200);
   }
 
   router.get('/fise/:doc/revizii/:id/constructii/:cid', { roles: ENGINEER }, guarded((ctx, l, base) => {
@@ -284,7 +345,17 @@ module.exports = function register(app) {
     const parsed = parseForm(ctx.form, l.full.family, lists);
     if (Object.keys(parsed.errors).length) return renderForm(ctx, l, base, cons, { values: parsed.values, errors: parsed.errors }, 422);
     const r = rev.saveConstruction(db, ctx.user, l.full.rev.id, cons ? cons.id : null, parsed.data);
-    return r.ok ? redirect(base, { flash: { key: 'construction_saved' } }) : fail(base, r.code);
+    if (!r.ok) return fail(base, r.code);
+    // where to go on: back to the paper check of this row, to the next row's editor, or the revision page
+    const after = ctx.form.get('after');
+    if (after === 'verify') return redirect(`${base}/verificare/${r.id}`, { flash: { key: 'construction_saved' } });
+    if (after === 'next') {
+      const order = rows(l.full);
+      const at = order.findIndex((x) => x.id === r.id);
+      const nx = at >= 0 ? order[at + 1] : null;
+      if (nx) return redirect(`${base}/constructii/${nx.id}`, { flash: { key: 'construction_saved' } });
+    }
+    return redirect(base, { flash: { key: 'construction_saved' } });
   }, 'canEdit'));
 
   // ---------- statistics for undetermined limits ----------

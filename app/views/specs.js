@@ -1,5 +1,5 @@
 'use strict';
-const { html, raw } = require('../lib/html');
+const { html, raw, jsonBlock } = require('../lib/html');
 const { T, f, opt, S } = require('../i18n');
 const { designLine } = require('./cable');
 const calc = require('../domain/calc');
@@ -71,6 +71,7 @@ function label(c, diff) {
   if (c.data && (c.data.modificat === 'rosu' || c.data.d_fir_modificat)) marks.push(html`<span class="tag red-paper" title="${T.specs.red_paper_title}">${T.specs.red_paper}</span>`);
   if (c.data && c.data.modificat === 'galben') marks.push(html`<span class="tag yellow-paper" title="${T.specs.yellow_paper_title}">${T.specs.yellow_paper}</span>`);
   if (c.iec_exception_reason) marks.push(html`<span class="tag warn" title="${c.iec_exception_reason}">${T.specs.iec_exception}</span>`);
+  if (c.checked) marks.push(html`<span class="tag ok" title="${f(T.specs.verify_checked_by, { name: c.checked.by_name, when: displayDateTime(c.checked.checked_at), how: T.specs['verify_how_' + c.checked.method] })}">✓ ${T.specs.verify_chip}</span>`);
   return html`<strong>${c.label}</strong> <span class="tag">${materialName(c.material_code)}</span>${c.coated ? html` <span class="tag">${T.specs.coated}</span>` : ''} ${marks}`;
 }
 
@@ -142,7 +143,7 @@ COLUMNS.CABLE_LV = [
 
 function constructionTable(ctx, full, diff, editable, backBase) {
   const cols = COLUMNS[full.family.code] || COLUMNS.FUNIE_RIGIDA;
-  return html`<div class="scroll"><table class="grid sheet"><thead><tr>${cols.map((c) => html`<th>${T.sheet[c.h]}</th>`)}${editable ? html`<th>${T.common.actions}</th>` : ''}</tr></thead>
+  return html`<div class="scroll sheet-scroll"><table class="grid sheet"><thead><tr>${cols.map((c) => html`<th>${T.sheet[c.h]}</th>`)}${editable ? html`<th>${T.common.actions}</th>` : ''}</tr></thead>
 <tbody>${full.constructions.map((c) => html`<tr class="${c.active ? '' : 'inactive'}">${cols.map((col) => cell(diff, c, col.keys, col.r(c, diff)))}
   ${editable ? html`<td class="nowrap"><a class="btn small" href="${backBase}/constructii/${c.id}">${T.common.edit}</a>
     <form method="post" action="${backBase}/constructii/${c.id}/${c.active ? 'dezactiveaza' : 'activeaza'}" class="inline">${csrf(ctx)}<button type="submit" class="btn small">${c.active ? T.common.deactivate : T.common.activate}</button></form></td>` : ''}</tr>`)}
@@ -174,12 +175,14 @@ function findingsBox(findings, revisionId, docId) {
 }
 
 function revisionPage(ctx, d) {
-  const { full, diff, findings, warnings, perms } = d;
+  const { full, diff, findings, warnings, perms, checks, progress } = d;
   const { rev, doc, family } = full;
   const base = `/fise/${doc.id}/revizii/${rev.id}`;
   const editable = perms.canEdit;
+  for (const c of full.constructions) c.checked = checks ? checks.get(c.id) || null : null;
+  const open = rev.status === 'ciorna' || rev.status === 'in_verificare';
   return layout(ctx, {
-    title: `${doc.title} — ${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}`, active: 'specs', wide: true, scripts: [],
+    title: `${doc.title} — ${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}`, active: 'specs', wide: true, scripts: ['/static/rowfilter.js'],
     body: html`<p><a href="/fise/${doc.id}">« ${doc.title}</a></p>
 <h1>${doc.title}</h1>
 <p>${statusBadge(rev.status)} <strong>${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}</strong>${doc.code ? html` · ${T.specs.code}: ${doc.code}` : ''} <a class="btn small" href="${base}/tipar">${T.print.open_print}</a></p>
@@ -195,12 +198,16 @@ ${!family.docActive ? html`<p class="notice">${T.specs.later_stage_notice}</p>` 
 
 ${perms.canSubmit || perms.canVerify || perms.authorWaits || perms.viewerIsAuthor ? html`<section class="card workflow"><h2>${T.specs.workflow}</h2>
   ${perms.canSubmit ? html`<form method="post" action="${base}/trimite" class="inline">${csrf(ctx)}<button class="btn primary" type="submit">${T.specs.submit}</button> <span class="muted">${T.specs.submit_hint}</span></form>` : ''}
+  ${perms.canVerify && progress && progress.remaining > 0 ? html`<p class="notice">${f(T.specs.verify_unchecked_warn, { n: progress.remaining })} <a href="${base}/verificare">${T.specs.verify_open}</a></p>` : ''}
   ${perms.canVerify ? html`<div class="row">
     <form method="post" action="${base}/verifica" data-confirm="${T.specs.verify_confirm}">${csrf(ctx)}<button class="btn primary" type="submit">${T.specs.verify}</button></form>
     <form method="post" action="${base}/respinge" class="reject">${csrf(ctx)}${textField({ label: T.specs.reject_reason, name: 'reason', required: true })}<button class="btn" type="submit">${T.specs.reject}</button></form></div>` : ''}
   ${perms.viewerIsAuthor && rev.status === 'in_verificare' ? html`<p class="muted">${T.specs.author_cannot_verify}</p>` : ''}
   ${perms.authorWaits ? html`<p class="muted">${T.specs.waiting_verification}</p>` : ''}
 </section>` : ''}
+
+${open && progress && progress.total ? html`<div class="card verify-summary"><progress max="${progress.total}" value="${progress.checked}"></progress> <strong>${f(T.specs.verify_progress, { n: progress.checked, total: progress.total })}</strong>
+  ${perms.canCheck ? html`<a class="btn primary" href="${base}/verificare">${T.specs.verify_open}</a>` : html`<a class="btn" href="${base}/verificare">${T.specs.verify_view}</a>`}</div>` : ''}
 
 ${warnings.length ? html`<section class="card seed-warnings"><h2>${T.specs.data_quality}</h2><p class="muted">${T.specs.data_quality_hint}</p>
   <ul>${warnings.map((w) => html`<li class="lvl-${w.level}"><span class="tag lvl">${w.level}</span> <strong>${w.location}</strong>: ${w.problem}</li>`)}</ul></section>` : ''}
@@ -216,6 +223,7 @@ ${editable ? html`<section class="card"><h2>${T.specs.header_edit}</h2>
   <button class="btn" type="submit">${T.common.save}</button></form></section>` : ''}
 
 <h2>${T.specs.constructions}</h2>
+<label class="field rowfilter"><span class="lbl">${T.specs.row_filter}</span><input type="search" id="row-filter" placeholder="${T.specs.row_filter_hint}" autocomplete="off"></label>
 ${diff.hasBase ? html`<p class="muted"><span class="changed legend">${T.specs.changed_legend}</span> ${T.specs.changed_hint}</p>` : ''}
 ${editable ? html`<p><a class="btn primary" href="${base}/constructii/noua">${T.specs.add_construction}</a></p>` : ''}
 ${constructionTable(ctx, full, diff, editable, base)}`,
@@ -265,7 +273,7 @@ function cableFields(v, errors, lists) {
 }
 
 function constructionForm(ctx, d) {
-  const { full, cons, values, errors, lists, base } = d;
+  const { full, cons, values, errors, lists, base, nav, from, checked } = d;
   const { family } = full;
   const v = values;
   const rows = limitRows(family);
@@ -277,7 +285,9 @@ function constructionForm(ctx, d) {
     title: heading, active: 'specs', wide: true, scripts: ['/static/specs.js'],
     body: html`<p><a href="${base}">« ${f(T.specs.ed_rev, { edition: full.rev.edition, revision: full.rev.revision })}</a></p>
 <h1>${heading}</h1>
-<form method="post" action="${base}/constructii/${cons ? cons.id : 'noua'}" class="entry construction-form">${csrf(ctx)}
+${nav ? html`<p class="rownav">${nav.prev ? html`<a class="btn small" href="${base}/constructii/${nav.prev}">« ${T.specs.row_prev}</a>` : ''} <span class="muted">${f(T.specs.verify_row_of, { i: nav.idx + 1, total: nav.total })}</span> ${nav.next ? html`<a class="btn small" href="${base}/constructii/${nav.next}">${T.specs.row_next} »</a>` : ''}</p>` : ''}
+${checked ? html`<p class="notice">${T.specs.verify_clear_note}</p>` : ''}
+<form method="post" action="${base}/constructii/${cons ? cons.id : 'noua'}" class="entry construction-form">${csrf(ctx)}<input type="hidden" name="from" value="${from || ''}">
 <fieldset class="card"><legend>${T.specs.identity}</legend><div class="row">
   ${selectField({ label: T.specs.material, name: 'material_id', value: v.material_id, options: lists.materials.map((m) => [m.id, m.name]), errors, required: true })}
   ${textField({ label: T.specs.section, name: 'section', value: v.section, errors, required: true, inputmode: 'decimal', cls: 'num' })}
@@ -322,7 +332,10 @@ ${Array.from({ length: d.paramRows }, (_, i) => html`<tr>
 <input type="hidden" name="param_rows" value="${d.paramRows}">
 <p class="muted">${T.specs.params_hint}</p></fieldset>` : ''}
 
-<div class="actions"><button class="btn primary big" type="submit">${T.common.save}</button><a class="btn" href="${base}">${T.common.cancel}</a></div>
+<div class="actions sticky-actions">
+  ${from === 'verificare' && cons ? html`<button class="btn primary big" type="submit" name="after" value="verify">${T.specs.save_back_to_check}</button><button class="btn" type="submit">${T.common.save}</button>` : html`<button class="btn primary big" type="submit">${T.common.save}</button>`}
+  ${nav && nav.next ? html`<button class="btn" type="submit" name="after" value="next">${T.specs.save_next}</button>` : ''}
+  <a class="btn" href="${base}">${T.common.cancel}</a></div>
 </form>`,
   });
 }
@@ -337,4 +350,53 @@ function statsPage(ctx, d) {
   });
 }
 
-module.exports = { docsPage, docPage, revisionPage, constructionForm, statsPage, limitRows, statusBadge };
+// ---------- checking a sheet against the paper original ----------
+
+const cpLabel = (p) => {
+  if (p.kind === 'wires') return T.specs.cp_wires;
+  if (p.kind === 'wire_d') return T.specs.cp_wire_d;
+  if (p.kind === 'strands') return T.specs.cp_strands;
+  if (p.kind === 'wires_per_strand') return T.specs.cp_wires_per_strand;
+  return `${opt('limitq', `${p.level}_${p.quantity}`, opt('limitq', p.quantity, p.quantity))} [${p.unit}] — ${T.specs['cp_' + p.part]}`;
+};
+
+function verifyPage(ctx, d) {
+  const { full, base, c, idx, total, points, check, warn, state, progress, perms, prev, next, order } = d;
+  const { rev, doc } = full;
+  const here = `${base}/verificare/${c.id}`;
+  const bad = new Set(state ? [...state.cmp.mismatched, ...state.cmp.unreadable] : []);
+  const msgs = { match: T.specs.verify_match, differ: T.specs.verify_differ, all_match: T.specs.verify_all_match, none_typed: T.specs.verify_none_typed, some_differ: T.specs.verify_some_differ };
+  return layout(ctx, {
+    title: T.specs.verify_title, active: 'specs', wide: true, scripts: ['/static/calc.js', '/static/verify.js'],
+    body: html`<p><a href="${base}">« ${doc.title} — ${f(T.specs.ed_rev, { edition: rev.edition, revision: rev.revision })}</a></p>
+<h1>${T.specs.verify_title}</h1>
+<p class="muted">${T.specs.verify_intro}</p>
+<div class="card verify-summary"><progress max="${progress.total}" value="${progress.checked}"></progress> <strong>${f(T.specs.verify_progress, { n: progress.checked, total: progress.total })}</strong>
+  <details class="rowlist"><summary>${T.specs.verify_rows}</summary><div class="chips">${order.map((o) => html`<a class="chip ${o.done ? 'done' : 'todo'}${o.id === c.id ? ' current' : ''}" href="${base}/verificare/${o.id}">${o.done ? '✓ ' : ''}${o.label}</a>`)}</div></details></div>
+
+<section class="card verify-row ${check ? 'checked' : ''}">
+  <h2>${f(T.specs.verify_row_of, { i: idx + 1, total })}: ${label(c, { added: new Set() })}</h2>
+  <p class="${check ? 'ok-note' : 'muted'}">${check ? f(T.specs.verify_checked_by, { name: check.by_name, when: displayDateTime(check.checked_at), how: T.specs['verify_how_' + check.method] }) : T.specs.verify_not_checked}${check && check.note ? html` — <em>${check.note}</em>` : ''}</p>
+  ${warn.length ? html`<ul class="seed-warnings">${warn.map((w) => html`<li class="lvl-${w.level}"><span class="tag lvl">${w.level}</span> ${w.problem}</li>`)}</ul>` : ''}
+  <form method="post" action="${here}" id="verify-form" autocomplete="off">${csrf(ctx)}
+    <script type="application/json" id="verify-msg">${jsonBlock(msgs)}</script>
+    <table class="grid verify"><thead><tr><th>${T.specs.verify_col_value}</th><th>${T.specs.verify_col_app}</th><th>${T.specs.verify_col_paper}</th><th></th></tr></thead><tbody>
+    ${points.map((p, i) => html`<tr class="${bad.has(i) ? 'bad' : ''}"><th scope="row">${cpLabel(p)}</th><td class="app num">${num(p.value, 4)}</td>
+      <td>${perms.canCheck ? html`<input name="paper_${i}" value="${state ? state.typed[i] || '' : ''}" inputmode="decimal" enterkeyhint="next" data-paper data-app="${p.value}" aria-label="${cpLabel(p)}">` : ''}</td><td class="cmp" aria-live="polite"></td></tr>`)}
+    </tbody></table>
+    ${state ? html`<p class="field-error" role="alert">${T.specs.verify_mismatch}</p>` : ''}
+    <p id="verify-status" class="verify-status" role="status"></p>
+    ${perms.canCheck ? html`<div class="row"><label class="field grow"><span class="lbl">${T.specs.verify_note}</span><input name="note" value="${state ? state.note : (check && check.note) || ''}" maxlength="300"></label></div>
+    <div class="actions">
+      ${prev ? html`<a class="btn" href="${base}/verificare/${prev}">${T.specs.verify_prev}</a>` : ''}
+      <button class="btn primary big" id="verify-check" type="submit" name="action" value="check">${T.specs.verify_check}</button>
+      <button class="btn" type="submit" name="action" value="skip" formnovalidate>${T.specs.verify_skip}</button>
+      <a class="btn" href="${base}/constructii/${c.id}?from=verificare">${T.specs.verify_edit}</a>
+      ${check ? html`<button class="btn" type="submit" name="action" value="uncheck" formnovalidate>${T.specs.verify_uncheck}</button>` : ''}
+    </div>` : html`<div class="actions">${prev ? html`<a class="btn" href="${base}/verificare/${prev}">${T.specs.verify_prev}</a>` : ''}${next ? html`<a class="btn" href="${base}/verificare/${next}">${T.specs.verify_next}</a>` : ''}</div>`}
+  </form>
+</section>`,
+  });
+}
+
+module.exports = { verifyPage, docsPage, docPage, revisionPage, constructionForm, statsPage, limitRows, statusBadge };

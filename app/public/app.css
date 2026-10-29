@@ -54,6 +54,27 @@ table.register tbody tr:hover { background: #eef4fa; }
 html.comfort .top .nav { order: 3; flex-basis: 100%; }
 .findings-group { margin: 6px 0; }
 .findings-group summary { cursor: pointer; padding: 6px 0; }
+.sheet-scroll { max-height: 72vh; overflow: auto; }
+.sheet-scroll table.sheet thead th { position: sticky; top: 0; z-index: 2; }
+.rowfilter { max-width: 360px; margin: 6px 0 10px; }
+.verify-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.verify-summary progress, progress { width: 220px; height: 16px; accent-color: var(--ok); }
+.rowlist { flex-basis: 100%; }
+.rowlist summary { cursor: pointer; color: var(--brand); font-weight: 600; padding: 4px 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0; max-height: 220px; overflow: auto; }
+.chip { padding: 5px 10px; border-radius: 14px; border: 1px solid var(--line); text-decoration: none; font-size: 0.9rem; background: #fff; color: var(--ink); }
+.chip.done { background: var(--ok-bg); color: var(--ok); border-color: #9bd4b0; }
+.chip.current { outline: 3px solid #f2a900; }
+.verify-row.checked { border-left: 5px solid var(--ok); }
+table.verify td.app { font-size: 1.15rem; font-weight: 600; }
+table.verify input { max-width: 180px; text-align: right; font-size: 1.15rem; min-height: 48px; }
+table.verify td.cmp { min-width: 110px; font-weight: 700; }
+td.cmp.ok { color: var(--ok); } td.cmp.bad { color: var(--bad); }
+table.verify tr.bad th, table.verify tr.bad td { background: var(--bad-bg); }
+.verify-status { font-weight: 600; min-height: 1.4em; }
+.verify-status.ok { color: var(--ok); } .verify-status.bad { color: var(--bad); }
+.sticky-actions { position: sticky; bottom: 0; background: var(--panel); padding: 10px 0; border-top: 1px solid var(--line); }
+.rownav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 8px; }
 .comfort-btn { background: transparent; color: inherit; border: 2px solid currentColor; border-radius: 6px; font: inherit; font-weight: 700; padding: 1px 8px; cursor: pointer; line-height: 1.4; }
 .comfort-btn small { font-size: 0.7em; }
 .comfort-btn[aria-pressed=true] { background: var(--brand-ink); color: var(--brand); }

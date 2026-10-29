@@ -224,6 +224,7 @@ function saveConstruction(db, user, revisionId, constructionId, data) {
         'INSERT INTO constructions(revision_id, stable_key, family_id, material_id, section, shape_id, destination_id, coated, label, wires, wire_d, die, data, iec_exception_reason, active, sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)',
         revisionId, key, family.id, data.material_id, data.section, data.shape_id, data.destination_id || null, data.coated ? 1 : 0, data.label, data.wires, data.wire_d, data.die, data.data ? JSON.stringify(data.data) : '{}', data.iec_exception_reason || null, sort).id;
     }
+    db.run('DELETE FROM construction_checks WHERE construction_id = ?', id); // changed values: the paper check starts again
     db.run('DELETE FROM limits WHERE construction_id = ?', id);
     for (const l of data.limits || []) {
       db.run('INSERT INTO limits(construction_id, level, quantity, nominal, min, max, unit, informative, tolerance_text) VALUES (?,?,?,?,?,?,?,?,?)',
