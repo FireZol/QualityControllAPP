@@ -36,3 +36,11 @@ Per user: access level for each module — *none / view / enter / lead* (lead ca
 5. How often are the meetings, who attends, and what does the minutes sheet look like today?
 6. Is preventive (recurring) maintenance wanted in the first release?
 7. Areas / lines to list besides machines (workshops, utilities, buildings)?
+
+## Decisions of 2026-10-30 (owner's answers, see INTREBARI 33)
+- **Levels per module:** view / enter (create requests, comment) / lead (assign, update status, close, evaluate). Quality and Maintenance: leads update (several allowed); Technical: everybody has the lead level (setting). The Administrator is lead everywhere.
+- **Closing:** anyone who can update the team's tasks; the history records who and when; the creator, the assignees and the team leads are notified.
+- **Notifications** are inside the application (a bell with an unread count and a page): assigned, status changed, comment, meeting scheduled / changed / cancelled (with date, time and attendees), meeting today, overdue, preventive task due. No e-mail (no integrations).
+- **Meetings:** one-off or recurring (weekdays, weekly, any day set), several teams per meeting, change or cancel a single occurrence, attendees; daily Technical and Maintenance, weekly Quality are seeded as examples the Administrator can edit.
+- **Priorities:** a list (Low, Normal, High, Critical) editable in Database. **Numbering:** a pattern per kind (task, non-conformity, meeting) edited in Settings with a live preview; tokens `{yyyy}` `{yy}` `{mm}` `{seq:N}` `{team}`; the counter restarts per year unless the pattern has no date.
+- **Preventive maintenance:** plans per machine (every N days / weeks / months, lead time, team, assignee, priority), tasks are generated when due; plans are fully editable.

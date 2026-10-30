@@ -75,6 +75,17 @@ table.verify tr.bad th, table.verify tr.bad td { background: var(--bad-bg); }
 .verify-status.ok { color: var(--ok); } .verify-status.bad { color: var(--bad); }
 .sticky-actions { position: sticky; bottom: 0; background: var(--panel); padding: 10px 0; border-top: 1px solid var(--line); }
 .rownav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 8px; }
+.bell { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; text-decoration: none; font-size: 1.15rem; border-radius: 6px; }
+.bell:hover { background: rgba(255,255,255,0.15); }
+.bell-n { position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: #f2a900; color: #1b2430; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.navmore-box a small { display: block; opacity: 0.8; font-size: 0.8rem; }
+.navmore-box a { flex-direction: column; align-items: flex-start; justify-content: center; }
+.navmore-box a.active { background: rgba(255,255,255,0.2); }
+ul.notif-list { list-style: none; margin: 0; padding: 0; }
+ul.notif-list li a { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 12px 8px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); min-height: 44px; }
+ul.notif-list li.unread a { font-weight: 600; background: var(--info-bg); }
+ul.notif-list li.read a { color: var(--muted); }
+fieldset.access { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
 .comfort-btn { background: transparent; color: inherit; border: 2px solid currentColor; border-radius: 6px; font: inherit; font-weight: 700; padding: 1px 8px; cursor: pointer; line-height: 1.4; }
 .comfort-btn small { font-size: 0.7em; }
 .comfort-btn[aria-pressed=true] { background: var(--brand-ink); color: var(--brand); }

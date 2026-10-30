@@ -23,6 +23,22 @@ const LISTS = {
       { name: 'rotor_config', type: 'rotor', required: false, max: 40 },
     ],
   },
+  persoane: {
+    table: 'people', title: 'people', nameField: 'name', order: 'name',
+    fields: [
+      { name: 'name', type: 'text', required: true, max: 120 },
+      { name: 'team', type: 'select', required: true, options: () => { const { T } = require('../i18n'); return ['maintenance', 'technical', 'quality', 'other'].map((t) => [t, T.teams[t]]); } },
+      { name: 'user_id', type: 'select', required: false, options: (db) => [['', '—']].concat(db.all('SELECT id, full_name FROM users WHERE active = 1 ORDER BY full_name').map((r) => [r.id, r.full_name])) },
+    ],
+  },
+  prioritati: {
+    table: 'priorities', title: 'priorities', nameField: 'name', order: 'sort, name',
+    fields: [
+      { name: 'name', type: 'text', required: true, max: 40 },
+      { name: 'name_en', type: 'text', required: false, max: 40 },
+      { name: 'sort', type: 'int', required: false },
+    ],
+  },
   operatori: {
     table: 'operators', title: 'operators', nameField: 'full_name', order: 'full_name',
     fields: [{ name: 'full_name', type: 'text', required: true, max: 120 }],

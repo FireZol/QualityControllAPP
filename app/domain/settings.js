@@ -14,6 +14,10 @@ const DEFAULTS = {
   'shift.cycle': [4, 2, 4, 2], // crew cycle in days: day shifts, days off, night shifts, days off
   'company.name': 'S.C. ROMCAB S.A.',
   'production.started_at': null, // set once by "Start production" (Settings)
+  'access.default.maintenance': 'enter', 'access.default.quality': 'enter', 'access.default.meetings': 'view', 'access.default.technical': 'lead',
+  'technical.open_to_all': true, // everybody may update Technical tasks (owner, 2026-10-30)
+  'numbering.task': '{team}-{yyyy}-{seq:4}', 'numbering.ncr': 'NC-{yyyy}-{seq:3}', 'numbering.meeting': 'S-{yyyy}-{mm}-{seq:2}',
+  'team.code.maintenance': 'MT', 'team.code.technical': 'TH', 'team.code.quality': 'QC',
   'feedback.email': '', // where the "Report a problem" link writes to (empty = no link)
   'modules.cable': false, // finished-cable tests, batches, certificates
   'modules.analytics': false, // analyses, SPC control charts and home-page alerts

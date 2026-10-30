@@ -7,6 +7,7 @@ const S = {
 
   nav: {
     label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
+    m_tasks: 'Sarcini', m_preventive: 'Preventiv', m_ncr: 'Neconformități', m_top: 'Top neconformități', m_meetings: 'Ședințe', m_series: 'Programări', modules: 'Module', notifications: 'Notificări', notifications_n: 'Notificări ({n} necitite)',
     admin: 'Administrare', lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
 
@@ -27,6 +28,21 @@ const S = {
   },
 
   layout: { comfort: 'Text și butoane mai mari (pentru ecrane din hală)', report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
+
+  modules: {
+    qc: { name: 'Control calitate (CTC)', desc: 'Măsurători, fișe tehnice, date de bază' },
+    maintenance: { name: 'Mentenanță', desc: 'Sarcini de mentenanță și mentenanță preventivă' },
+    technical: { name: 'Tehnic', desc: 'Sarcinile echipei tehnice' },
+    quality: { name: 'Calitate', desc: 'Neconformități și sarcini de calitate' },
+    meetings: { name: 'Ședințe', desc: 'Ședințe, ordine de zi, decizii și sarcini' },
+  },
+  teams: { maintenance: 'Mentenanță', technical: 'Tehnic', quality: 'Calitate', other: 'Altele' },
+  access: {
+    title: 'Acces la module', hint: 'Nivelul fiecărui utilizator în modulele echipelor. „Implicit” înseamnă nivelul stabilit în Setări → Module. Administratorul are mereu acces complet.',
+    levels: { none: 'fără acces', view: 'doar vizualizare', enter: 'adaugă și comentează', lead: 'responsabil (atribuie, închide)' }, default: 'implicit ({level})',
+  },
+  notif: { title: 'Notificări', empty: 'Nicio notificare.', mark_all: 'Marchează toate ca citite', unread: 'necitită', open: 'Deschide', generic: '{kind}' },
+  notify: {},
 
   roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
   shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
@@ -132,6 +148,7 @@ const S = {
   verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ', neconform: 'Neconform' },
 
   errors: {
+    num_required: 'Modelul este obligatoriu.', num_too_long: 'Modelul este prea lung.', num_invalid: 'Modelul conține caractere sau marcaje nepermise.', num_seq_once: 'Modelul trebuie să conțină {seq} sau {seq:N} o singură dată.',
     required: 'Câmp obligatoriu.', invalid: 'Valoare nevalidă.', too_long: 'Textul este prea lung.', duplicate: 'Există deja o intrare cu această valoare.',
     rotor_format: 'Format așteptat: numere separate prin +, de exemplu 1+6+12+18.', capacity: 'Utilajul nu are suficiente straturi pentru această construcție.',
     password_short: 'Parola trebuie să aibă cel puțin 8 caractere.', password_username: 'Parola nu poate fi identică cu numele de utilizator.',
@@ -319,16 +336,16 @@ const S = {
   lists: {
     title: 'Date de bază', intro: 'Listele se pot completa, redenumi și dezactiva. O intrare folosită în măsurători nu se șterge, doar se dezactivează.',
     names: {
-      machine_types: 'Tipuri de utilaj', machines: 'Utilaje', operators: 'Operatori', clients: 'Clienți', sample_types: 'Tipuri de probă', crews: 'Schimburi',
+      people: 'Persoane (echipe)', priorities: 'Priorități', machine_types: 'Tipuri de utilaj', machines: 'Utilaje', operators: 'Operatori', clients: 'Clienți', sample_types: 'Tipuri de probă', crews: 'Schimburi',
       shapes: 'Forme', destinations: 'Destinații', materials: 'Constante material', compounds: 'Compuși (izolație / manta)', cable_standards: 'Standarde cablu',
     },
     descriptions: {
-      machine_types: 'Procesul și familiile de produs permise', machines: 'Nume, tip și configurația rotoarelor', operators: 'Nume și prenume', clients: 'Nume scurt',
+      people: 'Cine primește sarcini: nume, echipă, cont de utilizator (pentru notificări)', priorities: 'Scara de priorități a sarcinilor, de la mică la mare', machine_types: 'Procesul și familiile de produs permise', machines: 'Nume, tip și configurația rotoarelor', operators: 'Nume și prenume', clients: 'Nume scurt',
       sample_types: 'Lista tipurilor de probă', crews: 'Schimburile A / B / C și data de start a ciclului', shapes: 'RE, RM, RMC, SM …', destinations: 'Unifilar, Multifilar, Armate …',
       materials: 'Rezistivitate, densitate, coeficient de temperatură', compounds: 'PVC, XLPE, HFFR … folosiți la fișele cablurilor', cable_standards: 'IEC 60502-1, HD 603, VDE 0276-603 …',
     },
     fields: {
-      name: 'Nume', machine_type_id: 'Tip utilaj', rotor_config: 'Configurație rotoare', full_name: 'Nume și prenume', short_name: 'Nume scurt', numbered: 'Numerotată', sort: 'Ordine',
+      team: 'Echipa', user_id: 'Cont de utilizator', name_en: 'Denumire în engleză', name: 'Nume', machine_type_id: 'Tip utilaj', rotor_config: 'Configurație rotoare', full_name: 'Nume și prenume', short_name: 'Nume scurt', numbered: 'Numerotată', sort: 'Ordine',
       cycle_start: 'Prima zi de tură de zi a ciclului', code: 'Cod', kind: 'Tip', iec_group: 'Grup IEC', material: 'Material', grade: 'Calitate', rho20: 'ρ20 [Ω·mm²/m]',
       compounds_code: 'Cod', compounds_name: 'Denumire', density: 'Densitate δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Denumire completă', crews_name: 'Schimb',
     },
@@ -348,6 +365,10 @@ const S = {
   },
 
   settings: {
+    team_modules: 'Modulele echipelor', team_modules_hint: 'Cine poate actualiza sarcinile, nivelul implicit al utilizatorilor fără setare proprie și numerotarea.', technical_open: 'În Tehnic oricine poate actualiza sarcinile', default_level: 'Nivel implicit — {module}',
+    numbering: 'Numerotare', numbering_hint: 'Modele cu {yyyy} {yy} {mm} {seq:N} (contor cu N cifre, o singură dată) și {team} (codul echipei); contorul pornește de la 1 când se schimbă anul sau luna din model.',
+    num_task: 'Sarcini', num_ncr: 'Neconformități', num_meeting: 'Ședințe', num_example: 'Exemplu: {example}', team_code: 'Cod echipă — {team}',
+    mod_maintenance: 'Mentenanță: sarcini și mentenanță preventivă', mod_technical: 'Tehnic: sarcinile echipei tehnice', mod_quality: 'Calitate: registrul de neconformități și sarcini', mod_meetings: 'Ședințe: programare, ordine de zi, decizii',
     title: 'Setări', modules: 'Module', modules_hint: 'Aplicația de bază este măsurarea CTC pentru conductoare. Părțile de mai jos sunt oprite până le porniți; datele existente nu se pierd.', mod_cable: 'Cablu finit: încercări, loturi și certificate', mod_analytics: 'Analize: tendințe, capabilitate, diagrame de control și alerte pe pagina principală', server: 'Server', restart_notice: 'Portul, adresa de rețea și numele public se aplică după repornirea serviciului.', port: 'Port', bind: 'Adresa de rețea',
     bind_hint: '0.0.0.0 = toate interfețele; 127.0.0.1 = doar acest calculator.', public_name: 'Nume public', public_name_hint: 'De exemplu ctc.romcab.local (înregistrat de IT în DNS).',
     sessions: 'Sesiuni', idle_hours: 'Expirare după inactivitate [ore]', shifts: 'Ture', cycle_hint: 'Ciclul unui schimb, în zile. Implicit 4 zile de zi, 2 libere, 4 nopți, 2 libere (12 zile). Se aplică măsurătorilor noi; înregistrările existente păstrează schimbul lor.', cycle_day: 'Zile de tură de zi', cycle_off1: 'Zile libere (după zi)', cycle_night: 'Nopți', cycle_off2: 'Zile libere (după noapte)', day_start: 'Începutul turei de zi', night_start: 'Începutul turei de noapte',
@@ -372,7 +393,7 @@ const S = {
       construction_add: 'construcție adăugată', construction_edit: 'construcție modificată', construction_deactivate: 'construcție dezactivată', construction_activate: 'construcție activată',
       setting_change: 'setare modificată', backup: 'backup', backup_failed: 'backup eșuat', restore: 'restaurare', material_change: 'constantă material',
       targets_change: 'ținte modificate', family_change: 'familie modificată', iec_add: 'IEC: valoare adăugată', iec_change: 'IEC: valoare modificată',
-      row_check: 'rând verificat față de original', row_uncheck: 'bifă de verificare ștearsă', golive_reset: 'început producție', list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
+      access_change: 'acces la module modificat', row_check: 'rând verificat față de original', row_uncheck: 'bifă de verificare ștearsă', golive_reset: 'început producție', list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
     },
   },
 };

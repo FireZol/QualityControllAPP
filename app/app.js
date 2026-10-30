@@ -12,6 +12,8 @@ const { Router } = require('./lib/router');
 const H = require('./lib/http');
 const auth = require('./lib/auth');
 const settings = require('./domain/settings');
+const access = require('./domain/access');
+const reg = require('./modules/registry');
 const backup = require('./lib/backup');
 const audit = require('./domain/audit');
 const { T, S } = require('./i18n');
@@ -40,7 +42,7 @@ async function createApp(config, opts) {
 
   const router = new Router();
   const app = { config, db, router, state, log, server: null, timer: null, adminPassword, afterRestore: () => require('./domain/tests').refresh(db) };
-  for (const r of ['auth', 'home', 'print', 'analytics', 'cable', 'measure', 'specs', 'config', 'lists', 'admin']) {
+  for (const r of ['auth', 'home', 'print', 'analytics', 'cable', 'measure', 'specs', 'config', 'lists', 'admin', 'notifications']) {
     const file = path.join(__dirname, 'routes', r + '.js');
     if (fs.existsSync(file)) require(file)(app);
   }
@@ -149,6 +151,8 @@ async function handleRequest(app, req, res, langStore) {
   if (method === 'GET' && PRINT_PATHS.test(pathname) && i18n.valid(url.searchParams.get('lang'))) langStore.lang = url.searchParams.get('lang');
   ctx.modules = modules.get(db);
   ctx.feedbackEmail = settings.get(db, 'feedback.email');
+  ctx.module = reg.moduleOfPath(pathname); // which module's menu the page shows (a route may change it)
+  ctx.level = (module) => access.level(db, ctx.user, module, ctx.modules);
   const mod = modules.moduleOf(pathname);
   if (mod && !ctx.modules[mod]) return send(res, notFoundPage(ctx), extra);
 
@@ -167,6 +171,7 @@ async function handleRequest(app, req, res, langStore) {
       return send(res, H.redirect('/login'), extra);
     }
     if (ctx.user.must_change_password && pathname !== '/parola' && pathname !== '/iesire') return send(res, H.redirect('/parola'), extra);
+    if (ctx.module !== 'qc' && ctx.level(ctx.module) === 'none') return send(res, H.page(errorPage(ctx, 'forbidden'), 403), extra);
     if (ropts.roles && !ropts.roles.includes(ctx.user.role)) {
       audit.log(db, ctx.user.id, 'forbidden', null, null, { path: pathname, method });
       return send(res, H.page(errorPage(ctx, 'forbidden'), 403), extra);

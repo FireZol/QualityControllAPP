@@ -2,6 +2,9 @@
 const { html } = require('../lib/html');
 const { T, f, S } = require('../i18n');
 const calc = require('../domain/calc');
+const modules = require('../domain/modules');
+const numbering = require('../domain/numbering');
+const reg = require('../modules/registry');
 const { displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, checkField, pager } = require('./layout');
 
@@ -28,6 +31,7 @@ function userForm(ctx, d) {
   ${textField({ label: T.users.full_name, name: 'full_name', value: v.full_name, errors, required: true, attrs: 'maxlength="120"' })}
   ${selectField({ label: T.users.role, name: 'role', value: v.role, options: roleOptions(), errors, required: true })}
   ${textField({ label: T.users.job_title, name: 'job_title', value: v.job_title, errors, hint: T.users.job_title_hint, attrs: 'maxlength="80"' })}
+  ${accessMatrix(d)}
   ${user ? checkField({ label: T.users.active_label, name: 'active', checked: !!(values ? values.active : user.active) }) : ''}
   ${self && user ? html`<p class="muted">${T.users.self_note}</p>` : ''}
   <button class="btn primary" type="submit">${T.common.save}</button>
@@ -35,6 +39,14 @@ function userForm(ctx, d) {
 ${user ? html`<form method="post" action="/admin/utilizatori/${user.id}/parola" class="card narrow" data-confirm="${T.users.reset_confirm}">${csrf(ctx)}
   <h2>${T.users.reset_title}</h2><p class="muted">${T.users.reset_hint}</p><button class="btn" type="submit">${T.users.reset}</button></form>` : ''}`,
   });
+}
+
+/** Level per team module for one user ('' = the default of Settings applies). */
+function accessMatrix(d) {
+  const lv = d.levels || {};
+  const defaults = d.defaults || {};
+  return html`<fieldset class="access"><legend>${T.access.title}</legend><p class="muted">${T.access.hint}</p>
+    ${['maintenance', 'technical', 'quality', 'meetings'].map((m) => selectField({ label: T.modules[m].name, name: `lvl_${m}`, value: lv[m] || '', options: [['', f(T.access.default, { level: T.access.levels[defaults[m] || 'view'] })]].concat(reg.LEVELS.map((l) => [l, T.access.levels[l]])) }))}</fieldset>`;
 }
 
 function passwordShown(ctx, d) {
@@ -69,8 +81,13 @@ function settingsPage(ctx, d) {
   </div>
   <h2>${T.settings.modules}</h2>
   <p class="muted">${T.settings.modules_hint}</p>
-  ${checkField({ label: T.settings.mod_cable, name: 'modules.cable', checked: !!values['modules.cable'] })}
-  ${checkField({ label: T.settings.mod_analytics, name: 'modules.analytics', checked: !!values['modules.analytics'] })}
+  ${modules.MODULES.map((m) => checkField({ label: T.settings['mod_' + m], name: `modules.${m}`, checked: !!values[`modules.${m}`] }))}
+  <h2>${T.settings.team_modules}</h2><p class="muted">${T.settings.team_modules_hint}</p>
+  ${checkField({ label: T.settings.technical_open, name: 'technical.open_to_all', checked: values['technical.open_to_all'] !== false })}
+  <div class="row">${['maintenance', 'quality', 'meetings', 'technical'].map((m) => selectField({ label: f(T.settings.default_level, { module: T.modules[m].name }), name: `access.default.${m}`, value: values[`access.default.${m}`], options: reg.LEVELS.map((l) => [l, T.access.levels[l]]), errors }))}</div>
+  <h2>${T.settings.numbering}</h2><p class="muted">${T.settings.numbering_hint}</p>
+  <div class="row">${numbering.RULES.map((r) => textField({ label: T.settings['num_' + r], name: `numbering.${r}`, value: values[`numbering.${r}`], errors, hint: f(T.settings.num_example, { example: values.numbering_example ? values.numbering_example[r] : '' }), attrs: 'maxlength="60"' }))}</div>
+  <div class="row">${Object.keys(numbering.TEAM_CODES).map((t) => textField({ label: f(T.settings.team_code, { team: T.teams[t] }), name: `team.code.${t}`, value: values[`team.code.${t}`], errors, cls: 'num', attrs: 'maxlength="6"' }))}</div>
   <p class="muted">${T.settings.cycle_hint}</p>
   <div class="row">
     ${['day', 'off1', 'night', 'off2'].map((k) => textField({ label: T.settings['cycle_' + k], name: 'cycle.' + k, value: values['cycle.' + k], errors, inputmode: 'numeric', cls: 'num', required: true }))}

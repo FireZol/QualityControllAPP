@@ -4,8 +4,18 @@ const { html, h, raw } = require('../lib/html');
 const { T, f, opt } = require('../i18n');
 const i18n = require('../i18n');
 const calc = require('../domain/calc');
+const reg = require('../modules/registry');
+const notifications = require('../domain/notifications');
 
-function nav(user, active, modules) {
+function nav(ctx, active) {
+  const { user, modules } = ctx;
+  const cur = ctx.module || 'qc';
+  const link = ([key, href, label]) => html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`;
+  const switcher = moduleSwitcher(ctx, cur);
+  if (cur !== 'qc') {
+    const items = reg.byId[cur].menu.filter((m) => reg.rank(ctx.level(cur)) >= reg.rank(m.minLevel || 'view')).map((m) => [m.key, m.href, T.nav['m_' + m.name]]);
+    return html`${switcher}<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}</nav>`;
+  }
   const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register]];
   if (modules && modules.cable) items.push(['batches', '/loturi', T.nav.batches]);
   if (modules && modules.analytics) items.push(['analyses', '/analize', T.nav.analyses]);
@@ -13,8 +23,21 @@ function nav(user, active, modules) {
   if (user.role === 'inginer' || user.role === 'administrator') items.push(['lists', '/liste', T.nav.lists]);
   // administration is one menu instead of three more tabs, so the bar stays on a single row
   const admin = user.role === 'administrator' ? [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]] : [];
-  const link = ([key, href, label]) => html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`;
-  return html`<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}${admin.length ? html`<details class="navmore${admin.some((a) => a[0] === active) ? ' active' : ''}"><summary>${T.nav.admin} <span aria-hidden="true">▾</span></summary><div class="navmore-box">${admin.map(link)}</div></details>` : ''}</nav>`;
+  return html`${switcher}<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}${admin.length ? html`<details class="navmore${admin.some((a) => a[0] === active) ? ' active' : ''}"><summary>${T.nav.admin} <span aria-hidden="true">▾</span></summary><div class="navmore-box">${admin.map(link)}</div></details>` : ''}</nav>`;
+}
+
+/** The module switcher next to the brand: only the modules switched on and open to this user. */
+function moduleSwitcher(ctx, cur) {
+  const open = reg.MODULES.filter((m) => m.core || (ctx.modules && ctx.modules[m.id] && reg.rank(ctx.level(m.id)) >= 1));
+  if (open.length < 2) return '';
+  return html`<details class="navmore modules"><summary title="${T.nav.modules}">⊞ ${T.modules[cur].name} <span aria-hidden="true">▾</span></summary>
+    <div class="navmore-box">${open.map((m) => html`<a href="${m.home || '/'}" class="${m.id === cur ? 'active' : ''}"><strong>${T.modules[m.id].name}</strong><small>${T.modules[m.id].desc}</small></a>`)}</div></details>`;
+}
+
+/** The bell: unread notifications. */
+function bell(ctx) {
+  const n = ctx.db ? notifications.unread(ctx.db, ctx.user.id) : 0;
+  return html`<a class="bell" href="/notificari" title="${T.nav.notifications}" aria-label="${n ? f(T.nav.notifications_n, { n }) : T.nav.notifications}">🔔${n ? html`<span class="bell-n">${n > 99 ? '99+' : n}</span>` : ''}</a>`;
 }
 
 /** The "?" button at the top right: a short tip list for the current screen. No script needed to open it. */
@@ -72,10 +95,10 @@ function layout(ctx, opts) {
 <body>
 <header class="top">
   <a class="brand" href="/">${T.app.name}</a>
-  ${user ? nav(user, opts.active, ctx.modules) : ''}
+  ${user ? nav(ctx, opts.active) : ''}
   ${user ? html`<div class="who">
     <button type="button" class="comfort-btn" data-comfort title="${T.layout.comfort}" aria-label="${T.layout.comfort}" aria-pressed="false">A<small>+</small></button>
-    ${langSwitch(ctx)}${helpBox(opts.active)}
+    ${bell(ctx)}${langSwitch(ctx)}${helpBox(opts.active)}
     <details class="navmore account"><summary title="${T.roles[user.role]}">${user.full_name} <span aria-hidden="true">▾</span></summary>
       <div class="navmore-box right"><div class="navmore-role">${T.roles[user.role]}</div><a href="/parola">${T.nav.password}</a>
         <form method="post" action="/iesire">${csrf(ctx)}<button type="submit">${T.nav.logout}</button></form></div></details></div>` : html`<div class="who">${langSwitch(ctx)}</div>`}

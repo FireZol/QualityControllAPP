@@ -2,8 +2,10 @@
 // Optional parts of the application. The core is conductor QC measuring; everything here is off until
 // an Administrator switches it on in Setări. The code stays in place so nothing has to be rebuilt later.
 const settings = require('./settings');
+const reg = require('../modules/registry');
 
-const MODULES = ['cable', 'analytics'];
+// finished cable and analyses (parts of the QC application) plus the team modules of the registry
+const MODULES = ['cable', 'analytics', ...reg.switchable()];
 const key = (m) => `modules.${m}`;
 
 function get(db) {
@@ -16,7 +18,8 @@ function get(db) {
 function moduleOf(pathname) {
   if (pathname === '/loturi' || pathname.startsWith('/loturi/') || pathname.startsWith('/certificate/')) return 'cable';
   if (pathname === '/analize' || pathname.startsWith('/analize/')) return 'analytics';
-  return null;
+  const m = reg.moduleOfPath(pathname);
+  return m === 'qc' ? null : m;
 }
 
 /** Turn a module on or off; the finished-cable family follows the cable module. */

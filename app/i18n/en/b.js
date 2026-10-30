@@ -3,6 +3,7 @@
 
 module.exports = {
   errors: {
+    num_required: 'The pattern is required.', num_too_long: 'The pattern is too long.', num_invalid: 'The pattern has characters or markers that are not allowed.', num_seq_once: 'The pattern must contain {seq} or {seq:N} exactly once.',
     required: 'Required field.', invalid: 'Invalid value.', too_long: 'The text is too long.', duplicate: 'An entry with this value already exists.',
     rotor_format: 'Expected format: numbers separated by +, for example 1+6+12+18.', capacity: 'The machine does not have enough layers for this construction.',
     password_short: 'The password must have at least 8 characters.', password_username: 'The password cannot be the same as the user name.',

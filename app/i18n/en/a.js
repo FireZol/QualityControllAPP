@@ -8,6 +8,7 @@ module.exports = {
 
   nav: {
     label: 'Main navigation', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
+    m_tasks: 'Tasks', m_preventive: 'Preventive', m_ncr: 'Non-conformities', m_top: 'Top non-conformities', m_meetings: 'Meetings', m_series: 'Schedules', modules: 'Modules', notifications: 'Notifications', notifications_n: 'Notifications ({n} unread)',
     admin: 'Administration', lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
   },
 
@@ -27,6 +28,21 @@ module.exports = {
   },
 
   layout: { comfort: 'Larger text and buttons (for hall screens)', report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
+
+  modules: {
+    qc: { name: 'Quality control (CTC)', desc: 'Measurements, data sheets, database' },
+    maintenance: { name: 'Maintenance', desc: 'Maintenance tasks and preventive maintenance' },
+    technical: { name: 'Technical', desc: 'Tasks of the technical team' },
+    quality: { name: 'Quality', desc: 'Non-conformities and quality tasks' },
+    meetings: { name: 'Meetings', desc: 'Meetings, agendas, decisions and tasks' },
+  },
+  teams: { maintenance: 'Maintenance', technical: 'Technical', quality: 'Quality', other: 'Other' },
+  access: {
+    title: 'Access to modules', hint: 'Each user\'s level in the team modules. “Default” means the level set in Settings → Modules. The Administrator always has full access.',
+    levels: { none: 'no access', view: 'view only', enter: 'adds and comments', lead: 'lead (assigns, closes)' }, default: 'default ({level})',
+  },
+  notif: { title: 'Notifications', empty: 'No notifications.', mark_all: 'Mark all as read', unread: 'unread', open: 'Open', generic: '{kind}' },
+  notify: {},
 
   roles: { administrator: 'Administrator', inginer: 'Engineer', personal: 'Staff' },
   shift: { zi: 'Day shift', noapte: 'Night shift' },

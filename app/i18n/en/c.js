@@ -76,16 +76,16 @@ module.exports = {
   lists: {
     title: 'Database', intro: 'The lists can be completed, renamed and deactivated. An entry used in measurements is never deleted, only deactivated.',
     names: {
-      machine_types: 'Machine types', machines: 'Machines', operators: 'Operators', clients: 'Clients', sample_types: 'Sample types', crews: 'Crews',
+      people: 'People (teams)', priorities: 'Priorities', machine_types: 'Machine types', machines: 'Machines', operators: 'Operators', clients: 'Clients', sample_types: 'Sample types', crews: 'Crews',
       shapes: 'Shapes', destinations: 'Destinations', materials: 'Material constants', compounds: 'Compounds (insulation / sheath)', cable_standards: 'Cable standards',
     },
     descriptions: {
-      machine_types: 'The process and the allowed product families', machines: 'Name, type and rotor configuration', operators: 'First and last name', clients: 'Short name',
+      people: 'Who receives tasks: name, team, user account (for notifications)', priorities: 'The priority scale of tasks, from low to high', machine_types: 'The process and the allowed product families', machines: 'Name, type and rotor configuration', operators: 'First and last name', clients: 'Short name',
       sample_types: 'The list of sample types', crews: 'Crews A / B / C and the cycle start date', shapes: 'RE, RM, RMC, SM …', destinations: 'Single-wire, Multi-wire, Armoured …',
       materials: 'Resistivity, density, temperature coefficient', compounds: 'PVC, XLPE, HFFR … used on the cable sheets', cable_standards: 'IEC 60502-1, HD 603, VDE 0276-603 …',
     },
     fields: {
-      name: 'Name', machine_type_id: 'Machine type', rotor_config: 'Rotor configuration', full_name: 'First and last name', short_name: 'Short name', numbered: 'Numbered', sort: 'Order',
+      team: 'Team', user_id: 'User account', name_en: 'English name', name: 'Name', machine_type_id: 'Machine type', rotor_config: 'Rotor configuration', full_name: 'First and last name', short_name: 'Short name', numbered: 'Numbered', sort: 'Order',
       cycle_start: 'First day-shift day of the cycle', code: 'Code', kind: 'Kind', iec_group: 'IEC group', material: 'Material', grade: 'Grade', rho20: 'ρ20 [Ω·mm²/m]',
       compounds_code: 'Code', compounds_name: 'Name', density: 'Density δ [g/cm³]', alpha20: 'α20 [1/K]', clients_name: 'Full name', crews_name: 'Crew',
     },
@@ -105,6 +105,10 @@ module.exports = {
   },
 
   settings: {
+    team_modules: 'Team modules', team_modules_hint: 'Who may update tasks, the default level of users without their own setting, and the numbering.', technical_open: 'In Technical everybody may update tasks', default_level: 'Default level — {module}',
+    numbering: 'Numbering', numbering_hint: 'Patterns with {yyyy} {yy} {mm} {seq:N} (counter with N digits, exactly once) and {team} (the team code); the counter restarts at 1 when the year or month in the pattern changes.',
+    num_task: 'Tasks', num_ncr: 'Non-conformities', num_meeting: 'Meetings', num_example: 'Example: {example}', team_code: 'Team code — {team}',
+    mod_maintenance: 'Maintenance: tasks and preventive maintenance', mod_technical: 'Technical: tasks of the technical team', mod_quality: 'Quality: non-conformity register and tasks', mod_meetings: 'Meetings: scheduling, agendas, decisions',
     title: 'Settings', modules: 'Modules', modules_hint: 'The base application is QC measuring for conductors. The parts below are off until you switch them on; existing data is not lost.', mod_cable: 'Finished cable: tests, batches and certificates', mod_analytics: 'Analyses: trends, capability, control charts and alerts on the home page', server: 'Server', restart_notice: 'The port, the network address and the public name apply after the service restarts.', port: 'Port', bind: 'Network address',
     bind_hint: '0.0.0.0 = all interfaces; 127.0.0.1 = this computer only.', public_name: 'Public name', public_name_hint: 'For example ctc.romcab.local (registered by IT in DNS).',
     sessions: 'Sessions', idle_hours: 'Expiry after inactivity [hours]', shifts: 'Shifts', cycle_hint: 'The working cycle of a crew, in days. Default 4 day shifts, 2 days off, 4 nights, 2 days off (12 days). It applies to new measurements; existing records keep their crew.', cycle_day: 'Day-shift days', cycle_off1: 'Days off (after days)', cycle_night: 'Night shifts', cycle_off2: 'Days off (after nights)', day_start: 'Start of the day shift', night_start: 'Start of the night shift',
@@ -129,7 +133,7 @@ module.exports = {
       construction_add: 'construction added', construction_edit: 'construction changed', construction_deactivate: 'construction deactivated', construction_activate: 'construction activated',
       setting_change: 'setting changed', backup: 'backup', backup_failed: 'backup failed', restore: 'restore', material_change: 'material constant',
       targets_change: 'targets changed', family_change: 'family changed', iec_add: 'IEC: value added', iec_change: 'IEC: value changed',
-      row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
+      access_change: 'module access changed', row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
     },
   },
 };

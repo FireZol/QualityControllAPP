@@ -7,6 +7,9 @@ const audit = require('../domain/audit');
 const settings = require('../domain/settings');
 const modules = require('../domain/modules');
 const golive = require('../domain/golive');
+const numbering = require('../domain/numbering');
+const reg = require('../modules/registry');
+const access = require('../domain/access');
 const backup = require('../lib/backup');
 const { nowIso } = require('../lib/time');
 const views = require('../views/admin');
@@ -27,7 +30,14 @@ module.exports = function register(app) {
 
   router.get('/admin/utilizatori', { roles: ADMIN }, (ctx) => page(views.usersPage(ctx, db.all('SELECT * FROM users ORDER BY active DESC, username'))));
 
-  router.get('/admin/utilizatori/nou', { roles: ADMIN }, (ctx) => page(views.userForm(ctx, {})));
+  // module levels of a user and the default that applies where nothing is set
+  const accessInfo = (userId) => ({
+    levels: userId ? access.userLevels(db, userId) : {},
+    defaults: Object.fromEntries(['maintenance', 'technical', 'quality', 'meetings'].map((m) => [m, settings.get(db, `access.default.${m}`) || access.DEFAULT_LEVEL[m]])),
+  });
+  const levelsFromForm = (form) => Object.fromEntries(['maintenance', 'technical', 'quality', 'meetings'].map((m) => [m, form.get(`lvl_${m}`)]).filter(([, v]) => reg.LEVELS.includes(v)));
+
+  router.get('/admin/utilizatori/nou', { roles: ADMIN }, (ctx) => page(views.userForm(ctx, { ...accessInfo(0) })));
 
   router.post('/admin/utilizatori/nou', { roles: ADMIN }, async (ctx) => {
     const errors = {};
@@ -37,12 +47,13 @@ module.exports = function register(app) {
     if (!values.full_name) errors.full_name = 'required'; else if (values.full_name.length > 120) errors.full_name = 'too_long';
     if (!auth.ROLES.includes(values.role)) errors.role = 'invalid';
     if (values.job_title.length > 80) errors.job_title = 'too_long';
-    if (Object.keys(errors).length) return page(views.userForm(ctx, { values, errors }), 422);
+    if (Object.keys(errors).length) return page(views.userForm(ctx, { values, errors, ...accessInfo(0), levels: levelsFromForm(ctx.form) }), 422);
     const password = auth.generatePassword(12);
     const hash = await auth.hashPassword(password);
     const id = db.tx(() => {
       const uid = db.run('INSERT INTO users(username, full_name, role, job_title, password_hash, must_change_password, active, created_at) VALUES (?,?,?,?,?,1,1,?)',
         values.username, values.full_name, values.role, values.job_title || null, hash, nowIso()).id;
+      access.setUserLevels(db, uid, levelsFromForm(ctx.form));
       audit.log(db, ctx.user.id, 'user_create', 'users', uid, { username: values.username, role: values.role });
       return uid;
     });
@@ -52,7 +63,7 @@ module.exports = function register(app) {
   router.get('/admin/utilizatori/:id', { roles: ADMIN }, (ctx) => {
     const user = db.get('SELECT * FROM users WHERE id = ?', idOf(ctx.params.id));
     if (!user) return page(errorPage(ctx, 'not_found'), 404);
-    return page(views.userForm(ctx, { user, self: user.id === ctx.user.id }));
+    return page(views.userForm(ctx, { user, self: user.id === ctx.user.id, ...accessInfo(user.id) }));
   });
 
   router.post('/admin/utilizatori/:id', { roles: ADMIN }, (ctx) => {
@@ -67,9 +78,14 @@ module.exports = function register(app) {
     if (self && !values.active) errors.active = 'own_account';
     const losesAdmin = user.role === 'administrator' && user.active && (values.role !== 'administrator' || !values.active);
     if (losesAdmin && activeAdmins() <= 1) errors.role = 'last_admin';
-    if (Object.keys(errors).length) return page(views.userForm(ctx, { user, values: { ...values, username: user.username }, errors, self }), 422);
+    if (Object.keys(errors).length) return page(views.userForm(ctx, { user, values: { ...values, username: user.username }, errors, self, ...accessInfo(user.id), levels: levelsFromForm(ctx.form) }), 422);
     db.tx(() => {
       db.run('UPDATE users SET full_name = ?, role = ?, job_title = ?, active = ? WHERE id = ?', values.full_name, values.role, values.job_title || null, values.active, user.id);
+      if (ctx.form.has('lvl_maintenance') || ctx.form.has('lvl_quality')) {
+        const before = access.userLevels(db, user.id);
+        access.setUserLevels(db, user.id, levelsFromForm(ctx.form));
+        audit.log(db, ctx.user.id, 'access_change', 'users', user.id, { before, after: levelsFromForm(ctx.form) });
+      }
       if (!values.active || values.role !== user.role) auth.destroyUserSessions(db, user.id);
       audit.log(db, ctx.user.id, 'user_edit', 'users', user.id, { before: { role: user.role, active: user.active, full_name: user.full_name }, after: values });
     });
@@ -99,6 +115,7 @@ module.exports = function register(app) {
     if (!extra || !extra.values) [values['cycle.day'], values['cycle.off1'], values['cycle.night'], values['cycle.off2']] = values['shift.cycle'];
     const dir = backup.backupDir(db, config);
     values.production_started_at = settings.get(db, 'production.started_at');
+    values.numbering_example = Object.fromEntries(numbering.RULES.map((r) => [r, numbering.preview(db, values[`numbering.${r}`] || numbering.DEFAULTS[r], r === 'task' ? 'maintenance' : 'quality')]));
     return views.settingsPage(ctx, { values, errors: extra && extra.errors, backups: backup.listBackups(dir), backupDir: dir, backupError: extra && extra.backupError });
   }
 
@@ -112,8 +129,15 @@ module.exports = function register(app) {
     raw['feedback.email'] = ctx.form.get('feedback.email').trim();
     const CYCLE = ['day', 'off1', 'night', 'off2'];
     for (const k of CYCLE) raw['cycle.' + k] = ctx.form.get('cycle.' + k).trim();
-    raw['modules.cable'] = ctx.form.bool('modules.cable');
-    raw['modules.analytics'] = ctx.form.bool('modules.analytics');
+    for (const m of modules.MODULES) raw[`modules.${m}`] = ctx.form.bool(`modules.${m}`);
+    // team modules: who may update Technical, default levels, numbering patterns and team codes (only when the form carries them)
+    const hasTeam = ctx.form.has('numbering.task');
+    if (hasTeam) {
+      raw['technical.open_to_all'] = ctx.form.bool('technical.open_to_all');
+      for (const m of ['maintenance', 'quality', 'meetings', 'technical']) raw[`access.default.${m}`] = ctx.form.get(`access.default.${m}`);
+      for (const r of numbering.RULES) raw[`numbering.${r}`] = ctx.form.get(`numbering.${r}`).trim();
+      for (const t of Object.keys(numbering.TEAM_CODES)) raw[`team.code.${t}`] = ctx.form.get(`team.code.${t}`).trim();
+    }
     const parsed = {};
     const port = /^\d{1,5}$/.test(raw['server.port']) ? Number(raw['server.port']) : 0;
     if (port < 1 || port > 65535) errors['server.port'] = 'invalid'; else parsed['server.port'] = port;
@@ -129,8 +153,13 @@ module.exports = function register(app) {
     if (keep < 1 || keep > 365) errors['backup.keep'] = 'invalid'; else parsed['backup.keep'] = keep;
     parsed['backup.auto'] = raw['backup.auto'];
     if (raw['feedback.email'] && !/^[A-Za-z0-9._%+\-]{1,64}@[A-Za-z0-9.\-]{1,120}$/.test(raw['feedback.email'])) errors['feedback.email'] = 'invalid'; else parsed['feedback.email'] = raw['feedback.email'];
-    parsed['modules.cable'] = raw['modules.cable'];
-    parsed['modules.analytics'] = raw['modules.analytics'];
+    for (const m of modules.MODULES) parsed[`modules.${m}`] = raw[`modules.${m}`];
+    if (hasTeam) {
+      parsed['technical.open_to_all'] = raw['technical.open_to_all'];
+      for (const m of ['maintenance', 'quality', 'meetings', 'technical']) { if (!reg.LEVELS.includes(raw[`access.default.${m}`])) errors[`access.default.${m}`] = 'invalid'; else parsed[`access.default.${m}`] = raw[`access.default.${m}`]; }
+      for (const r of numbering.RULES) { const e = numbering.validate(raw[`numbering.${r}`]); if (e) errors[`numbering.${r}`] = 'num_' + e; else parsed[`numbering.${r}`] = raw[`numbering.${r}`]; }
+      for (const t of Object.keys(numbering.TEAM_CODES)) { if (!/^[A-Za-z0-9]{1,6}$/.test(raw[`team.code.${t}`])) errors[`team.code.${t}`] = 'invalid'; else parsed[`team.code.${t}`] = raw[`team.code.${t}`].toUpperCase(); }
+    }
     if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
     const cycleSent = CYCLE.some((k) => ctx.form.params.has('cycle.' + k)); // an older form without the cycle fields leaves it unchanged
     const cyc = CYCLE.map((k) => (/^\d{1,2}$/.test(raw['cycle.' + k]) ? Number(raw['cycle.' + k]) : -1));
