@@ -64,3 +64,27 @@ Owner: Zoltan Biro (engineer, ROMCAB S.A.). Date locked: 2026-09-25.
 
 ## ADR-014 — Numbers and units
 **Decision.** Store SI-ish canonical units: mm, g/m (= kg/km), Ω/km, °C, m. Keep the precision entered; display wire Ø with 3 decimals, strand Ø with 1–2, mass g/m with 1–2 (wire kg/km with 2), R with 4 significant digits. Never round before computing a verdict.
+
+## ADR-015 — Languages (2026-09-30)
+**Decision.** Romanian is the master dictionary (`app/i18n/ro.js`); English is a full second dictionary (`app/i18n/en/*.js`); each user chooses (RO | EN in the header, stored on the account; the login page remembers the last choice in a cookie). A missing English text falls back to Romanian; a test fails when keys or `{placeholders}` differ. Stored data stays as entered. Numbers follow the language (comma / dot), CSV too. Printed pages take `?lang=` (a Language choice in their toolbar); a certificate is frozen in the language chosen when it is issued. Hungarian is deferred; adding it means one more dictionary and the same test.
+**Why.** Customers receive English documents; staff read Romanian; maintenance cost stays low because one test guards the sync.
+
+## ADR-016 — Optional modules (2026-09-30)
+**Decision.** The product is the conductor QC tool first. Finished cable (tests, batches, certificates) and analyses (SPC, capability, trends) are switched off on a fresh install and switched on by the Administrator (Setări → Module, `modules.*` settings). Their code, routes and data stay; a switched-off module answers 404 and disappears from the menu. A first-setup checklist guides the Administrator.
+**Why.** "Make the QC measuring work fully, then add the rest step by step" (owner).
+
+## ADR-017 — Pilot and go-live (2026-10-01)
+**Decision.** Version lives in `package.json` (`0.9.0-beta.N`, a BETA tag in the footer); the install package is built by `tools/make-release.js`; a "Report a problem" link writes to an address set in Settings. At the end of the pilot the Administrator may run **Start production** once: typed confirmation, automatic backup first, audit entry; it clears measurements (and batches / drums / certificates) and keeps users, sheets, lists, settings and the audit log. This is the single deliberate exception to ADR-005 and cannot be repeated.
+
+## ADR-018 — Checking a sheet against the paper original (2026-10-29)
+**Decision.** For every row of a draft or in-verification revision an engineer types the values read from the paper (compared live and again on the server, comma or dot) or ticks the row after looking. The result (who, when, typed / by eye, note) is informative: it never blocks submission or activation, the revision page shows "n of m rows checked", editing a row clears its tick, a new revision starts unchecked.
+**Why.** About 150 seeded rows were transcribed from scans; double entry is the quickest reliable check.
+
+## ADR-019 — Touch-first UI (2026-10-29)
+**Decision.** Every control is at least 44 × 44 px (`tools/touch-audit.js` is the test), a touch screen starts with the larger-text mode (`A+`, remembered per PC), the menu is one row (Administration and account in menus), the entry screen shows one big verdict banner beside the form from 900 px width.
+
+## ADR-020 — Standard limits as a second tier (parked, 2026-09-30)
+**Idea.** Keep the internal limits (data sheet) as the working target and add the standard's limits as a separate reference; anything outside the standard is always a non-conformity ("not forgiving"). **Not built:** needs the standard tables beyond IEC 60228 (which has only R max, class 2 minimum wires, class 5 maximum wire Ø), and decisions on certificates and the sheet's "IEC exception". See `docs/INTREBARI.md` item 30.
+
+## ADR-021 — Mass check band (2026-09-30)
+**Decision.** The warning "mass does not match wires × wire mass" uses a band of ±1 % by default (0.99 … 1.01), an editable target. The owner calls it the standard value and changes it as needed; about 45 of the 69 seeded aluminium rows warn at ±1 % (warnings only, folded into one line).
