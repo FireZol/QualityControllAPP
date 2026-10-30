@@ -30,6 +30,19 @@
     });
   })();
 
+  // ◐ switches the light / dark theme for this PC; the ☰ button opens the navigation drawer on narrow screens
+  document.addEventListener('click', function (e) {
+    const t = e.target instanceof Element ? e.target : null;
+    if (!t) return;
+    if (t.closest('[data-theme-toggle]')) {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('ctc_theme', next); } catch (err) { /* cannot remember: still applied now */ }
+    } else if (t.closest('[data-side-toggle]')) document.body.classList.toggle('side-open');
+    else if (t.closest('[data-side-close]') || (document.body.classList.contains('side-open') && t.closest('.side a'))) document.body.classList.remove('side-open');
+  });
+
   // a success notice fades after a few seconds; errors stay until the page changes
   document.querySelectorAll('.flash-ok').forEach(function (el) {
     setTimeout(function () { el.classList.add('fade'); }, 6000);

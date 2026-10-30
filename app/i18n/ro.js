@@ -6,7 +6,7 @@ const S = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
 
   nav: {
-    label: 'Navigare principală', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
+    label: 'Navigare principală', menu: 'Meniu', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
     m_tasks: 'Sarcini', m_preventive: 'Preventiv', m_ncr: 'Neconformități', m_top: 'Top neconformități', m_meetings: 'Ședințe', m_series: 'Programări', modules: 'Module', notifications: 'Notificări', notifications_n: 'Notificări ({n} necitite)',
     admin: 'Administrare', lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
   },
@@ -28,7 +28,7 @@ const S = {
     analyses: ['Analizele folosesc măsurătorile salvate; alegeți produsul și mărimea, apoi perioada.'],
   },
 
-  layout: { comfort: 'Text și butoane mai mari (pentru ecrane din hală)', report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
+  layout: { theme: 'Temă luminoasă / întunecată', comfort: 'Text și butoane mai mari (pentru ecrane din hală)', report_problem: 'Raportați o problemă', report_body: 'Descrieți ce ați făcut și ce s-a întâmplat:', beta_title: 'Versiune de test: aplicația este în perioada de testare' },
 
   modules: {
     qc: { name: 'Control calitate (CTC)', desc: 'Măsurători, fișe tehnice, date de bază' },
@@ -221,7 +221,7 @@ const S = {
   },
 
   home: {
-    title: 'Acasă', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
+    title: 'Acasă', greet_morning: 'Bună dimineața', greet_afternoon: 'Bună ziua', greet_evening: 'Bună seara', attention: 'Necesită atenția dvs.', attention_none: 'Totul în ordine — nimic nu așteaptă după dvs.', att_out: 'Măsurători cu valori în afara limitelor (24 h): {n}', att_spc: 'Alerte SPC: {n}', att_setup: 'Pași de prima configurare rămași: {n}', att_overdue: 'Sarcini întârziate: {n}', att_unread: 'Notificări necitite: {n}', att_mine: 'Sarcini deschise atribuite dvs.: {n}', quick: 'Acțiuni rapide', tile_today: 'Măsurători azi', tile_out: 'În afara limitelor (24 h)', tile_sheets: 'Fișe tehnice active', tile_tasks: 'Sarcini active', tile_overdue: 'întârziate', side_shift: 'În tură acum', side_tasks: 'Sarcinile mele', side_notes: 'Notificări recente', see_all: 'Vezi toate', no_tasks_mine: 'Nicio sarcină atribuită.', no_notes: 'Nicio notificare.', new_task: 'Sarcină nouă', crew_none: 'fără schimb', new_measurement: 'Măsurătoare nouă', current_shift: 'Tura curentă: {shift} · schimbul {crew}',
     setup_title: 'Prima configurare', setup_hint: 'Pașii de mai jos se bifează singuri. Panoul dispare când toți sunt făcuți.',
     setup_engineers: 'Cel puțin doi Ingineri (unul elaborează o fișă, celălalt o verifică și o activează)', setup_sheets: 'Fișe tehnice active, ca să se poată introduce măsurători',
     setup_crews: 'Datele de start ale schimburilor A / B / C (până atunci sunt orientative)', setup_backup: 'Cel puțin o copie de siguranță (Setări → Backup acum)',

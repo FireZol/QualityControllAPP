@@ -7,31 +7,31 @@ const calc = require('../domain/calc');
 const reg = require('../modules/registry');
 const notifications = require('../domain/notifications');
 
-function nav(ctx, active) {
+/**
+ * The left navigation (owner, 2026-10-30, after the HomeCloud look): Home on top, then one section per module the user may open;
+ * the section of the module being used is open, the others fold. Administration is its own section.
+ */
+function sidebar(ctx, active) {
   const { user, modules } = ctx;
   const cur = ctx.module || 'qc';
-  const link = ([key, href, label]) => html`<a href="${href}" class="${key === active ? 'active' : ''}"${key === active ? raw(' aria-current="page"') : ''}>${label}</a>`;
-  const switcher = moduleSwitcher(ctx, cur);
-  if (cur !== 'qc') {
-    const items = reg.byId[cur].menu.filter((m) => reg.rank(ctx.level(cur)) >= reg.rank(m.minLevel || 'view')).map((m) => [m.key, m.href, T.nav['m_' + m.name]]);
-    return html`${switcher}<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}</nav>`;
-  }
-  const items = [['home', '/', T.nav.home], ['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register]];
-  if (modules && modules.cable) items.push(['batches', '/loturi', T.nav.batches]);
-  if (modules && modules.analytics) items.push(['analyses', '/analize', T.nav.analyses]);
-  items.push(['specs', '/fise', T.nav.specs]);
-  if (user.role === 'inginer' || user.role === 'administrator') items.push(['lists', '/liste', T.nav.lists]);
-  // administration is one menu instead of three more tabs, so the bar stays on a single row
-  const admin = user.role === 'administrator' ? [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]] : [];
-  return html`${switcher}<nav class="nav" aria-label="${T.nav.label}">${items.map(link)}${admin.length ? html`<details class="navmore${admin.some((a) => a[0] === active) ? ' active' : ''}"><summary>${T.nav.admin} <span aria-hidden="true">▾</span></summary><div class="navmore-box">${admin.map(link)}</div></details>` : ''}</nav>`;
-}
+  const link = (mod, [key, href, label, badge]) => {
+    const on = mod === cur && key === active;
+    return html`<a href="${href}" class="${on ? 'active' : ''}"${on ? raw(' aria-current="page"') : ''}>${label}${badge ? html`<span class="side-badge">${badge}</span>` : ''}</a>`;
+  };
+  const section = (mod, title, items, isOpen) => html`<details class="side-sec"${(isOpen === undefined ? mod === cur : isOpen) ? raw(' open') : ''}><summary>${title}</summary><div class="side-items">${items.map((it) => link(mod, it))}</div></details>`;
 
-/** The module switcher next to the brand: only the modules switched on and open to this user. */
-function moduleSwitcher(ctx, cur) {
-  const open = reg.MODULES.filter((m) => m.core || (ctx.modules && ctx.modules[m.id] && reg.rank(ctx.level(m.id)) >= 1));
-  if (open.length < 2) return '';
-  return html`<details class="navmore modules"><summary title="${T.nav.modules}">⊞ ${T.modules[cur].name} <span aria-hidden="true">▾</span></summary>
-    <div class="navmore-box">${open.map((m) => html`<a href="${m.home || '/'}" class="${m.id === cur ? 'active' : ''}"><strong>${T.modules[m.id].name}</strong><small>${T.modules[m.id].desc}</small></a>`)}</div></details>`;
+  const qc = [['new', '/masuratori/nou', T.nav.new_measurement], ['register', '/masuratori', T.nav.register]];
+  if (modules && modules.cable) qc.push(['batches', '/loturi', T.nav.batches]);
+  if (modules && modules.analytics) qc.push(['analyses', '/analize', T.nav.analyses]);
+  qc.push(['specs', '/fise', T.nav.specs]);
+  if (user.role === 'inginer' || user.role === 'administrator') qc.push(['lists', '/liste', T.nav.lists]);
+
+  const others = reg.MODULES.filter((m) => !m.core && modules && modules[m.id] && reg.rank(ctx.level(m.id)) >= 1)
+    .map((m) => section(m.id, T.modules[m.id].name, m.menu.filter((x) => reg.rank(ctx.level(m.id)) >= reg.rank(x.minLevel || 'view')).map((x) => [x.key, x.href, T.nav['m_' + x.name]])));
+  const admin = user.role === 'administrator' ? section('qc', T.nav.admin, [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]], ['users', 'settings', 'audit'].includes(active)) : '';
+  return html`<nav class="side-nav" aria-label="${T.nav.label}">
+    <a href="/" class="side-home${cur === 'qc' && active === 'home' ? ' active' : ''}"${cur === 'qc' && active === 'home' ? raw(' aria-current="page"') : ''}>${T.nav.home}</a>
+    ${section('qc', T.modules.qc.name, qc)}${others}${admin}</nav>`;
 }
 
 /** The bell: unread notifications. */
@@ -57,6 +57,9 @@ function footer(ctx) {
     ? `mailto:${ctx.feedbackEmail}?subject=${encodeURIComponent(`${T.app.name} ${version.version}`)}&body=${encodeURIComponent(`${T.layout.report_body}\n\n${page}\n${T.app.name} ${version.version} (${who})`)}` : '';
   return html`<footer class="foot"><span>${T.app.name} ${version.version}</span>${version.beta ? html` <span class="beta-tag" title="${T.layout.beta_title}">BETA</span>` : ''}${mail ? html` · <a href="${mail}">${T.layout.report_problem}</a>` : ''}</footer>`;
 }
+
+/** Up to two initials for the avatar circle. */
+const initials = (name) => String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 
 const LANG_TITLE = { ro: 'Română', en: 'English' };
 
@@ -93,13 +96,19 @@ function layout(ctx, opts) {
 <script src="/static/prefs.js"></script>
 </head>
 <body>
+<div class="app">
+${user ? html`<aside class="side" id="side"><a class="brand" href="/">${T.app.name}</a>${sidebar(ctx, opts.active)}<div class="side-foot">${version.version}${version.beta ? html` <span class="beta-tag" title="${T.layout.beta_title}">BETA</span>` : ''}</div></aside>
+<div class="side-scrim" data-side-close></div>` : ''}
+<div class="content">
 <header class="top">
+  ${user ? html`<button type="button" class="icon-btn side-toggle" data-side-toggle aria-label="${T.nav.menu}" aria-controls="side">☰</button>` : ''}
   <a class="brand" href="/">${T.app.name}</a>
-  ${user ? nav(ctx, opts.active) : ''}
+  <span class="page-title">${opts.title || ''}</span>
   ${user ? html`<div class="who">
+    <button type="button" class="icon-btn" data-theme-toggle title="${T.layout.theme}" aria-label="${T.layout.theme}"><span class="theme-light-ico">☾</span><span class="theme-dark-ico">☀</span></button>
     <button type="button" class="comfort-btn" data-comfort title="${T.layout.comfort}" aria-label="${T.layout.comfort}" aria-pressed="false">A<small>+</small></button>
     ${bell(ctx)}${langSwitch(ctx)}${helpBox(opts.active)}
-    <details class="navmore account"><summary title="${T.roles[user.role]}"><span class="acc-name">${user.full_name}</span> <span aria-hidden="true">▾</span></summary>
+    <details class="navmore account"><summary title="${T.roles[user.role]}"><span class="avatar" aria-hidden="true">${initials(user.full_name)}</span><span class="acc-name">${user.full_name}</span> <span aria-hidden="true">▾</span></summary>
       <div class="navmore-box right"><div class="navmore-role">${T.roles[user.role]}</div><a href="/parola">${T.nav.password}</a>
         <form method="post" action="/iesire">${csrf(ctx)}<button type="submit">${T.nav.logout}</button></form></div></details></div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
 </header>
@@ -108,6 +117,8 @@ ${flashBox(ctx.flash)}
 ${opts.body}
 </main>
 ${footer(ctx)}
+</div>
+</div>
 ${scripts.map((s) => html`<script src="${s}"></script>`)}
 </body>
 </html>`;

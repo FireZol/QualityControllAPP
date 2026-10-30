@@ -307,6 +307,13 @@ function copyValues(db, id, team) {
   return { title: t.title, description: t.description, priority_id: t.priority_id, machine_id: t.machine_id, area: t.area };
 }
 
+/** Open tasks assigned to a user (through their people row), soonest due first. */
+function mine(db, userId, limit) {
+  return db.all(`SELECT DISTINCT t.id, t.no, t.title, t.team, t.status, t.due_date FROM tasks t JOIN task_assignees a ON a.task_id = t.id JOIN people p ON p.id = a.person_id
+    WHERE p.user_id = ? AND t.status IN ('open', 'in_progress', 'waiting', 'done') ORDER BY t.due_date IS NULL, t.due_date, t.id LIMIT ?`, userId, limit || 5)
+    .map((t) => ({ ...t, overdue: !!(t.due_date && t.due_date < today()) }));
+}
+
 /** Counts for the module tiles and the board tabs. */
 function counts(db, team) {
   const r = db.get(`SELECT count(*) FILTER (WHERE status IN ('open', 'in_progress', 'waiting', 'done')) AS active,
@@ -317,4 +324,4 @@ function counts(db, team) {
   return { active: r.active, overdue: r.overdue, finished: r.finished, by };
 }
 
-module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, today, addDays, SORT_KEYS, checklistOf, addChecklist, setChecked, removeChecklistItem, copyChecklist, plan, bulk, copyValues };
+module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, mine, today, addDays, SORT_KEYS, checklistOf, addChecklist, setChecked, removeChecklistItem, copyChecklist, plan, bulk, copyValues };

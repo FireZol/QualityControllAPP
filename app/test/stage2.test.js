@@ -294,10 +294,10 @@ test('the live preview gets the viewer\'s decimal separator', async () => {
   await ctc.postForm('/', '/limba', { lang: 'ro', back: '/' });
 });
 
-test('UX: one-row menu with administration and account menus, verdict banners, compact register, larger-text switch', async () => {
+test('UX: left navigation with an administration section, account menu, verdict banners, compact register, larger-text switch', async () => {
   // administration is one menu for the Administrator only; everybody has the account menu with password and log out
   const adminHome = (await admin.get('/')).text;
-  assert.match(adminHome, /<details class="navmore"><summary>Administrare/);
+  assert.match(adminHome, /<details class="side-sec"[^>]*><summary>Administrare/);
   assert.ok(['/admin/utilizatori', '/admin/setari', '/admin/jurnal'].every((u) => adminHome.includes(`href="${u}"`)));
   assert.ok(!(await engA.get('/')).text.includes('Administrare'), 'an Inginer has no Administration menu');
   const ctcHome = (await ctc.get('/')).text;

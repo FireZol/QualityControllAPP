@@ -60,6 +60,7 @@ module.exports = {
   },
 
   home: {
+    greet_morning: 'Good morning', greet_afternoon: 'Good afternoon', greet_evening: 'Good evening', attention: 'Needs your attention', attention_none: 'All clear — nothing is waiting for you.', att_out: 'Measurements with out-of-limit values (24 h): {n}', att_spc: 'SPC alerts: {n}', att_setup: 'First-setup steps left: {n}', att_overdue: 'Overdue tasks: {n}', att_unread: 'Unread notifications: {n}', att_mine: 'Open tasks assigned to you: {n}', quick: 'Quick actions', tile_today: 'Measurements today', tile_out: 'Out of limits (24 h)', tile_sheets: 'Active data sheets', tile_tasks: 'Active tasks', tile_overdue: 'overdue', side_shift: 'On shift now', side_tasks: 'My tasks', side_notes: 'Recent notifications', see_all: 'See all', no_tasks_mine: 'No tasks assigned to you.', no_notes: 'No notifications.', new_task: 'New task', crew_none: 'no crew',
     title: 'Home', new_measurement: 'New measurement', current_shift: 'Current shift: {shift} · crew {crew}',
     setup_title: 'First setup', setup_hint: 'The steps below tick themselves off. The panel disappears once all are done.',
     setup_engineers: 'At least two Engineers (one drafts a sheet, the other verifies and activates it)', setup_sheets: 'Active data sheets, so that measurements can be entered',

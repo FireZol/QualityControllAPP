@@ -145,7 +145,7 @@ test('Users: the access matrix is on the form, saved, audited and applied; the m
   assert.ok(app.db.get("SELECT 1 FROM audit_log WHERE action = 'access_change'"));
   // the switcher lists the modules this user may open
   const home = (await worker.get('/')).text;
-  assert.match(home, /class="navmore modules"/);
+  assert.match(home, /class="side-sec"/);
   assert.ok(home.includes('Mentenanță') && home.includes('Calitate') && home.includes('Ședințe') && home.includes('Tehnic'));
   access.setUserLevels(app.db, w.id, { maintenance: 'none' });
   assert.ok(!(await worker.get('/')).text.includes('href="/mentenanta"'), 'a module with level none is not offered');

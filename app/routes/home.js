@@ -4,7 +4,20 @@ const M = require('../domain/measurements');
 const A = require('../domain/analytics');
 const setup = require('../domain/setup');
 const views = require('../views/home');
+const tasks = require('../domain/tasks');
+const notifications = require('../domain/notifications');
 
 module.exports = function register(app) {
-  app.router.get('/', {}, (ctx) => page(views.homePage(ctx, { setup: ctx.user.role === 'personal' ? [] : setup.checklist(app.db, app.config).filter((_, __, all) => !setup.isComplete(all)), today: M.today(app.db), out: M.outOfLimit24h(app.db), spc: ctx.modules.analytics ? A.spcAlerts(app.db, require('../domain/targets').get(app.db)) : [] })));
+  const { db } = app;
+  app.router.get('/', {}, (ctx) => {
+    const teams = tasks.TEAMS.filter((t) => ctx.modules[t] && tasks.canView(db, ctx.user, t, ctx.modules)).map((t) => ({ team: t, path: tasks.teamPath(t), counts: tasks.counts(db, t), create: tasks.canCreate(db, ctx.user, t, ctx.modules) }));
+    return page(views.homePage(ctx, {
+      setup: ctx.user.role === 'personal' ? [] : setup.checklist(db, app.config).filter((_, __, all) => !setup.isComplete(all)),
+      today: M.today(db), out: M.outOfLimit24h(db),
+      spc: ctx.modules.analytics ? A.spcAlerts(db, require('../domain/targets').get(db)) : [],
+      teams, mine: teams.length ? tasks.mine(db, ctx.user.id, 5).filter((t) => teams.some((x) => x.team === t.team)) : [],
+      notes: notifications.list(db, ctx.user.id, { limit: 5 }), unread: notifications.unread(db, ctx.user.id),
+      sheets: db.value("SELECT count(*) FROM spec_revisions WHERE status = 'activa'"),
+    }));
+  });
 };
