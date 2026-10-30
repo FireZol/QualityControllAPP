@@ -30,7 +30,9 @@ async function main() {
   mk('quality', 'Verificat lot după neconformitate', { priority_id: prio[2].id });
   const done = mk('maintenance', 'Înlocuit rulment', { status: 'done' });
   void people; void done;
-  const screens = [['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
+  tasks.addChecklist(db, { id: adminId }, first, ['Oprire utilaj', 'Verificare lagăre', 'Pornire și probă']);
+  tasks.setChecked(db, { id: adminId }, first, db.get('SELECT id FROM task_checklist WHERE task_id = ? ORDER BY id', first).id, true);
+  const screens = [['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['board grouped', '/mentenanta?group=status&sort=due'], ['work order', `/sarcini/${first}/tipar`], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
   const browser = await pw.chromium.launch();
   let total = 0;
   for (const [sizeName, viewport] of Object.entries(SIZES)) {

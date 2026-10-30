@@ -24,6 +24,19 @@ const canUpdate = (db, user, team, enabled) => access.can(db, user, team, 'lead'
 
 const today = () => nowIso().slice(0, 10);
 
+/** yyyy-mm-dd plus n days (calendar arithmetic in UTC, so no daylight-saving surprises). */
+function addDays(iso, n) { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+function addMonths(iso, n) { const d = new Date(`${iso}T00:00:00Z`); const day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + n); const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate(); d.setUTCDate(Math.min(day, last)); return d.toISOString().slice(0, 10); }
+
+/** Board sort orders (owner: sort the way the work is planned). */
+const SORT_KEYS = ['priority', 'due', 'new', 'updated'];
+const SORTS = {
+  priority: 'COALESCE(pr.sort, 0) DESC, t.due_date IS NULL, t.due_date, t.id',
+  due: 't.due_date IS NULL, t.due_date, COALESCE(pr.sort, 0) DESC, t.id',
+  new: 't.id DESC',
+  updated: 't.updated_at DESC, t.id DESC',
+};
+
 function validate(db, data) {
   const errors = {};
   const v = {
@@ -162,6 +175,7 @@ function detail(db, id) {
   t.assignees = db.all('SELECT p.id, p.name FROM task_assignees a JOIN people p ON p.id = a.person_id WHERE a.task_id = ? ORDER BY p.name', id);
   t.events = db.all('SELECT e.*, u.full_name AS user_name FROM task_events e LEFT JOIN users u ON u.id = e.user_id WHERE e.task_id = ? ORDER BY e.id', id)
     .map((e) => ({ ...e, details: e.details ? JSON.parse(e.details) : null }));
+  t.checklist = checklistOf(db, id);
   t.overdue = !!(t.due_date && ACTIVE.includes(t.status) && t.due_date < today());
   return t;
 }
@@ -179,11 +193,18 @@ function list(db, f) {
   if (f.priority) { where.push('t.priority_id = ?'); p.push(f.priority); }
   if (f.machine) { where.push('t.machine_id = ?'); p.push(f.machine); }
   if (f.overdue) { where.push(`t.due_date < ? AND t.status IN ('open', 'in_progress', 'waiting', 'done')`); p.push(today()); }
+  if (f.persons && f.persons.length) { where.push(`EXISTS (SELECT 1 FROM task_assignees a WHERE a.task_id = t.id AND a.person_id IN (${f.persons.map(() => '?').join(',')}))`); p.push(...f.persons); }
+  if (f.unassigned) where.push('NOT EXISTS (SELECT 1 FROM task_assignees a WHERE a.task_id = t.id)');
+  if (f.soon) { where.push(`t.due_date IS NOT NULL AND t.due_date >= ? AND t.due_date <= ? AND t.status IN ('open', 'in_progress', 'waiting', 'done')`); p.push(today(), addDays(today(), 7)); }
+  if (f.created_by) { where.push('t.created_by = ?'); p.push(f.created_by); }
   if (f.source_kind) { where.push('t.source_kind = ?'); p.push(f.source_kind); }
   if (f.q) { where.push("(t.title LIKE ? ESCAPE '\\' OR t.no LIKE ? ESCAPE '\\' OR t.description LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like); }
-  const rows = db.all(`SELECT t.*, pr.name AS priority_name, pr.name_en AS priority_name_en, pr.sort AS priority_sort, m.name AS machine_name
+  const order = f.view === 'closed' ? 't.closed_at DESC, t.id DESC' : SORTS[f.sort] || SORTS.priority;
+  const rows = db.all(`SELECT t.*, pr.name AS priority_name, pr.name_en AS priority_name_en, pr.sort AS priority_sort, m.name AS machine_name,
+      (SELECT count(*) FROM task_checklist c WHERE c.task_id = t.id) AS check_total, (SELECT count(*) FROM task_checklist c WHERE c.task_id = t.id AND c.done = 1) AS check_done,
+      (SELECT count(*) FROM task_events e WHERE e.task_id = t.id AND e.kind = 'comment') AS comments
     FROM tasks t LEFT JOIN priorities pr ON pr.id = t.priority_id LEFT JOIN machines m ON m.id = t.machine_id
-    WHERE ${where.join(' AND ')} ORDER BY ${f.view === 'closed' ? 't.closed_at DESC, t.id DESC' : 'COALESCE(pr.sort, 0) DESC, t.due_date IS NULL, t.due_date, t.id'} LIMIT ${Math.min(Number(f.limit) || 300, 2000)}`, ...p);
+    WHERE ${where.join(' AND ')} ORDER BY ${order} LIMIT ${Math.min(Number(f.limit) || 300, 2000)}`, ...p);
   const byTask = new Map(rows.map((r) => [r.id, r]));
   for (const r of rows) { r.assignees = []; r.overdue = !!(r.due_date && ACTIVE.includes(r.status) && r.due_date < today()); }
   for (let i = 0; i < rows.length; i += 400) {
@@ -191,6 +212,99 @@ function list(db, f) {
     for (const a of db.all(`SELECT a.task_id, p.id, p.name FROM task_assignees a JOIN people p ON p.id = a.person_id WHERE a.task_id IN (${ids.map(() => '?').join(',')}) ORDER BY p.name`, ...ids)) byTask.get(a.task_id).assignees.push({ id: a.id, name: a.name });
   }
   return rows;
+}
+
+// ---- checklist: the steps of a job, ticked off by whoever does them; every change is in the history ----
+function checklistOf(db, id) {
+  return db.all('SELECT c.*, u.full_name AS done_by_name FROM task_checklist c LEFT JOIN users u ON u.id = c.done_by WHERE c.task_id = ? ORDER BY c.position, c.id', id);
+}
+
+function checkEvent(db, user, id, action, item) {
+  db.run('UPDATE tasks SET updated_at = ? WHERE id = ?', nowIso(), id);
+  event(db, id, user.id, 'edit', { details: { checklist: { action, item } } });
+}
+
+/** Add steps (one per line or array entry). */
+function addChecklist(db, user, id, texts) {
+  if (!get(db, id)) return { ok: false, code: 'not_found' };
+  const items = (Array.isArray(texts) ? texts : String(texts || '').split(/\r?\n/)).map((x) => String(x).trim().slice(0, 200)).filter(Boolean).slice(0, 50);
+  if (!items.length) return { ok: false, code: 'required' };
+  db.tx(() => {
+    let pos = db.value('SELECT COALESCE(max(position), 0) FROM task_checklist WHERE task_id = ?', id);
+    for (const text of items) db.run('INSERT INTO task_checklist(task_id, position, text, created_at) VALUES (?,?,?,?)', id, ++pos, text, nowIso());
+    checkEvent(db, user, id, 'added', items.join('; '));
+  });
+  return { ok: true, added: items.length };
+}
+
+function setChecked(db, user, id, itemId, done) {
+  const it = db.get('SELECT * FROM task_checklist WHERE id = ? AND task_id = ?', itemId, id);
+  if (!it) return { ok: false, code: 'not_found' };
+  if (!!it.done === !!done) return { ok: true, changed: false };
+  db.tx(() => {
+    db.run('UPDATE task_checklist SET done = ?, done_by = ?, done_at = ? WHERE id = ?', done ? 1 : 0, done ? user.id : null, done ? nowIso() : null, itemId);
+    checkEvent(db, user, id, done ? 'checked' : 'unchecked', it.text);
+  });
+  return { ok: true, changed: true };
+}
+
+function removeChecklistItem(db, user, id, itemId) {
+  const it = db.get('SELECT * FROM task_checklist WHERE id = ? AND task_id = ?', itemId, id);
+  if (!it) return { ok: false, code: 'not_found' };
+  db.tx(() => { db.run('DELETE FROM task_checklist WHERE id = ?', itemId); checkEvent(db, user, id, 'removed', it.text); });
+  return { ok: true };
+}
+
+/** A copy of a task's steps, all unticked, for a task made from another one. */
+function copyChecklist(db, user, fromId, toId) {
+  const steps = checklistOf(db, fromId).map((c) => c.text);
+  if (steps.length) addChecklist(db, user, toId, steps);
+  return steps.length;
+}
+
+// ---- plan: priority and due date in one tap, postponing with a note in the history ----
+function addToDue(task, how) {
+  const base = task.due_date && task.due_date > today() ? task.due_date : today();
+  return how === '1d' ? addDays(base, 1) : how === '1w' ? addDays(base, 7) : how === '1m' ? addMonths(base, 1) : null;
+}
+
+/** Set priority and/or due date ('postpone' = '1d' | '1w' | '1m' moves the due date on from the later of today and the current one). */
+function plan(db, user, id, data) {
+  const task = get(db, id);
+  if (!task) return { ok: false, code: 'not_found' };
+  let due = data.due_date !== undefined ? String(data.due_date || '').trim() || null : task.due_date;
+  if (data.postpone) { due = addToDue(task, data.postpone); if (!due) return { ok: false, code: 'invalid' }; }
+  const r = update(db, user, id, { title: task.title, description: task.description, priority_id: data.priority_id !== undefined && data.priority_id !== '' ? data.priority_id : task.priority_id, due_date: due, machine_id: task.machine_id, area: task.area });
+  return r.ok ? { ok: true } : { ok: false, code: 'invalid', errors: r.errors };
+}
+
+/**
+ * The same change for several tasks of a team. action: 'status' (value = a status; reopening or cancelling needs a reason, so those are skipped),
+ * 'assign' (value = a person, added to the others), 'priority', 'due' (value '' clears it). @returns {{changed, skipped}}
+ */
+function bulk(db, user, team, ids, action, value) {
+  let changed = 0, skipped = 0;
+  for (const id of [...new Set(ids.map(Number))].slice(0, 500)) {
+    const t = get(db, id);
+    if (!t || t.team !== team) { skipped++; continue; }
+    let r;
+    if (action === 'status') r = changeStatus(db, user, id, value, null);
+    else if (action === 'assign') {
+      const person = Number(value);
+      if (!Number.isInteger(person) || person <= 0 || !db.get('SELECT 1 FROM people WHERE id = ?', person)) r = { ok: false };
+      else { setAssignees(db, user, id, [...db.all('SELECT person_id FROM task_assignees WHERE task_id = ?', id).map((x) => x.person_id), person]); r = { ok: true }; }
+    } else if (action === 'priority' || action === 'due') r = plan(db, user, id, action === 'priority' ? { priority_id: value } : { due_date: value });
+    else r = { ok: false };
+    if (r.ok) changed++; else skipped++;
+  }
+  return { changed, skipped };
+}
+
+/** Values to pre-fill a new task from an existing one of the same team. */
+function copyValues(db, id, team) {
+  const t = get(db, id);
+  if (!t || t.team !== team) return null;
+  return { title: t.title, description: t.description, priority_id: t.priority_id, machine_id: t.machine_id, area: t.area };
 }
 
 /** Counts for the module tiles and the board tabs. */
@@ -203,4 +317,4 @@ function counts(db, team) {
   return { active: r.active, overdue: r.overdue, finished: r.finished, by };
 }
 
-module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, today };
+module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, today, addDays, SORT_KEYS, checklistOf, addChecklist, setChecked, removeChecklistItem, copyChecklist, plan, bulk, copyValues };
