@@ -27,7 +27,7 @@ module.exports = {
     tasks: ['The five boxes show tasks by status; tap one to filter, tap again to clear it. “Mine”, “Unassigned” and “Due in 7 days” are quick filters.', 'Tick several tasks to change their status, person, priority or due date in one go.', 'On a task: a checklist whose steps are ticked by whoever does them, “Postpone” moves the due date, “Copy as a new task” reuses a recurring job, “Work order” prints it.', 'Everything is kept in the history; tasks are never deleted, closed ones stay in the Closed list.'],
     list: ['This lists today\'s meetings and the coming days; tap a team or “Mine” to filter. Schedules (for leads) make the recurring meetings by themselves.', 'Open a meeting to record attendance, the agenda, the minutes and decisions; a decision can become a task for a team right away.', 'The minutes can be printed from the meeting page.'],
     preventive: ['A plan says “every N days / weeks / months”; a few days before it is due a task appears by itself, with the plan\'s steps, for the people chosen.', 'When the task is closed the plan moves to the next due date (from the planned date or from the day it was done). “Skip” needs a reason and stays in the history.', 'Plans are edited or stopped, never deleted.'],
-    ncr: ['The register is new in the app: anybody with the entry level reports a non-conformity; the leads evaluate it (cause, decision on the product) and close it.', 'From a non-conformity you give tasks to Maintenance, Quality or Technical; it moves to “In action” by itself.', 'For the quality meeting: “Top non-conformities”. The Excel reference keeps the number from the old register, for the import.'],
+    ncr: ['The register is new in the app: anybody with the entry level reports a non-conformity; the leads evaluate it (cause, decision on the product) and close it.', 'From a non-conformity you give tasks to Maintenance, Quality or Technical; it moves to “In action” by itself.', 'The evaluation holds the immediate action, the cause, the decision on the product, the corrective and preventive action, who is responsible and by when; then the effectiveness check. The closing rules are chosen in Settings.', 'For the quality meeting: “Top non-conformities”. The Excel reference keeps the number from the old register, for the import.'],
     analyses: ['Analyses use the saved measurements; choose the product and the quantity, then the period.'],
   },
 
@@ -120,6 +120,7 @@ module.exports = {
     day_short: { 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat', 7: 'Sun' },
   },
   pm: {
+    presets: 'Start from', preset_daily: 'Daily (working days, made for tomorrow)', preset_weekly: 'Weekly (Mondays)', preset_monthly: 'Monthly (the 1st)', weekdays_only: 'Working days only (skips Saturday and Sunday)', weekdays_note: '(working days)',
     title: 'Preventive maintenance',
     new: 'New plan',
     edit: 'Edit plan',
@@ -172,6 +173,7 @@ module.exports = {
     state: { upcoming: 'upcoming', due: 'due', overdue: 'overdue', task: 'task', inactive: 'stopped' },
   },
   ncr: {
+    containment: 'Immediate action taken', containment_hint: 'What was done on the spot: stopped, product set aside, lot marked.', corrective: 'Corrective action', preventive: 'Preventive action', responsible: 'Responsible', action_due: 'Action due', verification: 'Effectiveness check', verified: 'verified', not_verified: 'Not verified yet: once the action is done, check that the problem has not come back.', unverify: 'Undo the check', verify: 'Mark as verified', verification_note: 'What was found', verification_hint: 'for example: no deviation in the last 3 batches', similar: 'Similar problems', similar_hint: 'The same type, on the same machine or the same product, within 90 days.', recurring: 'recurring ({n})', eval_overdue: 'evaluation overdue', eval_overdue_n: 'Evaluation overdue: {n}', action_overdue: 'action overdue', ev_verified: 'Effectiveness was verified.', ev_unverified: 'The check was undone.',
     print_page: 'Print',
     title: 'Non-conformities',
     new: 'New non-conformity',
@@ -245,7 +247,7 @@ module.exports = {
     status: { reported: 'Reported', evaluation: 'In evaluation', action: 'In action', closed: 'Closed', cancelled: 'Cancelled' },
     act: { reported: 'Reported', evaluation: 'In evaluation', action: 'In action', closed: 'Close', cancelled: 'Cancel' },
     source: { manual: 'entered by hand', measurement: 'measurement', batch: 'batch', customer: 'customer complaint', audit: 'audit' },
-    field: { title: 'title', description: 'description', type_id: 'type', severity_id: 'severity', machine_id: 'machine', product: 'product', quantity: 'quantity', source_kind: 'source', record_no: 'measurement', batch_id: 'batch', external_ref: 'Excel reference', reported_at: 'date found', cause: 'cause', evaluation: 'evaluation', disposition_id: 'decision' },
+    field: { title: 'title', description: 'description', type_id: 'type', severity_id: 'severity', machine_id: 'machine', product: 'product', quantity: 'quantity', source_kind: 'source', record_no: 'measurement', batch_id: 'batch', external_ref: 'Excel reference', reported_at: 'date found', cause: 'cause', evaluation: 'evaluation', disposition_id: 'decision', containment: 'immediate action', corrective_action: 'corrective action', preventive_action: 'preventive action', responsible_person_id: 'responsible', action_due: 'action due' },
   },
   notif: { title: 'Notifications', empty: 'No notifications.', mark_all: 'Mark all as read', unread: 'unread', open: 'Open', generic: '{kind}' },
   taskstatus: { open: 'Open', in_progress: 'In progress', waiting: 'Waiting', done: 'Done', closed: 'Closed', cancelled: 'Cancelled' },

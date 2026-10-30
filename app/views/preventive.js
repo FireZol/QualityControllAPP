@@ -7,7 +7,7 @@ const tasks = require('../domain/tasks');
 const pm = require('../domain/preventive');
 const { prioName } = require('./tasks');
 
-const everyText = (p) => (p.every_n === 1 ? T.pm.every_one[p.unit] : f(T.pm.every, { n: p.every_n, unit: T.pm.unit[p.unit] }));
+const everyText = (p) => (p.every_n === 1 ? T.pm.every_one[p.unit] : f(T.pm.every, { n: p.every_n, unit: T.pm.unit[p.unit] })) + (p.unit === 'days' && p.weekdays_only ? ` ${T.pm.weekdays_note}` : '');
 const stateTag = (st) => {
   if (st.key === 'task') return html`<a class="tag ts-${st.task_status}" href="/sarcini/${st.task_id}">${st.task_no} · ${T.taskstatus[st.task_status]}</a>`;
   return html`<span class="tag pm-${st.key}">${T.pm.state[st.key]}</span>`;
@@ -54,6 +54,7 @@ function planForm(ctx, d) {
   return layout(ctx, {
     title: p ? T.pm.edit : T.pm.new, active: 'preventive',
     body: html`<p><a href="${p ? `${base}/${p.id}` : base}">« ${T.common.back}</a></p><h1>${p ? T.pm.edit : T.pm.new}</h1>
+${p ? '' : html`<div class="quick" aria-label="${T.pm.presets}"><span class="muted">${T.pm.presets}:</span>${['daily', 'weekly', 'monthly'].map((k) => html`<a class="qchip${d.preset === k ? ' on' : ''}" href="${base}/nou?preset=${k}">${T.pm['preset_' + k]}</a>`)}</div>`}
 <form method="post" action="${p ? `${base}/${p.id}/editeaza` : `${base}/nou`}" class="card entry">${csrf(ctx)}
   ${textField({ label: T.pm.plan, name: 'title', value: v.title, errors, required: true, attrs: 'maxlength="200"' })}
   ${textArea({ label: T.tasks.description, name: 'description', value: v.description, errors, rows: 3 })}
@@ -65,6 +66,7 @@ function planForm(ctx, d) {
   <div class="row">
     ${textField({ label: T.pm.every_label, name: 'every_n', value: v.every_n || 1, type: 'number', errors, required: true, attrs: 'min="1" max="999"' })}
     ${selectField({ label: T.pm.unit_label, name: 'unit', value: v.unit || 'weeks', options: pm.UNITS.map((u) => [u, T.pm.unit[u]]) })}
+    <label class="check"><input type="checkbox" name="weekdays_only" value="1"${v.weekdays_only ? raw(' checked') : ''}> <span>${T.pm.weekdays_only}</span></label>
     ${selectField({ label: T.pm.basis, name: 'basis', value: v.basis || 'schedule', options: pm.BASES.map((b) => [b, T.pm.basis_opt[b]]) })}
     ${textField({ label: T.pm.first_due, name: 'next_due', value: v.next_due, type: 'date', errors, required: true, hint: T.pm.first_due_hint })}
     ${textField({ label: T.pm.lead, name: 'lead_days', value: v.lead_days === undefined ? 3 : v.lead_days, type: 'number', errors, attrs: 'min="0" max="365"', hint: T.pm.lead_hint })}

@@ -737,3 +737,5 @@ html[data-theme] main .notif-list li a:not([class]) { color: var(--ink); text-de
 html[data-theme] .page-title { flex: 1 1 0; min-width: 0; margin-right: 0; }
 @media (min-width: 1001px) { html[data-theme] .top { flex-wrap: nowrap; } }
 html[data-theme] .card .scroll { border: 0; box-shadow: none; border-radius: 0; background: transparent; }
+
+.tag.ns-overdue { background: var(--bad-bg); color: var(--bad); } .tag.ns-recurring { background: var(--warn-bg); color: var(--warn); }

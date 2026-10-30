@@ -85,6 +85,10 @@ function settingsPage(ctx, d) {
   <h2>${T.settings.team_modules}</h2><p class="muted">${T.settings.team_modules_hint}</p>
   ${checkField({ label: T.settings.technical_open, name: 'technical.open_to_all', checked: values['technical.open_to_all'] !== false })}
   <div class="row">${['maintenance', 'quality', 'meetings', 'technical'].map((m) => selectField({ label: f(T.settings.default_level, { module: T.modules[m].name }), name: `access.default.${m}`, value: values[`access.default.${m}`], options: reg.LEVELS.map((l) => [l, T.access.levels[l]]), errors }))}</div>
+  <h2>${T.settings.ncr_rules}</h2><p class="muted">${T.settings.ncr_rules_hint}</p>
+  ${checkField({ label: T.settings.ncr_disposition, name: 'ncr.require_disposition', checked: values['ncr.require_disposition'] !== false })}${checkField({ label: T.settings.ncr_cause, name: 'ncr.require_cause', checked: values['ncr.require_cause'] === true })}
+  ${checkField({ label: T.settings.ncr_corrective, name: 'ncr.require_corrective', checked: values['ncr.require_corrective'] === true })}${checkField({ label: T.settings.ncr_verification, name: 'ncr.require_verification', checked: values['ncr.require_verification'] === true })}
+  <div class="row">${textField({ label: T.settings.ncr_eval_days, name: 'ncr.eval_days', value: values['ncr.eval_days'] ?? 2, errors, cls: 'num', inputmode: 'numeric', hint: T.settings.ncr_eval_days_hint })}</div>
   <h2>${T.settings.numbering}</h2><p class="muted">${T.settings.numbering_hint}</p>
   <div class="row">${numbering.RULES.map((r) => textField({ label: T.settings['num_' + r], name: `numbering.${r}`, value: values[`numbering.${r}`], errors, hint: f(T.settings.num_example, { example: values.numbering_example ? values.numbering_example[r] : '' }), attrs: 'maxlength="60"' }))}</div>
   <div class="row">${Object.keys(numbering.TEAM_CODES).map((t) => textField({ label: f(T.settings.team_code, { team: T.teams[t] }), name: `team.code.${t}`, value: values[`team.code.${t}`], errors, cls: 'num', attrs: 'maxlength="6"' }))}</div>

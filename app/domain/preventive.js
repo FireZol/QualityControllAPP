@@ -13,7 +13,12 @@ const RE_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const today = () => nowIso().slice(0, 10);
 
 /** A date plus N days / weeks / months (month ends are kept in range: 31 Jan + 1 month = 28 or 29 Feb). */
-function addInterval(iso, n, unit) {
+const isWeekend = (iso) => { const d = new Date(`${iso}T00:00:00Z`).getUTCDay(); return d === 0 || d === 6; };
+/** The same day, or the following Monday when it is a Saturday or Sunday. */
+function nextWeekday(iso) { let d = iso; while (isWeekend(d)) d = tasks.addDays(d, 1); return d; }
+
+function addInterval(iso, n, unit, weekdaysOnly) {
+  if (unit === 'days' && weekdaysOnly) { let d = iso; for (let i = 0; i < n; i++) d = nextWeekday(tasks.addDays(d, 1)); return d; }   // N working days on
   if (unit === 'days') return tasks.addDays(iso, n);
   if (unit === 'weeks') return tasks.addDays(iso, 7 * n);
   const d = new Date(`${iso}T00:00:00Z`); const day = d.getUTCDate();
@@ -42,12 +47,14 @@ function validate(db, data) {
   if (!Number.isInteger(v.every_n) || v.every_n < 1 || v.every_n > 999) errors.every_n = 'invalid';
   v.unit = UNITS.includes(data.unit) ? data.unit : 'weeks';
   v.basis = BASES.includes(data.basis) ? data.basis : 'schedule';
+  v.weekdays_only = v.unit === 'days' && ['1', 'on', 'true', 1, true].includes(data.weekdays_only) ? 1 : 0;
   v.lead_days = data.lead_days === undefined || data.lead_days === '' ? 3 : Number(data.lead_days);
   if (!Number.isInteger(v.lead_days) || v.lead_days < 0 || v.lead_days > 365) errors.lead_days = 'invalid';
   v.priority_id = data.priority_id ? Number(data.priority_id) : null;
   if (v.priority_id && !db.get('SELECT 1 FROM priorities WHERE id = ?', v.priority_id)) errors.priority_id = 'invalid';
   v.next_due = String(data.next_due || '').trim();
   if (!RE_DATE.test(v.next_due) || Number.isNaN(Date.parse(v.next_due))) errors.next_due = 'invalid';
+  else if (v.weekdays_only) v.next_due = nextWeekday(v.next_due);
   v.people = [...new Set((data.people || []).map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   if (v.people.some((id) => !db.get('SELECT 1 FROM people WHERE id = ?', id))) errors.people = 'invalid';
   v.steps = (Array.isArray(data.steps) ? data.steps : String(data.steps || '').split(/\r?\n/)).map((x) => String(x).trim().slice(0, 200)).filter(Boolean).slice(0, 50);
@@ -66,8 +73,8 @@ function create(db, user, data) {
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const now = nowIso();
-    const id = db.run('INSERT INTO pm_plans(title, description, team, machine_id, area, every_n, unit, basis, lead_days, priority_id, next_due, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-      v.title, v.description, v.team, v.machine_id, v.area, v.every_n, v.unit, v.basis, v.lead_days, v.priority_id, v.next_due, user.id, now, now).id;
+    const id = db.run('INSERT INTO pm_plans(title, description, team, machine_id, area, every_n, unit, basis, weekdays_only, lead_days, priority_id, next_due, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      v.title, v.description, v.team, v.machine_id, v.area, v.every_n, v.unit, v.basis, v.weekdays_only, v.lead_days, v.priority_id, v.next_due, user.id, now, now).id;
     writeChildren(db, id, v);
     audit.log(db, user.id, 'pm_plan_save', 'pm_plans', id, { title: v.title, created: true });
     return { ok: true, id };
@@ -82,8 +89,8 @@ function update(db, user, id, data) {
   db.tx(() => {
     // a plan whose current date already has a task keeps that date (the task is for it); the new date applies to the next round
     const date = db.get('SELECT 1 FROM pm_runs WHERE plan_id = ? AND due_date = ?', id, p.next_due) ? p.next_due : v.next_due;
-    db.run('UPDATE pm_plans SET title=?, description=?, team=?, machine_id=?, area=?, every_n=?, unit=?, basis=?, lead_days=?, priority_id=?, next_due=?, updated_at=? WHERE id = ?',
-      v.title, v.description, v.team, v.machine_id, v.area, v.every_n, v.unit, v.basis, v.lead_days, v.priority_id, date, nowIso(), id);
+    db.run('UPDATE pm_plans SET title=?, description=?, team=?, machine_id=?, area=?, every_n=?, unit=?, basis=?, weekdays_only=?, lead_days=?, priority_id=?, next_due=?, updated_at=? WHERE id = ?',
+      v.title, v.description, v.team, v.machine_id, v.area, v.every_n, v.unit, v.basis, v.weekdays_only, v.lead_days, v.priority_id, date, nowIso(), id);
     writeChildren(db, id, v);
     audit.log(db, user.id, 'pm_plan_save', 'pm_plans', id, { title: v.title });
   });
@@ -123,10 +130,10 @@ function makeTask(db, plan, actor) {
 /** Moves the plan on from a finished run. 'schedule': from the planned date (and never into the past: missed rounds are not piled up); 'completion': from the day it was done. */
 function advance(db, plan, run, doneOn) {
   const base = plan.basis === 'completion' && doneOn ? doneOn : run.due_date;
-  let next = addInterval(base, plan.every_n, plan.unit);
+  let next = addInterval(base, plan.every_n, plan.unit, plan.weekdays_only);
   const t = today();
   let guard = 0;
-  while (next < t && guard++ < 1000) next = addInterval(next, plan.every_n, plan.unit);   // a plan that fell far behind restarts from the next future date
+  while (next < t && guard++ < 1000) next = addInterval(next, plan.every_n, plan.unit, plan.weekdays_only);   // a plan that fell far behind restarts from the next future date
   db.run('UPDATE pm_plans SET next_due = ?, last_done = COALESCE(?, last_done), updated_at = ? WHERE id = ?', next, doneOn || null, nowIso(), plan.id);
   db.run('UPDATE pm_runs SET advanced = 1 WHERE id = ?', run.id);
   return next;
@@ -189,6 +196,18 @@ function stateOf(db, plan) {
   return { key: 'upcoming' };
 }
 
+/**
+ * Starting values for the plan form (owner: daily, "for tomorrow" and weekly plans, everything editable afterwards):
+ * 'daily' = every working day, the task is made the day before, for tomorrow; 'weekly' = every Monday, made two days before; 'monthly' = the 1st, made five days before.
+ */
+function preset(name, day) {
+  const t = day || today();
+  if (name === 'daily') return { every_n: 1, unit: 'days', weekdays_only: 1, lead_days: 1, basis: 'schedule', next_due: nextWeekday(tasks.addDays(t, 1)) };
+  if (name === 'weekly') { let d = tasks.addDays(t, 1); while (new Date(`${d}T00:00:00Z`).getUTCDay() !== 1) d = tasks.addDays(d, 1); return { every_n: 1, unit: 'weeks', weekdays_only: 0, lead_days: 2, basis: 'schedule', next_due: d }; }
+  if (name === 'monthly') { const d = new Date(`${t}T00:00:00Z`); const first = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)).toISOString().slice(0, 10); return { every_n: 1, unit: 'months', weekdays_only: 0, lead_days: 5, basis: 'schedule', next_due: first }; }
+  return null;
+}
+
 /** All plans with their state, sorted by next date. Filters: view 'active' | 'stopped' | 'all', machine, q, state. */
 function list(db, f) {
   const where = []; const p = [];
@@ -229,4 +248,4 @@ function detail(db, id) {
   return p;
 }
 
-module.exports = { UNITS, BASES, today, addInterval, canView, canManage, validate, create, update, setActive, get, makeTask, ensure, generateNow, skip, stateOf, list, counts, detail };
+module.exports = { UNITS, BASES, today, addInterval, nextWeekday, preset, canView, canManage, validate, create, update, setActive, get, makeTask, ensure, generateNow, skip, stateOf, list, counts, detail };

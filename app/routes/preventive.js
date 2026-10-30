@@ -17,7 +17,7 @@ module.exports = function register(app) {
     priorities: db.all('SELECT * FROM priorities WHERE active = 1 ORDER BY sort, name'),
     machines: db.all('SELECT id, name FROM machines WHERE active = 1 ORDER BY name'),
   });
-  const planData = (ctx) => ({ title: ctx.form.get('title'), description: ctx.form.get('description'), team: ctx.form.get('team'), machine_id: ctx.form.get('machine_id'), area: ctx.form.get('area'), every_n: ctx.form.get('every_n'), unit: ctx.form.get('unit'), basis: ctx.form.get('basis'), lead_days: ctx.form.get('lead_days'), priority_id: ctx.form.get('priority_id'), next_due: ctx.form.get('next_due'), people: ctx.form.all('people'), steps: ctx.form.get('steps') });
+  const planData = (ctx) => ({ title: ctx.form.get('title'), description: ctx.form.get('description'), team: ctx.form.get('team'), machine_id: ctx.form.get('machine_id'), area: ctx.form.get('area'), every_n: ctx.form.get('every_n'), unit: ctx.form.get('unit'), basis: ctx.form.get('basis'), weekdays_only: ctx.form.get('weekdays_only'), lead_days: ctx.form.get('lead_days'), priority_id: ctx.form.get('priority_id'), next_due: ctx.form.get('next_due'), people: ctx.form.all('people'), steps: ctx.form.get('steps') });
 
   router.get(BASE, {}, (ctx) => {
     const rt = rights(ctx);
@@ -30,7 +30,8 @@ module.exports = function register(app) {
 
   router.get(`${BASE}/nou`, {}, (ctx) => {
     if (!rights(ctx).manage) return forbidden(ctx);
-    return page(views.planForm(ctx, { values: { next_due: pm.today() }, lists: lists(), base: BASE }));
+    const pre = pm.preset(ctx.query.get('preset'));
+    return page(views.planForm(ctx, { values: pre || { next_due: pm.today() }, lists: lists(), base: BASE, preset: pre ? ctx.query.get('preset') : '' }));
   });
   router.post(`${BASE}/nou`, {}, (ctx) => {
     if (!rights(ctx).manage) return forbidden(ctx);

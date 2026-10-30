@@ -28,7 +28,7 @@ module.exports = function register(app) {
   const filtersOf = (ctx) => {
     const q = ctx.query;
     return { view: ['open', 'closed', 'all'].includes(q.get('view')) ? q.get('view') : 'open', status: ncr.STATUSES.includes(q.get('status')) ? q.get('status') : '', type: int(q, 'type'), severity: int(q, 'severity'), machine: int(q, 'machine'),
-      q: (q.get('q') || '').trim().slice(0, 60), mine: q.get('mine') === '1', days: int(q, 'days'), sort: ncr.SORT_KEYS.includes(q.get('sort')) ? q.get('sort') : 'new' };
+      q: (q.get('q') || '').trim().slice(0, 60), mine: q.get('mine') === '1', eval_overdue: q.get('evalo') === '1', days: int(q, 'days'), sort: ncr.SORT_KEYS.includes(q.get('sort')) ? q.get('sort') : 'new' };
   };
   const queryOf = (ctx, fl, extra) => ({ ...fl, mine: fl.mine ? ctx.user.id : null, ...extra });
   const mainData = (ctx) => ({ title: ctx.form.get('title'), description: ctx.form.get('description'), type_id: ctx.form.get('type_id'), severity_id: ctx.form.get('severity_id'), machine_id: ctx.form.get('machine_id'), product: ctx.form.get('product'), quantity: ctx.form.get('quantity'), reported_at: ctx.form.get('reported_at') });
@@ -97,7 +97,7 @@ module.exports = function register(app) {
     const x = load(ctx); if (x.fail) return x.fail;
     if (!x.rt.lead) return forbidden(ctx);
     const evalPart = ctx.form.get('part') === 'eval';
-    const data = evalPart ? { cause: ctx.form.get('cause'), evaluation: ctx.form.get('evaluation'), disposition_id: ctx.form.get('disposition_id') } : { ...mainData(ctx), external_ref: ctx.form.get('external_ref') };
+    const data = evalPart ? { containment: ctx.form.get('containment'), cause: ctx.form.get('cause'), evaluation: ctx.form.get('evaluation'), disposition_id: ctx.form.get('disposition_id'), corrective_action: ctx.form.get('corrective_action'), preventive_action: ctx.form.get('preventive_action'), responsible_person_id: ctx.form.get('responsible_person_id'), action_due: ctx.form.get('action_due') } : { ...mainData(ctx), external_ref: ctx.form.get('external_ref') };
     const r = ncr.update(db, ctx.user, x.n.id, data);
     if (!r.ok) return evalPart ? redirect(`${BASE}/neconformitati/${x.n.id}`, { flash: { type: 'err', key: 'e_invalid' } }) : page(views.ncrForm(ctx, { n: x.n, values: data, errors: r.errors || {}, lists: lists(), today: ncr.today() }), 422);
     return redirect(`${BASE}/neconformitati/${x.n.id}`, { flash: { key: 'ncr_saved' } });
@@ -106,7 +106,13 @@ module.exports = function register(app) {
     const x = load(ctx); if (x.fail) return x.fail;
     if (!x.rt.lead) return forbidden(ctx);
     const r = ncr.setStatus(db, ctx.user, x.n.id, ctx.form.get('to'), ctx.form.get('comment'));
-    return redirect(`${BASE}/neconformitati/${x.n.id}`, r.ok ? { flash: { key: 'ncr_status_changed' } } : { flash: { type: 'err', key: 'e_' + (r.code === 'reason_required' ? 'reason_required' : r.code === 'disposition_required' ? 'disposition_required' : 'invalid') } });
+    return redirect(`${BASE}/neconformitati/${x.n.id}`, r.ok ? { flash: { key: 'ncr_status_changed' } } : { flash: { type: 'err', key: 'e_' + (['reason_required', 'disposition_required', 'cause_required', 'corrective_required', 'verification_required'].includes(r.code) ? r.code : 'invalid') } });
+  });
+  router.post(`${P}/verifica`, {}, (ctx) => {
+    const x = load(ctx); if (x.fail) return x.fail;
+    if (!x.rt.lead) return forbidden(ctx);
+    const r = ncr.verify(db, ctx.user, x.n.id, ctx.form.get('note'), ctx.form.get('undo') === '1');
+    return redirect(`${BASE}/neconformitati/${x.n.id}#verify`, r.ok ? { flash: { key: 'ncr_saved' } } : { flash: { type: 'err', key: 'e_invalid' } });
   });
   router.post(`${P}/comentariu`, {}, (ctx) => {
     const x = load(ctx); if (x.fail) return x.fail;

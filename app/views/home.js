@@ -33,6 +33,7 @@ const greeting = () => { const h = new Date().getHours(); return h < 12 ? T.home
 function attentionItems(ctx, d) {
   const items = [];
   if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte', tone: 'info', icon: '👥' });
+  if (d.ncr && d.ncr.eval_overdue) items.push({ text: f(T.home.att_ncr_overdue, { n: d.ncr.eval_overdue }), href: '/calitate?evalo=1', tone: 'bad', icon: '⏳' });
   if (d.ncr && d.ncr.reported) items.push({ text: f(T.home.att_ncr, { n: d.ncr.reported }), href: '/calitate?status=reported', tone: 'bad', icon: '🧾' });
   if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad', icon: '⚠️' });
   if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc', tone: 'warn', icon: '📈' });

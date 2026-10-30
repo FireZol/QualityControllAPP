@@ -138,6 +138,9 @@ module.exports = function register(app) {
       for (const r of numbering.RULES) raw[`numbering.${r}`] = ctx.form.get(`numbering.${r}`).trim();
       for (const t of Object.keys(numbering.TEAM_CODES)) raw[`team.code.${t}`] = ctx.form.get(`team.code.${t}`).trim();
     }
+    // non-conformity closing rules (only when the form carries them, so an older form leaves them as they were)
+    const hasNcr = ctx.form.has('ncr.eval_days');
+    if (hasNcr) { for (const k of ['require_disposition', 'require_cause', 'require_corrective', 'require_verification']) raw['ncr.' + k] = ctx.form.bool('ncr.' + k); raw['ncr.eval_days'] = ctx.form.get('ncr.eval_days').trim(); }
     const parsed = {};
     const port = /^\d{1,5}$/.test(raw['server.port']) ? Number(raw['server.port']) : 0;
     if (port < 1 || port > 65535) errors['server.port'] = 'invalid'; else parsed['server.port'] = port;
@@ -159,6 +162,11 @@ module.exports = function register(app) {
       for (const m of ['maintenance', 'quality', 'meetings', 'technical']) { if (!reg.LEVELS.includes(raw[`access.default.${m}`])) errors[`access.default.${m}`] = 'invalid'; else parsed[`access.default.${m}`] = raw[`access.default.${m}`]; }
       for (const r of numbering.RULES) { const e = numbering.validate(raw[`numbering.${r}`]); if (e) errors[`numbering.${r}`] = 'num_' + e; else parsed[`numbering.${r}`] = raw[`numbering.${r}`]; }
       for (const t of Object.keys(numbering.TEAM_CODES)) { if (!/^[A-Za-z0-9]{1,6}$/.test(raw[`team.code.${t}`])) errors[`team.code.${t}`] = 'invalid'; else parsed[`team.code.${t}`] = raw[`team.code.${t}`].toUpperCase(); }
+    }
+    if (hasNcr) {
+      for (const k of ['require_disposition', 'require_cause', 'require_corrective', 'require_verification']) parsed['ncr.' + k] = raw['ncr.' + k];
+      const ed = /^\d{1,2}$/.test(raw['ncr.eval_days']) ? Number(raw['ncr.eval_days']) : -1;
+      if (ed < 1 || ed > 60) errors['ncr.eval_days'] = 'invalid'; else parsed['ncr.eval_days'] = ed;
     }
     if (!errors['shift.day_start'] && !errors['shift.night_start'] && parsed['shift.day_start'] >= parsed['shift.night_start']) errors['shift.night_start'] = 'invalid';
     const cycleSent = CYCLE.some((k) => ctx.form.params.has('cycle.' + k)); // an older form without the cycle fields leaves it unchanged

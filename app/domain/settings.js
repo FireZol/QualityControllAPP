@@ -18,6 +18,7 @@ const DEFAULTS = {
   'technical.open_to_all': true, // everybody may update Technical tasks (owner, 2026-10-30)
   'numbering.task': '{team}-{yyyy}-{seq:4}', 'numbering.ncr': 'NC-{yyyy}-{seq:3}', 'numbering.meeting': 'S-{yyyy}-{mm}-{seq:2}',
   'team.code.maintenance': 'MT', 'team.code.technical': 'TH', 'team.code.quality': 'QC',
+  'ncr.require_disposition': true, 'ncr.require_cause': false, 'ncr.require_corrective': false, 'ncr.require_verification': false, 'ncr.eval_days': 2, // closing rules and the evaluation deadline of non-conformities
   'feedback.email': '', // where the "Report a problem" link writes to (empty = no link)
   'modules.cable': false, // finished-cable tests, batches, certificates
   'modules.analytics': false, // analyses, SPC control charts and home-page alerts

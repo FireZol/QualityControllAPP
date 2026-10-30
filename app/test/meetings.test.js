@@ -63,18 +63,19 @@ test('access: the list needs a level; a module that is off answers 404; series n
   modules.set(app.db, 'meetings', true);
 });
 
-test('the series of the owner (Technical and Maintenance daily, Quality weekly) make meetings on their own, once', async () => {
+test('the starting schedule of the owner (Technical with Maintenance 08:30 and a 17:00 recap on weekdays, Quality Monday and Wednesday 15:00) makes meetings on its own, once', async () => {
   const seeded = app.db.all('SELECT title, teams, days FROM meeting_series ORDER BY id');
-  assert.deepEqual(seeded.map((s) => s.teams), ['technical', 'maintenance', 'quality']);
+  assert.deepEqual(seeded.map((s) => s.teams), ['maintenance,technical', 'maintenance,technical', 'quality'], 'Technical and Maintenance meet together');
+  assert.deepEqual(app.db.all('SELECT start_time FROM meeting_series ORDER BY id').map((s) => s.start_time), ['08:30', '17:00', '15:00']);
   assert.equal(seeded[0].days, '1,2,3,4,5');
-  assert.equal(seeded[2].days, '1', 'Quality: once a week');
+  assert.equal(seeded[2].days, '1,3', 'Quality: Monday and Wednesday');
   const start = '2030-01-07'; // a Monday far away from today
   const made = meetings.ensure(app.db, start, 14);
-  assert.equal(made, 2 * 10 + 2, 'two daily series x 10 weekdays + 2 Mondays for Quality');
+  assert.equal(made, 10 + 10 + 4, 'morning + recap on 10 weekdays, Quality on 2 Mondays and 2 Wednesdays');
   assert.equal(meetings.ensure(app.db, start, 14), 0, 'a second call makes nothing');
-  const first = app.db.get("SELECT * FROM meetings WHERE meeting_date = '2030-01-07' AND teams = 'maintenance'");
+  const first = app.db.get("SELECT * FROM meetings WHERE meeting_date = '2030-01-07' AND start_time = '08:30'");
   const inv = app.db.all('SELECT person_id FROM meeting_attendees WHERE meeting_id = ?', first.id).map((r) => r.person_id);
-  assert.ok(inv.includes(ids.pLead) && inv.includes(ids.pFitter) && !inv.includes(ids.pTech), 'with nobody named, the people of its team are invited');
+  assert.ok(inv.includes(ids.pLead) && inv.includes(ids.pFitter) && inv.includes(ids.pTech), 'with nobody named, the people of both its teams are invited');
   assert.equal(app.db.value("SELECT count(*) FROM meetings WHERE meeting_date IN ('2030-01-12', '2030-01-13')"), 0, 'nothing on the weekend');
   // a moved meeting is not made again, a cancelled one stays cancelled
   app.db.run("UPDATE meetings SET meeting_date = '2030-01-09' WHERE id = ?", first.id);
@@ -82,7 +83,7 @@ test('the series of the owner (Technical and Maintenance daily, Quality weekly) 
   assert.equal(app.db.value("SELECT count(*) FROM meetings WHERE series_id = ? AND slot_date = '2030-01-07'", first.series_id), 1);
   // stopping a series stops new meetings
   app.db.run('UPDATE meeting_series SET active = 0 WHERE id = ?', first.series_id);
-  assert.equal(meetings.ensure(app.db, '2030-02-04', 7), 5 + 1, 'only the two other series');
+  assert.equal(meetings.ensure(app.db, '2030-02-04', 7), 5 + 2, 'only the two other series: the recap on 5 weekdays and Quality on Monday and Wednesday');
   app.db.run('UPDATE meeting_series SET active = 1 WHERE id = ?', first.series_id);
   app.db.run("DELETE FROM meeting_attendees WHERE meeting_id IN (SELECT id FROM meetings WHERE meeting_date >= '2030-01-01')");
   app.db.run("DELETE FROM meetings WHERE meeting_date >= '2030-01-01'");
@@ -90,7 +91,7 @@ test('the series of the owner (Technical and Maintenance daily, Quality weekly) 
 
 test('the daily reminder: once a day, only invitees with a login, never twice', async () => {
   meetings.resetReminders();
-  app.db.run('DELETE FROM meeting_attendees'); app.db.run('DELETE FROM meetings');
+  app.db.run('DELETE FROM meeting_attendees'); app.db.run('DELETE FROM meetings'); app.db.run("DELETE FROM notifications WHERE kind LIKE 'meeting_%'");   // ids are reused after this clean-up, so old reminder keys must go too
   const r = meetings.createMeeting(app.db, { id: ids.worker, full_name: 'Operator Ședințe' }, { title: 'Probă zilnică', meeting_date: today(), start_time: '23:30', duration_min: 15, teams: ['maintenance'], attendees: [ids.pLead, ids.pFitter] });
   assert.ok(r.ok);
   assert.equal(notes(ids.lead, 'meeting_invited').length, 1, 'the invitee with a login is told when the meeting is made');
@@ -197,7 +198,7 @@ test('schedules: lead creates, edits, stops; invitees are told the schedule; not
   assert.equal(app.db.value('SELECT count(*) FROM meeting_series'), before, 'stopped, not deleted');
   assert.equal((await post(lead, `/sedinte/serii/${s.id}/sterge`, {})).status, 404, 'there is no delete');
   assert.equal((await post(worker, `/sedinte/serii/${s.id}/activ`, { active: '1' }, '/sedinte')).status, 403);
-  assert.ok(textOf((await lead.get('/sedinte/serii')).text).includes('Lu–Vi la 08:00'), 'the schedule reads in words');
+  assert.ok(textOf((await lead.get('/sedinte/serii')).text).includes('Lu–Vi la 08:30'), 'the schedule reads in words');
 });
 
 test('pages: list filters, minutes print, home panel; English screens and texts', async () => {
@@ -222,7 +223,7 @@ test('pages: list filters, minutes print, home panel; English screens and texts'
   const en = textOf((await lead.get(`/sedinte/${ids.m}`)).text);
   assert.ok(en.includes('Agenda') && en.includes('Decisions') && en.includes('Save attendance') && en.includes('Becomes a task of'));
   assert.ok(/Held/.test(en) && !/Ținută/.test(en));
-  assert.ok(textOf((await lead.get('/sedinte/serii')).text).includes('Mon–Fri at 08:00'));
+  assert.ok(textOf((await lead.get('/sedinte/serii')).text).includes('Mon–Fri at 08:30'));
   const note = textOf((await lead.get('/notificari')).text);
   assert.match(note, /You are invited to “Neconformități — comună”/);
   assert.match(note, /Meeting schedule|The meeting “/);
