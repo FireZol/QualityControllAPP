@@ -161,8 +161,9 @@ test('the board: sorted by priority, filters (person, priority, text, overdue), 
   assert.ok((await only('q=filtru')).includes('Schimb filtru') && !(await only('q=filtru')).includes('Lubrifiere'));
   const od = await only('overdue=1');
   assert.ok(od.includes('Zgomot la rotor 2 (urgent)') && !od.includes('Lubrifiere'));
-  assert.match(textOf(board), /1 sarcini întârziate/);
-  assert.deepEqual(tasks.counts(app.db, 'maintenance'), { active: 3, overdue: 1, finished: 0 });
+  assert.match(textOf(board), /1 Întârziate/);
+  assert.deepEqual(tasks.counts(app.db, 'maintenance'), { active: 3, overdue: 1, finished: 0, by: { open: 3, in_progress: 0, waiting: 0, done: 0 } });
+  assert.ok((await only('status=open')).includes('Schimb filtru') && !(await only('status=waiting')).includes('Schimb filtru'), 'a status tile filters');
   // a wildcard in the search is plain text
   assert.ok(!(await only('q=%25')).includes('Schimb filtru'));
 });

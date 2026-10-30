@@ -22,6 +22,14 @@ function tabs(d) {
   return html`<div class="tabs">${mk('active', T.tasks.view_active, d.counts.active)}${mk('closed', T.tasks.view_closed, d.counts.finished)}${mk('all', T.tasks.view_all)}</div>`;
 }
 
+/** One tile per active status plus the overdue ones: the board at a glance, each tile a filter (tap again to clear). */
+function tiles(d) {
+  const keep = { ...d.keep, view: 'active' };
+  delete keep.status; delete keep.overdue;
+  const tile = (cls, label, n, on, params) => html`<a class="tile ${cls}${on ? ' on' : ''}" href="${d.base}?${new URLSearchParams(on ? keep : { ...keep, ...params })}"><strong>${n}</strong><span>${label}</span></a>`;
+  return html`<nav class="tiles" aria-label="${T.tasks.overview}">${tasks.ACTIVE.map((st) => tile(`ts-${st}`, T.taskstatus[st], d.counts.by[st], d.f.status === st, { status: st }))}${tile('ts-overdue', T.tasks.overdue_title, d.counts.overdue, d.f.overdue, { overdue: '1' })}</nav>`;
+}
+
 function boardPage(ctx, d) {
   const { team, rows, f: fl, lists, ranks, can } = d;
   const back = `${d.base}?${new URLSearchParams(d.keep).toString()}`;
@@ -29,10 +37,10 @@ function boardPage(ctx, d) {
     title: `${T.modules[team].name} — ${T.tasks.title}`, active: 'tasks', wide: true,
     body: html`<div class="hero"><h1>${T.modules[team].name}: ${T.tasks.title}</h1>
   ${can.create ? html`<a class="btn primary big" href="${d.newPath}">${T.tasks.new}</a>` : ''}</div>
-${d.counts.overdue ? html`<p class="notice">${f(T.tasks.overdue_n, { n: d.counts.overdue })} <a href="${d.base}?overdue=1">${T.tasks.show}</a></p>` : ''}
+${tiles(d)}
 ${tabs(d)}
 <form method="get" action="${d.base}" class="card filters">
-  <input type="hidden" name="view" value="${fl.view}">
+  <input type="hidden" name="view" value="${fl.view}">${fl.status ? html`<input type="hidden" name="status" value="${fl.status}">` : ''}
   <div class="row">
     ${textField({ label: T.common.search, name: 'q', value: fl.q })}
     ${selectField({ label: T.tasks.person, name: 'person', value: fl.person, options: lists.people.map((p) => [p.id, p.name]), blank: T.common.all })}

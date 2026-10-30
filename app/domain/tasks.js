@@ -198,7 +198,9 @@ function counts(db, team) {
   const r = db.get(`SELECT count(*) FILTER (WHERE status IN ('open', 'in_progress', 'waiting', 'done')) AS active,
       count(*) FILTER (WHERE status IN ('open', 'in_progress', 'waiting', 'done') AND due_date < ?) AS overdue,
       count(*) FILTER (WHERE status IN ('closed', 'cancelled')) AS finished FROM tasks WHERE team = ?`, today(), team);
-  return { active: r.active, overdue: r.overdue, finished: r.finished };
+  const by = {};
+  for (const st of ACTIVE) by[st] = db.value('SELECT count(*) FROM tasks WHERE team = ? AND status = ?', team, st);
+  return { active: r.active, overdue: r.overdue, finished: r.finished, by };
 }
 
 module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, today };

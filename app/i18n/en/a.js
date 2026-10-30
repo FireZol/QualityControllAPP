@@ -47,7 +47,7 @@ module.exports = {
   tasks: {
     title: 'Tasks', new: 'New task', edit_title: 'Edit task {no}', no: 'No.', task: 'Task', description: 'Description', priority: 'Priority', due: 'Due date', where: 'Machine / area', area: 'Area',
     area_hint: 'When it is not a machine from the list (workshop, utilities …).', assigned: 'Assigned to', unassigned: 'unassigned', person: 'Person', only_overdue: 'Overdue only', count: '{n} tasks',
-    print_list: 'Work list (print)', empty: 'No tasks.', view_active: 'Active', view_closed: 'Closed', view_all: 'All', overdue: 'overdue', overdue_n: '{n} tasks are overdue.', show: 'Show',
+    print_list: 'Work list (print)', empty: 'No tasks.', view_active: 'Active', view_closed: 'Closed', view_all: 'All', overdue: 'overdue', overdue_title: 'Overdue', overview: 'At a glance', overdue_n: '{n} tasks are overdue.', show: 'Show',
     created: 'Created', closed: 'Closed', source_label: 'Source', source: { manual: 'manual', meeting: 'meeting', ncr: 'non-conformity', measurement: 'measurement', preventive: 'preventive' },
     change_status: 'Change the status', comment_optional: 'Comment (required to cancel and to reopen)', reason_hint: 'It is kept in the history.', save_assignees: 'Save the assignment',
     add_comment: 'Add a comment', comment: 'Comment', send: 'Send', history: 'History', system: 'system', ev_created: 'Task created.', ev_status: 'Status: {from} → {to}.',

@@ -281,6 +281,9 @@ table.sheet td.changed, .changed { color: var(--changed); font-weight: 700; }
 
 @media (max-width: 720px) {
   main { padding: 10px; }
+  .who { margin-left: 0; flex-wrap: wrap; max-width: 100%; }
+  .top { padding: 8px 10px; gap: 8px 10px; }
+  .acc-name { display: inline-block; max-width: 6.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
   .field, .field.num { min-width: 100%; max-width: none; }
 }
 @media print {
@@ -290,7 +293,7 @@ table.sheet td.changed, .changed { color: var(--changed); font-weight: 700; }
 
 /* analyses and charts (SVG drawn by the server; colours only through these classes) */
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 10px; }
-.tabs a { padding: 8px 14px; text-decoration: none; border-radius: 6px 6px 0 0; color: var(--ink); }
+.tabs a { padding: 10px 14px; min-height: 44px; box-sizing: border-box; text-decoration: none; border-radius: 6px 6px 0 0; color: var(--ink); }
 .tabs a:hover { background: #e8edf3; }
 .tabs a.active { background: var(--brand); color: var(--brand-ink); font-weight: 600; }
 .export { display: flex; gap: 8px; align-items: center; }
@@ -338,3 +341,12 @@ details:not(.help):not(.navmore) > summary { display: flex; align-items: center;
 .navmore-box a, .navmore-box button { min-height: 44px; display: flex; align-items: center; }
 table.grid td > a:only-child, td.nowrap > a:first-child { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; }
 input[type=checkbox] { width: 24px; height: 24px; min-height: 24px; }
+
+/* task tiles: the board at a glance */
+.tiles { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 14px; }
+.tile { display: flex; align-items: baseline; gap: 8px; min-height: 48px; padding: 8px 16px; border-radius: var(--radius); border: 2px solid var(--line); background: var(--surface, #fff); color: var(--ink); text-decoration: none; }
+.tile strong { font-size: 1.5rem; line-height: 1; }
+.tile.on { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand) inset; }
+.tile.ts-open { background: var(--info-bg); color: var(--info); } .tile.ts-in_progress { background: #e8e2f8; color: #4a3a92; } .tile.ts-waiting { background: var(--warn-bg); color: var(--warn); }
+.tile.ts-done { background: var(--ok-bg); color: var(--ok); } .tile.ts-overdue { background: var(--bad-bg); color: var(--bad); }
+@media (max-width: 600px) { .tile { flex: 1 1 calc(50% - 10px); } }

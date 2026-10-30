@@ -25,9 +25,9 @@ module.exports = function register(app) {
   /** Board filters from a query string (the same ones the printable list takes). */
   function filtersOf(q) {
     const int = (k) => (/^\d+$/.test(q.get(k) || '') ? Number(q.get(k)) : null);
-    return { view: ['active', 'closed', 'all'].includes(q.get('view')) ? q.get('view') : 'active', q: (q.get('q') || '').trim().slice(0, 60), person: int('person'), priority: int('priority'), machine: int('machine'), overdue: q.get('overdue') === '1', source_kind: q.get('source') || '' };
+    return { view: ['active', 'closed', 'all'].includes(q.get('view')) ? q.get('view') : 'active', q: (q.get('q') || '').trim().slice(0, 60), person: int('person'), priority: int('priority'), machine: int('machine'), overdue: q.get('overdue') === '1', status: tasks.ACTIVE.includes(q.get('status')) ? q.get('status') : '', source_kind: q.get('source') || '' };
   }
-  const keepOf = (fl) => Object.fromEntries(Object.entries({ view: fl.view, q: fl.q, person: fl.person, priority: fl.priority, machine: fl.machine, overdue: fl.overdue ? '1' : '' }).filter(([, v]) => v !== '' && v !== null && v !== undefined));
+  const keepOf = (fl) => Object.fromEntries(Object.entries({ view: fl.view, q: fl.q, person: fl.person, priority: fl.priority, machine: fl.machine, overdue: fl.overdue ? '1' : '', status: fl.status }).filter(([, v]) => v !== '' && v !== null && v !== undefined));
 
   for (const team of tasks.TEAMS) {
     const base = tasks.teamPath(team);

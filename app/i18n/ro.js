@@ -47,7 +47,7 @@ const S = {
   tasks: {
     title: 'Sarcini', new: 'Sarcină nouă', edit_title: 'Modificare sarcină {no}', no: 'Nr.', task: 'Sarcina', description: 'Descriere', priority: 'Prioritate', due: 'Termen', where: 'Utilaj / zonă', area: 'Zonă',
     area_hint: 'Dacă nu este un utilaj din listă (hală, utilități …).', assigned: 'Atribuită', unassigned: 'neatribuită', person: 'Persoana', only_overdue: 'Doar cele întârziate', count: '{n} sarcini',
-    print_list: 'Listă de lucru (tipărire)', empty: 'Nicio sarcină.', view_active: 'Active', view_closed: 'Închise', view_all: 'Toate', overdue: 'întârziată', overdue_n: '{n} sarcini întârziate.', show: 'Arată',
+    print_list: 'Listă de lucru (tipărire)', empty: 'Nicio sarcină.', view_active: 'Active', view_closed: 'Închise', view_all: 'Toate', overdue: 'întârziată', overdue_title: 'Întârziate', overview: 'Pe scurt', overdue_n: '{n} sarcini întârziate.', show: 'Arată',
     created: 'Creată', closed: 'Închisă', source_label: 'Sursă', source: { manual: 'manuală', meeting: 'ședință', ncr: 'neconformitate', measurement: 'măsurătoare', preventive: 'preventiv' },
     change_status: 'Schimbă starea', comment_optional: 'Comentariu (obligatoriu la anulare și la redeschidere)', reason_hint: 'Se păstrează în istoric.', save_assignees: 'Salvează atribuirea',
     add_comment: 'Adaugă un comentariu', comment: 'Comentariu', send: 'Trimite', history: 'Istoric', system: 'sistem', ev_created: 'Sarcină creată.', ev_status: 'Starea: {from} → {to}.',

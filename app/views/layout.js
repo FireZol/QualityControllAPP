@@ -99,7 +99,7 @@ function layout(ctx, opts) {
   ${user ? html`<div class="who">
     <button type="button" class="comfort-btn" data-comfort title="${T.layout.comfort}" aria-label="${T.layout.comfort}" aria-pressed="false">A<small>+</small></button>
     ${bell(ctx)}${langSwitch(ctx)}${helpBox(opts.active)}
-    <details class="navmore account"><summary title="${T.roles[user.role]}">${user.full_name} <span aria-hidden="true">▾</span></summary>
+    <details class="navmore account"><summary title="${T.roles[user.role]}"><span class="acc-name">${user.full_name}</span> <span aria-hidden="true">▾</span></summary>
       <div class="navmore-box right"><div class="navmore-role">${T.roles[user.role]}</div><a href="/parola">${T.nav.password}</a>
         <form method="post" action="/iesire">${csrf(ctx)}<button type="submit">${T.nav.logout}</button></form></div></details></div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
 </header>
