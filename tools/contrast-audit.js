@@ -8,6 +8,8 @@ const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwri
 const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');
+const ncr = require('../app/domain/ncr');
+const pmd = require('../app/domain/preventive');
 
 const MIN = Number(process.argv[2]) || 4.5;
 /** Runs in the page: every visible text (and every field's value and placeholder) below MIN contrast against its real background. */
@@ -60,6 +62,12 @@ async function main() {
   tasks.addChecklist(db, u, t1, ['Oprire utilaj', 'Verificare lagăre']); tasks.setChecked(db, u, t1, db.get('SELECT id FROM task_checklist ORDER BY id').id, true);
   tasks.create(db, u, { team: 'technical', title: 'Modificare rețetă' });
   meetings.ensure(db);
+  const nid = ncr.create(db, u, { title: 'Masă sub limită la LITARE 2', type_id: 2, machine_id: machine, product: '240 SM 90°', quantity: '2 colaci', description: 'Trei probe la rând' }).id;
+  ncr.update(db, u, nid, { cause: 'Uzură filieră', evaluation: 'Lot afectat' });
+  ncr.addTask(db, u, nid, { team: 'maintenance', title: 'Schimbat filiera', assignees: [pid] });
+  ncr.create(db, u, { title: 'Zgârieturi pe izolație', type_id: 4 });
+  const pid2 = pmd.create(db, u, { title: 'Lubrifiere lagăre', every_n: 2, unit: 'weeks', next_due: tasks.today ? tasks.today() : '2030-01-01', lead_days: 3, people: [pid], steps: 'Oprire\nLubrifiere' }).id;
+  pmd.create(db, u, { title: 'Revizie anuală', every_n: 12, unit: 'months', next_due: '2030-06-01', lead_days: 7 }); pmd.ensure(db);
   const mid = meetings.createMeeting(db, u, { title: 'Neconformități — comună', meeting_date: meetings.today(), start_time: '10:00', duration_min: 45, teams: ['maintenance', 'technical'], attendees: [pid] }).id;
   meetings.addDecision(db, u, mid, { text: 'Înlocuit rulment', team: 'maintenance' });
   const draft = db.get("SELECT d.id AS doc, r.id AS rev FROM spec_documents d JOIN spec_revisions r ON r.document_id = d.id WHERE r.status = 'ciorna' AND d.id <> ? ORDER BY d.id LIMIT 1", doc);
@@ -67,7 +75,7 @@ async function main() {
   const screens = [...(draft ? [["draft revision", `/fise/${draft.doc}/revizii/${draft.rev}`], ...(draftRow ? [["row editor (draft)", `/fise/${draft.doc}/revizii/${draft.rev}/constructii/${draftRow.id}`]] : [])] : []), ['home', '/'], ['new measurement', `/masuratori/nou?family=${fam}&machine=${machine}&construction=${cons.id}&level=funie`], ['register', '/masuratori'], ['record (out of limit)', `/masuratori/${record}`],
     ['sheets', '/fise'], ['revision', `/fise/${doc}/revizii/${rv}`], ['paper check', `/fise/${doc}/revizii/${rv}/verificare/${row}`], 
     ['database', '/liste'], ['users', '/admin/utilizatori'], ['settings', '/admin/setari'], ['audit', '/admin/jurnal'], ['analyses', '/analize'], ['batches', '/loturi'], ['notifications', '/notificari'],
-    ['tasks', '/mentenanta'], ['task', `/sarcini/${t1}`], ['task new', '/mentenanta/nou'], ['meetings', '/sedinte'], ['meeting', `/sedinte/${mid}`], ['series', '/sedinte/serii'], ['password', '/parola']];
+    ['ncr register', '/calitate'], ['ncr', `/calitate/neconformitati/${nid}`], ['ncr new', '/calitate/nou'], ['ncr edit', `/calitate/neconformitati/${nid}/editeaza`], ['ncr top', '/calitate/top'], ['plans', '/mentenanta/preventiv'], ['plan', `/mentenanta/preventiv/${pid2}`], ['plan new', '/mentenanta/preventiv/nou'], ['tasks', '/mentenanta'], ['task', `/sarcini/${t1}`], ['task new', '/mentenanta/nou'], ['meetings', '/sedinte'], ['meeting', `/sedinte/${mid}`], ['series', '/sedinte/serii'], ['password', '/parola']];
   const browser = await pw.chromium.launch();
   let total = 0;
   for (const theme of ['light', 'dark']) {

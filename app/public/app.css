@@ -582,3 +582,153 @@ html[data-theme=dark] .flash-err { background: #3d1b19; color: #fca5a5; border-c
 .tag.pm-upcoming { background: var(--info-bg); color: var(--info); } .tag.pm-due { background: var(--warn-bg); color: var(--warn); } .tag.pm-overdue { background: var(--bad-bg); color: var(--bad); } .tag.pm-inactive, .tag.pm-skipped { background: #eee; color: #777; }
 td.barcell { width: 32%; min-width: 120px; } td.barcell progress { width: 100%; height: 14px; }
 html[data-theme=dark] .tag.ns-action { background: #2a2447; color: #b9a8ff; } html[data-theme=dark] .tag.ns-cancelled, html[data-theme=dark] .tag.pm-inactive, html[data-theme=dark] .tag.pm-skipped { background: #222d3a; color: #9fb0c3; }
+
+.panel-list a, a.tag { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* =====================================================================================================================
+   Modern design layer (owner, 2026-10-30: "our UI is ten years older than the examples"). Everything below is scoped to
+   html[data-theme] (set by prefs.js on every app page), so the print pages, which load this file too, keep their own look.
+   Motion: only transform and opacity are animated (QUALITY.md law 3); hover and focus change colours instantly.
+   ===================================================================================================================== */
+html[data-theme=light] {
+  --bg: #f4f6fa; --panel: #ffffff; --ink: #0f172a; --muted: #566579; --line: #e2e8f0; --line-strong: #cbd5e1;
+  --brand: #2563eb; --brand-ink: #ffffff; --brand-hover: #1d4ed8; --chrome: #ffffff; --side-bg: #0f172a; --surface-2: #f8fafc; --hover: rgba(15,23,42,0.06);
+  --ok: #15803d; --ok-bg: #dcfce7; --bad: #b91c1c; --bad-bg: #fee2e2; --warn: #92400e; --warn-bg: #fef3c7; --info: #1d4ed8; --info-bg: #dbeafe; --undef: #475569; --undef-bg: #e2e8f0;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.07); --shadow-md: 0 8px 24px rgba(15,23,42,0.12);
+}
+html[data-theme=dark] { --line-strong: #2f3f55; --brand-hover: #4a86ec; --hover: rgba(255,255,255,0.07); --shadow-sm: 0 1px 2px rgba(0,0,0,0.4); --shadow-md: 0 10px 28px rgba(0,0,0,0.5); }
+html[data-theme] { --radius: 12px; --gap: 16px; }
+html[data-theme] body { font-family: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 0.97rem; line-height: 1.5; -webkit-font-smoothing: antialiased; letter-spacing: -0.003em; }
+html[data-theme] h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 0.2rem 0 0.9rem; }
+html[data-theme] h2 { font-size: 1.12rem; font-weight: 650; letter-spacing: -0.01em; margin: 0.2rem 0 0.7rem; }
+html[data-theme] h3 { font-weight: 650; }
+html[data-theme] table, html[data-theme] .stat strong, html[data-theme] .tile strong { font-variant-numeric: tabular-nums; }
+html[data-theme] main { max-width: 1180px; padding: 24px 28px 72px; }
+html[data-theme] main.wide { max-width: 1560px; }
+@media (max-width: 720px) { html[data-theme] main { padding: 16px 14px 56px; } }
+html[data-theme] * { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+
+/* links: quiet until hovered */
+html[data-theme] main a:not([class]), html[data-theme] .foot a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+html[data-theme] main a:not([class]):hover { text-decoration-color: currentColor; }
+html[data-theme] .task-title a, html[data-theme] td > a > strong { text-decoration: none; }
+html[data-theme=light] main a:not([class]) { color: var(--brand); }
+html[data-theme] :focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 55%, transparent); outline-offset: 2px; border-radius: 6px; }
+
+/* surfaces */
+html[data-theme] .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow-sm); }
+html[data-theme] .card-in { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 12px; }
+html[data-theme] .eyebrow { font-size: 0.72rem; letter-spacing: 0.09em; font-weight: 700; }
+html[data-theme] .hero { margin-bottom: 4px; }
+html[data-theme] .muted { color: var(--muted); }
+
+/* buttons */
+html[data-theme] .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--panel); color: var(--ink); font-weight: 600; font-size: 0.95rem; box-shadow: var(--shadow-sm); transition: transform 0.1s; }
+html[data-theme] .btn:hover { background: var(--hover); border-color: var(--line-strong); }
+html[data-theme] .btn:active { transform: translateY(1px); }
+html[data-theme] .btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); box-shadow: 0 1px 2px rgba(37,99,235,0.35); }
+html[data-theme] .btn.primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+html[data-theme] .btn.big { min-height: 50px; padding: 0 28px; font-size: 1.05rem; border-radius: 12px; }
+html[data-theme] .btn.small { min-height: 36px; padding: 0 12px; font-size: 0.88rem; border-radius: 8px; }
+html[data-theme] .btn[disabled] { opacity: 0.45; box-shadow: none; }
+html[data-theme] .actions { gap: 10px; }
+
+/* fields */
+html[data-theme] input, html[data-theme] select, html[data-theme] textarea { background: var(--panel); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 12px; min-height: 44px; }
+html[data-theme] input:hover, html[data-theme] select:hover, html[data-theme] textarea:hover { border-color: color-mix(in srgb, var(--ink) 35%, var(--line-strong)); }
+html[data-theme] input:focus, html[data-theme] select:focus, html[data-theme] textarea:focus { outline: 3px solid color-mix(in srgb, var(--brand) 30%, transparent); outline-offset: 0; border-color: var(--brand); }
+html[data-theme] input[type=checkbox], html[data-theme] input[type=radio] { accent-color: var(--brand); width: 20px; height: 20px; min-height: 20px; padding: 0; }
+html[data-theme] .field .lbl, html[data-theme] label .lbl { font-size: 0.8rem; font-weight: 650; color: var(--muted); letter-spacing: 0.01em; }
+html[data-theme] .field.has-error input, html[data-theme] .field.has-error select, html[data-theme] .field.has-error textarea { border-color: var(--bad); }
+html[data-theme] .field-error { color: var(--bad); font-size: 0.85rem; font-weight: 600; }
+html[data-theme] fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+html[data-theme] legend { font-size: 0.8rem; font-weight: 650; color: var(--muted); padding: 0 6px; }
+html[data-theme] .card.filters { padding: 14px 18px; }
+
+/* tables: quiet rows, no grid of boxes */
+html[data-theme] .scroll { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: var(--shadow-sm); overflow-x: auto; }
+html[data-theme] table.grid { background: transparent; border-collapse: separate; border-spacing: 0; width: 100%; }
+html[data-theme] table.grid th, html[data-theme] table.grid td { border: 0; border-bottom: 1px solid var(--line); padding: 11px 14px; }
+html[data-theme] table.grid thead th { background: var(--surface-2); font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 700; position: sticky; top: 0; z-index: 1; border-bottom: 1px solid var(--line-strong); }
+html[data-theme] table.grid tbody tr:last-child td, html[data-theme] table.grid tbody tr:last-child th { border-bottom: 0; }
+html[data-theme] table.grid tbody tr:hover td { background: var(--hover); }
+html[data-theme] table.grid tbody tr:nth-child(even) td { background: transparent; }
+html[data-theme] table.grid td.empty { padding: 36px 14px; font-size: 0.98rem; }
+html[data-theme] .scroll > table.grid { margin: 0; }
+html[data-theme] .card > .scroll { box-shadow: none; }
+html[data-theme] table.register tbody tr:nth-child(even) { background: transparent; }
+
+/* chips, tags, badges: pills */
+html[data-theme] .tag { font-size: 0.74rem; font-weight: 650; padding: 2px 10px; border-radius: 999px; border: 0; letter-spacing: 0.01em; background: var(--undef-bg); color: var(--undef); }
+html[data-theme] .prio { border-radius: 999px; font-weight: 650; font-size: 0.74rem; padding: 2px 10px; }
+html[data-theme] .mini { border-radius: 999px; }
+html[data-theme] .qchip { border-width: 1px; border-color: var(--line-strong); background: var(--panel); box-shadow: var(--shadow-sm); font-weight: 600; font-size: 0.9rem; }
+html[data-theme] .qchip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+html[data-theme] .tile, html[data-theme] .stat, html[data-theme] .qa { border-radius: 14px; box-shadow: var(--shadow-sm); border-width: 1px; }
+html[data-theme] .tile.on { box-shadow: 0 0 0 2px var(--brand) inset; }
+html[data-theme] .tabs { background: var(--surface-2); border-radius: 12px; }
+html[data-theme] .tabs a { font-weight: 600; font-size: 0.92rem; }
+html[data-theme] .banner { border-radius: 14px; border-width: 1px; box-shadow: var(--shadow-sm); }
+html[data-theme] .help-box { border-radius: 14px; box-shadow: var(--shadow-md); }
+
+/* notices as toasts that slide in (transform + opacity only) */
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+html[data-theme] .flash { position: fixed; top: 72px; right: 24px; z-index: 80; max-width: min(440px, calc(100vw - 32px)); margin: 0; padding: 12px 16px; border-radius: 12px; box-shadow: var(--shadow-md); font-weight: 600; animation: toast-in 0.25s ease-out; }
+html[data-theme] .flash.hidden { display: none; }
+@media (prefers-reduced-motion: reduce) { html[data-theme] .flash { animation: none; } html[data-theme] .btn { transition: none; } }
+
+/* the header, light version (the dark one keeps the dark chrome) */
+html[data-theme=light] .top { background: var(--chrome); color: var(--ink); border-bottom: 1px solid var(--line); box-shadow: 0 1px 0 rgba(15,23,42,0.02); }
+html[data-theme=light] .top a, html[data-theme=light] .page-title, html[data-theme=light] .top .acc-name { color: var(--ink); }
+html[data-theme=light] .icon-btn, html[data-theme=light] .comfort-btn, html[data-theme=light] .theme-menu > summary { border: 1px solid var(--line-strong); color: var(--ink); background: var(--panel); }
+html[data-theme=light] .icon-btn:hover, html[data-theme=light] .navmore summary:hover, html[data-theme=light] .bell:hover { background: var(--hover); }
+html[data-theme=light] .comfort-btn[aria-pressed=true] { background: var(--brand); color: #fff; border-color: var(--brand); }
+html[data-theme=light] .lang button { border-color: var(--line-strong); color: var(--ink); background: var(--panel); }
+html[data-theme=light] .lang button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+html[data-theme=light] .lang button:hover:not(.active) { background: var(--hover); }
+html[data-theme=light] .help summary { border: 1px solid var(--line-strong); color: var(--ink); background: var(--panel); }
+html[data-theme=light] .help summary:hover, html[data-theme=light] .help[open] summary { background: var(--brand); color: #fff; border-color: var(--brand); }
+html[data-theme=light] .chip-pill { background: var(--surface-2); border: 1px solid var(--line-strong); color: var(--ink); }
+html[data-theme=light] .chip-pill strong { color: var(--brand); }
+html[data-theme=light] .chip-pill.is-crit strong { color: var(--bad); }
+html[data-theme=light] .chip-pill:hover { background: var(--hover); }
+html[data-theme=light] .navmore-box { background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow-md); }
+html[data-theme=light] .navmore-box a, html[data-theme=light] .navmore-box button { color: var(--ink); }
+html[data-theme=light] .navmore-box a:hover, html[data-theme=light] .navmore-box button:hover { background: var(--hover); }
+html[data-theme=light] .navmore-role { color: var(--muted); border-bottom-color: var(--line); opacity: 1; }
+html[data-theme=light] .theme-menu .navmore-box button[aria-checked=true] { background: color-mix(in srgb, var(--brand) 12%, transparent); }
+html[data-theme=light] .count-pill { color: #b91c1c; }
+html[data-theme=dark] .top { box-shadow: none; }
+html[data-theme=dark] .navmore-box { border: 1px solid var(--line); box-shadow: var(--shadow-md); }
+
+/* the sidebar: a touch of depth */
+html[data-theme] .side { background: linear-gradient(180deg, var(--side-bg), color-mix(in srgb, var(--side-bg) 92%, #000)); }
+html[data-theme] .side .brand { font-weight: 800; letter-spacing: -0.02em; }
+html[data-theme] .side-nav a { border-radius: 10px; font-weight: 500; }
+html[data-theme] .side-nav a.active { font-weight: 650; }
+html[data-theme] .side-nav a .ico { filter: saturate(0.9); }
+
+/* home */
+html[data-theme] .queue li { border-radius: 12px; }
+html[data-theme] .stat strong { font-weight: 750; letter-spacing: -0.02em; }
+html[data-theme] .greet h1 { font-size: 1.6rem; }
+html[data-theme=light] .attention, html[data-theme=light] .attention.clear { background: var(--panel); }
+html[data-theme=light] .queue li.sev-bad { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+html[data-theme=light] .queue li.sev-warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+html[data-theme=light] .queue li.sev-info { background: var(--surface-2); }
+html[data-theme=light] .qa.primary, html[data-theme=light] .btn.primary { color: #fff; }
+
+/* pages written before this layer: measurement entry, sheets, record */
+html[data-theme] table.sheet th, html[data-theme] table.sheet td { border-color: var(--line); }
+html[data-theme] table.sheet thead th { background: var(--surface-2); color: var(--muted); }
+html[data-theme] .verify tbody tr:hover td { background: var(--hover); }
+html[data-theme] .facts dt { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+html[data-theme] .facts dd { font-weight: 500; }
+html[data-theme] .timeline li { border-radius: 8px; }
+html[data-theme] .empty { color: var(--muted); }
+html[data-theme] .side { background-color: var(--side-bg); background-image: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18)); }
+html[data-theme] .notif-list a { color: var(--ink); text-decoration: none; }
+html[data-theme=dark] { --brand-hover: #2760c9; }
+html[data-theme] .btn { min-height: 44px; }
+html[data-theme] .btn.small { min-height: 44px; }
+html[data-theme] main .notif-list li a:not([class]) { color: var(--ink); text-decoration: none; }

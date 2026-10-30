@@ -8,6 +8,8 @@ const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwri
 const { startApp, adminClient } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');
+const ncr = require('../app/domain/ncr');
+const pmd = require('../app/domain/preventive');
 
 const SIZES = { laptop: { width: 1360, height: 860 }, tablet: { width: 1024, height: 768 }, phone: { width: 390, height: 844 } };
 const shots = process.argv[2];
@@ -34,9 +36,12 @@ async function main() {
   tasks.addChecklist(db, { id: adminId }, first, ['Oprire utilaj', 'Verificare lagăre', 'Pornire și probă']);
   tasks.setChecked(db, { id: adminId }, first, db.get('SELECT id FROM task_checklist WHERE task_id = ? ORDER BY id', first).id, true);
   meetings.ensure(db);
+  const nid = ncr.create(db, { id: adminId, full_name: 'Administrator' }, { title: 'Masă sub limită la LITARE 2', type_id: 2, product: '240 SM 90°', description: 'Trei probe la rând' }).id;
+  ncr.addTask(db, { id: adminId, full_name: 'Administrator' }, nid, { team: 'maintenance', title: 'Schimbat filiera' });
+  const planId = pmd.create(db, { id: adminId, full_name: 'Administrator' }, { title: 'Lubrifiere lagăre', every_n: 2, unit: 'weeks', next_due: meetings.today(), lead_days: 3, steps: 'Oprire\nLubrifiere' }).id; pmd.ensure(db);
   const mid = meetings.createMeeting(db, { id: adminId, full_name: 'Administrator' }, { title: 'Neconformități — comună', meeting_date: meetings.today(), start_time: '10:00', duration_min: 45, location: 'Sala 1', teams: ['maintenance', 'technical', 'quality'], agenda: 'Top neconformități', attendees: db.all('SELECT id FROM people LIMIT 3').map((r) => r.id) }).id;
   meetings.addDecision(db, { id: adminId, full_name: 'Administrator' }, mid, { text: 'Înlocuit rulment la LITARE 2', team: 'maintenance', due_date: meetings.today() });
-  const screens = [['meetings', '/sedinte'], ['meetings past', '/sedinte?view=past'], ['meeting', `/sedinte/${mid}`], ['meeting new', '/sedinte/nou'], ['meeting edit', `/sedinte/${mid}/editeaza`], ['meeting print', `/sedinte/${mid}/tipar`], ['series', '/sedinte/serii'], ['series new', '/sedinte/serii/nou'], ['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['board grouped', '/mentenanta?group=status&sort=due'], ['work order', `/sarcini/${first}/tipar`], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
+  const screens = [['ncr register', '/calitate'], ['ncr', `/calitate/neconformitati/${nid}`], ['ncr new', '/calitate/nou'], ['ncr top', '/calitate/top'], ['ncr print', `/calitate/neconformitati/${nid}/tipar`], ['plans', '/mentenanta/preventiv'], ['plan', `/mentenanta/preventiv/${planId}`], ['plan new', '/mentenanta/preventiv/nou'], ['meetings', '/sedinte'], ['meetings past', '/sedinte?view=past'], ['meeting', `/sedinte/${mid}`], ['meeting new', '/sedinte/nou'], ['meeting edit', `/sedinte/${mid}/editeaza`], ['meeting print', `/sedinte/${mid}/tipar`], ['series', '/sedinte/serii'], ['series new', '/sedinte/serii/nou'], ['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['board grouped', '/mentenanta?group=status&sort=due'], ['work order', `/sarcini/${first}/tipar`], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
   const browser = await pw.chromium.launch();
   let total = 0;
   for (const [sizeName, viewport] of Object.entries(SIZES)) {
