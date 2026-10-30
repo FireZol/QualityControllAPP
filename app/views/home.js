@@ -10,10 +10,10 @@ function quickRow(r) {
   const m = r.resultMap;
   if (r.family_code === 'CABLE_LV') {
     const out = r.results.filter((x) => ['sub', 'peste', 'neconform'].includes(x.verdict)).length;
-    return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at).slice(-5)}</td><td>${T.shift[r.shift]}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}</a>` : ''}</td><td>${r.machine_name}</td><td colspan="4"><span class="val ${out ? 'v-neconform' : 'v-ok'}">${f(T.cable.summary, { n: r.results.length, out })}</span></td></tr>`;
+    return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td class="nowrap">${displayDateTime(r.created_at).slice(-5)}</td><td class="nowrap">${T.shift[r.shift]}</td><td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.batch_no ? html` <a class="tag ok" href="/loturi/${r.batch_id}">${r.batch_no}</a>` : ''}</td><td>${r.machine_name}</td><td colspan="4"><span class="val ${out ? 'v-neconform' : 'v-ok'}">${f(T.cable.summary, { n: r.results.length, out })}</span></td></tr>`;
   }
   const dia = m.h || m.l ? html`${valueCell(m.h, 'h')} × ${valueCell(m.l, 'l')}` : html`${valueCell(m.d1, 'd1')} · ${valueCell(m.d2, 'd2')}`;
-  return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td>${displayDateTime(r.created_at).slice(-5)}</td><td>${T.shift[r.shift]}</td>
+  return html`<tr><td><a href="/masuratori/${r.record_no}">${r.record_no}</a></td><td class="nowrap">${displayDateTime(r.created_at).slice(-5)}</td><td class="nowrap">${T.shift[r.shift]}</td>
     <td>${r.construction_label} <span class="tag">${r.material_code}</span>${r.family_code === 'FLEXIBIL_CL5' ? html` <span class="tag ok">${T.level[r.level]}</span>` : ''}</td><td>${r.machine_name}</td><td class="nowrap">${dia}</td><td>${valueCell(m.mass_gm, 'mass_gm')}</td>
     <td>${valueCell(m.r20_echiv || m.r20, 'r20')}</td><td>${valueCell(m.r20_theor, 'r20_theor')}</td></tr>`;
 }
@@ -33,8 +33,7 @@ const greeting = () => { const h = new Date().getHours(); return h < 12 ? T.home
 function attentionItems(ctx, d) {
   const items = [];
   if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte', tone: 'info', icon: '👥' });
-  if (d.ncr && d.ncr.eval_overdue) items.push({ text: f(T.home.att_ncr_overdue, { n: d.ncr.eval_overdue }), href: '/calitate?evalo=1', tone: 'bad', icon: '⏳' });
-  if (d.ncr && d.ncr.reported) items.push({ text: f(T.home.att_ncr, { n: d.ncr.reported }), href: '/calitate?status=reported', tone: 'bad', icon: '🧾' });
+  if (d.ncr && d.ncr.reported) items.push({ text: d.ncr.eval_overdue ? f(T.home.att_ncr_late, { n: d.ncr.reported, late: d.ncr.eval_overdue }) : f(T.home.att_ncr, { n: d.ncr.reported }), href: d.ncr.eval_overdue ? '/calitate?evalo=1' : '/calitate?status=reported', tone: 'bad', icon: '🧾' });
   if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad', icon: '⚠️' });
   if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc', tone: 'warn', icon: '📈' });
   const overdue = d.teams.filter((t) => t.counts.overdue);
@@ -77,7 +76,7 @@ function homePage(ctx, d) {
   ${firstTeam ? html`<a class="stat ${overdue ? 'warn' : ''}" href="${firstTeam.path}"><strong>${open}</strong><span>${T.home.tile_tasks}${overdue ? ` · ${overdue} ${T.home.tile_overdue}` : ''}</span></a>` : ''}
 </div>
 
-<div class="home-grid"><div>
+<div class="home-grid home-top"><div>
 ${d.setup.length ? html`<section class="card setup" id="setup"><h2>${T.home.setup_title}</h2><p class="muted">${T.home.setup_hint}</p>
   <ul class="checklist-steps">${d.setup.map((s) => html`<li class="${s.done ? 'done' : 'todo'}"><span class="mark" aria-hidden="true">${s.done ? '✓' : '○'}</span> <span>${T.home['setup_' + s.key]}${s.total !== undefined ? ` (${f(T.home.setup_sheets_n, { n: s.n, total: s.total })})` : (s.n !== undefined ? ` (${f(T.home.setup_now, { n: s.n })})` : '')}</span> ${s.done ? '' : html`<a class="btn small" href="${s.href}">${T.common.open}</a>`}</li>`)}</ul></section>` : ''}
 <section class="card" id="today"><h2>${T.home.today}</h2>
@@ -91,7 +90,7 @@ ${d.spc.length ? html`<section class="card" id="spc"><h2>${T.home.spc}</h2><p cl
 
 <aside>
   ${d.meetings ? html`<section class="card"><div class="panel-head"><p class="eyebrow">${T.home.side_meetings}</p><a href="/sedinte">${T.home.see_all}</a></div>
-    ${d.meetings.length ? html`<ul class="panel-list">${d.meetings.map((m) => html`<li><a href="/sedinte/${m.id}">${m.isToday ? '' : `${displayDate(m.meeting_date)} `}<strong>${m.start_time}</strong> ${m.title}</a></li>`)}</ul>` : html`<p class="muted">${T.home.no_meetings}</p>`}</section>` : ''}
+    ${d.meetings.length ? html`<ul class="panel-list">${d.meetings.map((m) => html`<li><a class="meet-line" href="/sedinte/${m.id}"><span class="meet-when">${m.isToday ? '' : html`<small class="muted">${displayDate(m.meeting_date).slice(0, 5)}</small> `}<strong>${m.start_time}</strong></span><span class="meet-title">${m.title}</span></a></li>`)}</ul>` : html`<p class="muted">${T.home.no_meetings}</p>`}</section>` : ''}
   <section class="card"><p class="eyebrow">${T.home.side_shift}</p><p><strong>${T.shift[cur.shift]}</strong><br><span class="muted">${cur.crew ? cur.crew.name : T.home.crew_none}</span></p></section>
   ${d.teams.length ? html`<section class="card"><div class="panel-head"><p class="eyebrow">${T.home.side_tasks}</p>${firstTeam ? html`<a href="${firstTeam.path}?mine=1">${T.home.see_all}</a>` : ''}</div>
     ${d.mine.length ? html`<ul class="panel-list">${d.mine.map((t) => html`<li><a href="/sarcini/${t.id}">${t.no} ${t.title}</a>${t.due_date ? html`<span class="${t.overdue ? 'overdue' : 'muted'}">${displayDate(t.due_date)}</span>` : ''}</li>`)}</ul>` : html`<p class="muted">${T.home.no_tasks_mine}</p>`}</section>` : ''}

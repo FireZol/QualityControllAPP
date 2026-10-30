@@ -59,7 +59,7 @@ module.exports = {
     confirm: 'Confirm the new password', hint: 'At least 8 characters.', submit: 'Change password',
   },
 
-  home: { att_ncr_overdue: 'Non-conformities with overdue evaluation: {n}', att_ncr: 'Non-conformities to evaluate: {n}', items_n: '{n} items',
+  home: { att_ncr_late: 'Non-conformities to evaluate: {n} ({late} overdue)', att_ncr: 'Non-conformities to evaluate: {n}', items_n: '{n} items',
     side_meetings: 'Meetings', no_meetings: 'No meetings in the next 7 days.', att_meetings: 'Meetings today: {n}',
     greet_morning: 'Good morning', greet_afternoon: 'Good afternoon', greet_evening: 'Good evening', attention: 'Needs your attention', attention_none: 'All clear — nothing is waiting for you.', att_out: 'Measurements with out-of-limit values (24 h): {n}', att_spc: 'SPC alerts: {n}', att_setup: 'First-setup steps left: {n}', att_overdue: 'Overdue tasks: {n}', att_unread: 'Unread notifications: {n}', att_mine: 'Open tasks assigned to you: {n}', quick: 'Quick actions', tile_today: 'Measurements today', tile_out: 'Out of limits (24 h)', tile_sheets: 'Active data sheets', tile_tasks: 'Active tasks', tile_overdue: 'overdue', side_shift: 'On shift now', side_tasks: 'My tasks', side_notes: 'Recent notifications', see_all: 'See all', no_tasks_mine: 'No tasks assigned to you.', no_notes: 'No notifications.', new_task: 'New task', crew_none: 'no crew',
     title: 'Home', new_measurement: 'New measurement', current_shift: 'Current shift: {shift} · crew {crew}',

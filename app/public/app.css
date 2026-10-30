@@ -739,3 +739,28 @@ html[data-theme] .page-title { flex: 1 1 0; min-width: 0; margin-right: 0; }
 html[data-theme] .card .scroll { border: 0; box-shadow: none; border-radius: 0; background: transparent; }
 
 .tag.ns-overdue { background: var(--bad-bg); color: var(--bad); } .tag.ns-recurring { background: var(--warn-bg); color: var(--warn); }
+
+/* found by using the app with demo data */
+html[data-theme] .tag { white-space: nowrap; }
+a.tag-link { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+html[data-theme] main .queue li a:not([class]) { color: inherit; text-decoration: none; }
+html[data-theme] main table a:not([class]) { text-decoration: none; }
+html[data-theme] main table a:not([class]):hover { text-decoration: underline; text-underline-offset: 3px; }
+html[data-theme] main .panel-list a:not([class]) { text-decoration: none; }
+a.meet-line { display: flex; gap: 12px; align-items: baseline; text-decoration: none; }
+.meet-when { flex: none; min-width: 4.4rem; } .meet-title { min-width: 0; }
+table.grid td.plan-cell { min-width: 210px; }
+
+/* Home: the tables need the full width, so below 1500 px the side panels become a row above them */
+@media (min-width: 1500px) { html[data-theme] .home-grid.home-top { grid-template-columns: minmax(0, 1fr) 340px; } }
+@media (max-width: 1499px) {
+  html[data-theme] .home-grid.home-top { grid-template-columns: minmax(0, 1fr); }
+  html[data-theme] .home-grid.home-top > aside { order: -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; align-items: start; }
+  html[data-theme] .home-grid.home-top > aside > .card { margin: 0; }
+}
+
+/* the task board must show its action column at laptop width */
+html[data-theme] table.tasks th, html[data-theme] table.tasks td { padding: 10px 10px; }
+html[data-theme] table.tasks td:first-child, html[data-theme] table.tasks th:first-child { padding-left: 12px; }
+@media (max-width: 1499px) { html[data-theme] table.tasks .col-updated { display: none; } }
+html[data-theme] table.tasks td.nowrap a { font-size: 0.88rem; }

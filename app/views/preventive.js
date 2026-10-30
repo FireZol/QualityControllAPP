@@ -9,7 +9,7 @@ const { prioName } = require('./tasks');
 
 const everyText = (p) => (p.every_n === 1 ? T.pm.every_one[p.unit] : f(T.pm.every, { n: p.every_n, unit: T.pm.unit[p.unit] })) + (p.unit === 'days' && p.weekdays_only ? ` ${T.pm.weekdays_note}` : '');
 const stateTag = (st) => {
-  if (st.key === 'task') return html`<a class="tag ts-${st.task_status}" href="/sarcini/${st.task_id}">${st.task_no} · ${T.taskstatus[st.task_status]}</a>`;
+  if (st.key === 'task') return html`<a class="tag-link" href="/sarcini/${st.task_id}"><span class="tag ts-${st.task_status}">${st.task_no} · ${T.taskstatus[st.task_status]}</span></a>`;
   return html`<span class="tag pm-${st.key}">${T.pm.state[st.key]}</span>`;
 };
 const whenText = (p) => {
@@ -37,7 +37,7 @@ function listPage(ctx, d) {
   <button class="btn primary" type="submit">${T.common.filter}</button><a class="btn" href="${d.base}?view=${fl.view}">${T.common.reset}</a></div></form>
 <p class="muted">${f(T.pm.count, { n: rows.length })}</p>
 <div class="scroll"><table class="grid"><thead><tr><th>${T.pm.plan}</th><th>${T.pm.where}</th><th>${T.pm.interval}</th><th>${T.pm.next_due}</th><th>${T.pm.last_done}</th><th>${T.tasks.assigned}</th><th>${T.common.status}</th>${can.manage ? html`<th></th>` : ''}</tr></thead>
-<tbody>${rows.length ? rows.map((p) => html`<tr class="${p.active ? '' : 'is-cancelled'}"><td><a href="${d.base}/${p.id}"><strong>${p.title}</strong></a>${p.team !== 'maintenance' ? html` <span class="tag team-${p.team}">${T.modules[p.team].name}</span>` : ''}</td>
+<tbody>${rows.length ? rows.map((p) => html`<tr class="${p.active ? '' : 'is-cancelled'}"><td class="plan-cell"><a href="${d.base}/${p.id}"><strong>${p.title}</strong></a>${p.team !== 'maintenance' ? html` <span class="tag team-${p.team}">${T.modules[p.team].name}</span>` : ''}</td>
   <td>${[p.machine_name, p.area].filter(Boolean).join(' · ') || html`<span class="muted">—</span>`}</td><td class="nowrap">${everyText(p)}</td><td class="nowrap">${dueCell(p)}</td>
   <td class="nowrap">${p.last_done ? displayDate(p.last_done) : html`<span class="muted">—</span>`}</td><td>${p.people.length ? p.people.join(', ') : html`<span class="muted">${T.tasks.unassigned}</span>`}</td><td>${stateTag(p.state)}</td>
   ${can.manage ? html`<td class="nowrap">${p.active && p.state.key !== 'task' ? html`<form method="post" action="${d.base}/${p.id}/genereaza" class="inline">${csrf(ctx)}<button class="btn small" type="submit">${T.pm.make_now}</button></form>` : ''}</td>` : ''}</tr>`)
@@ -97,7 +97,7 @@ ${can.manage ? html`<section class="card"><h2>${T.pm.actions}</h2><div class="ac
   ${p.active && p.state.key !== 'task' ? html`<form method="post" action="${base}/${p.id}/sari" class="card-in">${csrf(ctx)}${textField({ label: T.pm.skip_reason, name: 'reason', value: '', attrs: 'maxlength="300"', hint: T.pm.skip_hint })}<button class="btn" type="submit">${T.pm.skip}</button></form>` : ''}</section>` : ''}
 <section class="card"><h2>${T.pm.steps} <span class="count">${p.steps.length}</span></h2>${p.steps.length ? html`<ol class="decisions">${p.steps.map((s) => html`<li>${s.text}</li>`)}</ol>` : html`<p class="muted">${T.tasks.check_none}</p>`}</section>
 <section class="card"><h2>${T.pm.history}</h2><div class="scroll"><table class="grid"><thead><tr><th>${T.pm.due_date}</th><th>${T.pm.result}</th><th>${T.pm.done_on}</th></tr></thead>
-<tbody>${p.runs.length ? p.runs.map((r) => html`<tr><td>${displayDate(r.due_date)}</td><td>${r.outcome === 'skipped' ? html`<span class="tag pm-skipped">${T.pm.skipped}</span> ${r.skip_reason}` : html`<a class="tag ts-${r.task_status}" href="/sarcini/${r.task_id}">${r.task_no} · ${T.taskstatus[r.task_status]}</a>`}</td><td>${r.closed_at ? displayDateTime(r.closed_at) : '—'}</td></tr>`) : html`<tr><td colspan="3" class="empty">${T.pm.no_history}</td></tr>`}</tbody></table></div></section>`,
+<tbody>${p.runs.length ? p.runs.map((r) => html`<tr><td>${displayDate(r.due_date)}</td><td>${r.outcome === 'skipped' ? html`<span class="tag pm-skipped">${T.pm.skipped}</span> ${r.skip_reason}` : html`<a class="tag-link" href="/sarcini/${r.task_id}"><span class="tag ts-${r.task_status}">${r.task_no} · ${T.taskstatus[r.task_status]}</span></a>`}</td><td>${r.closed_at ? displayDateTime(r.closed_at) : '—'}</td></tr>`) : html`<tr><td colspan="3" class="empty">${T.pm.no_history}</td></tr>`}</tbody></table></div></section>`,
   });
 }
 

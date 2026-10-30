@@ -75,15 +75,15 @@ function boardPage(ctx, d) {
   const back = `${d.base}?${keep}`;
   d.back = back; d.team = team;
   const qs = new URLSearchParams({ ...d.keep, team });
-  const cols = can.update ? 10 : 9;
+  const cols = can.update ? 9 : 8;
   const row = (t) => html`<tr class="${t.overdue ? 'is-overdue' : ''}">
   ${can.update ? html`<td class="sel"><label class="selbox"><input type="checkbox" name="ids" value="${t.id}" form="bulk" aria-label="${t.no}"></label></td>` : ''}
   <td class="nowrap"><a href="/sarcini/${t.id}">${t.no}</a></td>
   <td class="task-title"><a href="/sarcini/${t.id}"><strong>${t.title}</strong></a>${t.source_kind && t.source_kind !== 'manual' ? html` <span class="tag">${T.tasks.source[t.source_kind] || t.source_kind}</span>` : ''}
-    ${t.check_total ? html` <span class="mini${t.check_done === t.check_total ? ' ok' : ''}" title="${T.tasks.checklist}">☑ ${t.check_done}/${t.check_total}</span>` : ''}${t.comments ? html` <span class="mini" title="${T.tasks.comments}">💬 ${t.comments}</span>` : ''}</td>
+    ${t.check_total ? html` <span class="mini${t.check_done === t.check_total ? ' ok' : ''}" title="${T.tasks.checklist}">☑ ${t.check_done}/${t.check_total}</span>` : ''}${t.comments ? html` <span class="mini" title="${T.tasks.comments}">💬 ${t.comments}</span>` : ''}${where(t) ? html`<br><small class="muted">${where(t)}</small>` : ''}</td>
   <td>${prioChip(t, ranks)}</td><td>${statusChip(t.status)}</td>
   <td>${t.assignees.length ? t.assignees.map((a) => a.name).join(', ') : html`<span class="muted">${T.tasks.unassigned}</span>`}</td>
-  <td>${where(t)}</td><td class="nowrap">${dueCell(t)}</td><td class="nowrap muted">${displayDate((t.updated_at || t.created_at).slice(0, 10))}</td>
+  <td class="nowrap">${dueCell(t)}</td><td class="nowrap muted col-updated">${displayDate((t.updated_at || t.created_at).slice(0, 10))}</td>
   ${can.update ? html`<td class="nowrap">${NEXT[t.status] ? html`<form method="post" action="/sarcini/${t.id}/stare" class="inline">${csrf(ctx)}<input type="hidden" name="to" value="${NEXT[t.status]}"><input type="hidden" name="back" value="${back}"><button class="btn small primary" type="submit">${T.taskact[t.status === 'waiting' ? 'resume' : NEXT[t.status]]}</button></form>` : ''}</td>` : ''}
 </tr>`;
   const groups = sections(d);
@@ -112,7 +112,7 @@ ${tabs(d)}
   <a class="btn small" href="/sarcini/tipar?${new URLSearchParams({ ...d.keep, team, group: 'person' })}">${T.tasks.print_by_person}</a>
   <a class="btn small" href="/sarcini/export?${qs}&format=csv">${T.tasks.export_csv}</a><a class="btn small" href="/sarcini/export?${qs}&format=xlsx">${T.tasks.export_xlsx}</a></p>
 ${can.update ? bulkBar(ctx, d) : ''}
-<div class="scroll"><table class="grid tasks"><thead><tr>${can.update ? html`<th class="sel"><label class="selbox"><input type="checkbox" id="sel-all" aria-label="${T.tasks.select_all}"></label></th>` : ''}<th>${T.tasks.no}</th><th>${T.tasks.task}</th><th>${T.tasks.priority}</th><th>${T.common.status}</th><th>${T.tasks.assigned}</th><th>${T.tasks.where}</th><th>${T.tasks.due}</th><th>${T.tasks.updated}</th>${can.update ? html`<th></th>` : ''}</tr></thead>
+<div class="scroll"><table class="grid tasks"><thead><tr>${can.update ? html`<th class="sel"><label class="selbox"><input type="checkbox" id="sel-all" aria-label="${T.tasks.select_all}"></label></th>` : ''}<th>${T.tasks.no}</th><th>${T.tasks.task}</th><th>${T.tasks.priority}</th><th>${T.common.status}</th><th>${T.tasks.assigned}</th><th>${T.tasks.due}</th><th class="col-updated">${T.tasks.updated}</th>${can.update ? html`<th></th>` : ''}</tr></thead>
 <tbody>${rows.length ? groups.map((g) => html`${g.title ? html`<tr class="group-row"><th colspan="${cols}">${g.title} <span class="count">${g.rows.length}</span></th></tr>` : ''}${g.rows.map(row)}`) : html`<tr><td colspan="${cols}" class="empty">${T.tasks.empty} ${can.create ? html`<a href="${d.newPath}">${T.tasks.new}</a>` : ''}</td></tr>`}</tbody></table></div>`,
   });
 }
