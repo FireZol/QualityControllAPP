@@ -7,11 +7,13 @@ const views = require('../views/home');
 const tasks = require('../domain/tasks');
 const notifications = require('../domain/notifications');
 const meetings = require('../domain/meetings');
+const preventive = require('../domain/preventive');
 
 module.exports = function register(app) {
   const { db } = app;
   app.router.get('/', {}, (ctx) => {
     const teams = tasks.TEAMS.filter((t) => ctx.modules[t] && tasks.canView(db, ctx.user, t, ctx.modules)).map((t) => ({ team: t, path: tasks.teamPath(t), counts: tasks.counts(db, t), create: tasks.canCreate(db, ctx.user, t, ctx.modules) }));
+    if (ctx.modules.maintenance && preventive.canView(db, ctx.user, ctx.modules)) preventive.ensure(db);
     const meet = ctx.modules.meetings && meetings.canView(db, ctx.user, ctx.modules);
     if (meet) { meetings.ensure(db); meetings.remindToday(db); }
     return page(views.homePage(ctx, {

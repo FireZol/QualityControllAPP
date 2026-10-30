@@ -5,6 +5,7 @@ const i18n = require('../i18n');
 const tasks = require('../domain/tasks');
 const settings = require('../domain/settings');
 const views = require('../views/tasks');
+const preventive = require('../domain/preventive');
 const { errorPage } = require('../views/errors');
 const { nowIso } = require('../lib/time');
 const { T } = require('../i18n');
@@ -43,6 +44,7 @@ module.exports = function register(app) {
     router.get(base, {}, (ctx) => {
       const rt = rights(ctx, team);
       if (!rt.view) return forbidden(ctx);
+      if (team === 'maintenance') preventive.ensure(db);
       const fl = filtersOf(ctx.query);
       const l = lists();
       return page(views.boardPage(ctx, { team, base, newPath: `${base}/nou`, rows: tasks.list(db, queryOf(ctx, fl, team)), f: fl, hasPerson: myPeople(ctx).length > 0, keep: keepOf(fl), lists: l, ranks: ranks(l), counts: tasks.counts(db, team), can: rt }));
