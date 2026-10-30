@@ -6,17 +6,20 @@ const i18n = require('../i18n');
 const calc = require('../domain/calc');
 const reg = require('../modules/registry');
 const notifications = require('../domain/notifications');
+const tasksDomain = require('../domain/tasks');
 
 /**
  * The left navigation (owner, 2026-10-30, after the HomeCloud look): Home on top, then one section per module the user may open;
  * the section of the module being used is open, the others fold. Administration is its own section.
  */
+const ICONS = { home: '📊', new: '➕', register: '☰', batches: '📦', analyses: '📈', specs: '📄', lists: '🗂️', tasks: '✅', preventive: '🗓️', ncr: '⚠️', top: '🔝', list: '👥', series: '🔁', users: '👤', settings: '⚙️', audit: '📜' };
+
 function sidebar(ctx, active) {
   const { user, modules } = ctx;
   const cur = ctx.module || 'qc';
   const link = (mod, [key, href, label, badge]) => {
     const on = mod === cur && key === active;
-    return html`<a href="${href}" class="${on ? 'active' : ''}"${on ? raw(' aria-current="page"') : ''}>${label}${badge ? html`<span class="side-badge">${badge}</span>` : ''}</a>`;
+    return html`<a href="${href}" class="${on ? 'active' : ''}"${on ? raw(' aria-current="page"') : ''}><span class="ico" aria-hidden="true">${ICONS[key] || '•'}</span><span class="lab">${label}</span>${badge ? html`<span class="side-badge">${badge}</span>` : ''}</a>`;
   };
   const section = (mod, title, items, isOpen) => html`<details class="side-sec"${(isOpen === undefined ? mod === cur : isOpen) ? raw(' open') : ''}><summary>${title}</summary><div class="side-items">${items.map((it) => link(mod, it))}</div></details>`;
 
@@ -30,8 +33,18 @@ function sidebar(ctx, active) {
     .map((m) => section(m.id, T.modules[m.id].name, m.menu.filter((x) => reg.rank(ctx.level(m.id)) >= reg.rank(x.minLevel || 'view')).map((x) => [x.key, x.href, T.nav['m_' + x.name]])));
   const admin = user.role === 'administrator' ? section('qc', T.nav.admin, [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]], ['users', 'settings', 'audit'].includes(active)) : '';
   return html`<nav class="side-nav" aria-label="${T.nav.label}">
-    <a href="/" class="side-home${cur === 'qc' && active === 'home' ? ' active' : ''}"${cur === 'qc' && active === 'home' ? raw(' aria-current="page"') : ''}>${T.nav.home}</a>
+    <a href="/" class="side-home${cur === 'qc' && active === 'home' ? ' active' : ''}"${cur === 'qc' && active === 'home' ? raw(' aria-current="page"') : ''}><span class="ico" aria-hidden="true">${ICONS.home}</span><span class="lab">${T.nav.home}</span></a>
     ${section('qc', T.modules.qc.name, qc)}${others}${admin}</nav>`;
+}
+
+/** Status chips in the top bar: tasks still open and critical ones, for the teams this user can see; each opens that board. */
+function statusChips(ctx) {
+  if (!ctx.db || !ctx.modules) return '';
+  const teams = tasksDomain.TEAMS.filter((t) => ctx.modules[t] && tasksDomain.canView(ctx.db, ctx.user, t, ctx.modules));
+  if (!teams.length) return '';
+  const c = tasksDomain.barCounts(ctx.db, teams);
+  const base = tasksDomain.teamPath(teams[0]);
+  return html`<a class="chip-pill" href="${base}" title="${T.nav.chip_open_title}"><span>${T.nav.chip_open}</span><strong>${c.open}</strong></a>${c.topPriority ? html`<a class="chip-pill ${c.critical ? 'is-crit' : ''}" href="${base}?priority=${c.topPriority}" title="${T.nav.chip_critical_title}"><span>${T.nav.chip_critical}</span><strong>${c.critical}</strong></a>` : ''}`;
 }
 
 /** The bell: unread notifications. */
@@ -104,11 +117,13 @@ ${user ? html`<aside class="side" id="side"><a class="brand" href="/">${T.app.na
   ${user ? html`<button type="button" class="icon-btn side-toggle" data-side-toggle aria-label="${T.nav.menu}" aria-controls="side">☰</button>` : ''}
   <a class="brand" href="/">${T.app.name}</a>
   <span class="page-title">${opts.title || ''}</span>
+  ${user ? html`<div class="chips">${statusChips(ctx)}</div>` : ''}
   ${user ? html`<div class="who">
-    <button type="button" class="icon-btn" data-theme-toggle title="${T.layout.theme}" aria-label="${T.layout.theme}"><span class="theme-light-ico">☾</span><span class="theme-dark-ico">☀</span></button>
+    <details class="navmore theme-menu"><summary class="icon-btn" title="${T.layout.theme}" aria-label="${T.layout.theme}">◐</summary>
+      <div class="navmore-box right" role="menu">${[['light', '☀', T.layout.theme_light], ['dark', '☾', T.layout.theme_dark], ['system', '🖥', T.layout.theme_system]].map(([v, i, l]) => html`<button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`)}</div></details>
     <button type="button" class="comfort-btn" data-comfort title="${T.layout.comfort}" aria-label="${T.layout.comfort}" aria-pressed="false">A<small>+</small></button>
     ${bell(ctx)}${langSwitch(ctx)}${helpBox(opts.active)}
-    <details class="navmore account"><summary title="${T.roles[user.role]}"><span class="avatar" aria-hidden="true">${initials(user.full_name)}</span><span class="acc-name">${user.full_name}</span> <span aria-hidden="true">▾</span></summary>
+    <details class="navmore account"><summary title="${T.roles[user.role]}"><span class="avatar" aria-hidden="true">${initials(user.full_name)}</span><span class="acc-who"><span class="acc-name">${user.full_name}</span><small>${T.roles[user.role]}</small></span> <span aria-hidden="true">▾</span></summary>
       <div class="navmore-box right"><div class="navmore-role">${T.roles[user.role]}</div><a href="/parola">${T.nav.password}</a>
         <form method="post" action="/iesire">${csrf(ctx)}<button type="submit">${T.nav.logout}</button></form></div></details></div>` : html`<div class="who">${langSwitch(ctx)}</div>`}
 </header>

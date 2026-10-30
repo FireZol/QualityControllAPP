@@ -304,6 +304,9 @@ test('UX: left navigation with an administration section, account menu, verdict 
   assert.ok(!ctcHome.includes('Administrare'));
   assert.ok(ctcHome.includes('class="navmore account"') && ctcHome.includes('action="/iesire"') && ctcHome.includes('href="/parola"'));
   assert.ok(ctcHome.includes('data-comfort') && ctcHome.includes('/static/prefs.js'));
+  assert.ok(['light', 'dark', 'system'].every((t) => ctcHome.includes(`data-theme-set="${t}"`)), 'the theme menu offers Light, Dark and PC default');
+  const prefsJs = await (await fetch(`${app.base}/static/prefs.js`)).text();
+  assert.ok(prefsJs.includes("'system'") && prefsJs.includes('prefers-color-scheme'), 'PC default follows the system setting');
   assert.equal((await fetch(`${app.base}/static/prefs.js`)).status, 200);
   // a record shows one big verdict
   const badNo = app.db.value("SELECT m.record_no FROM measurements m JOIN measurement_results r ON r.measurement_id = m.id WHERE m.is_current = 1 AND r.verdict IN ('sub', 'peste') LIMIT 1");

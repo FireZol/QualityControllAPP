@@ -32,14 +32,14 @@ const greeting = () => { const h = new Date().getHours(); return h < 12 ? T.home
 /** What waits for this user, most urgent first; each line has one place to go. */
 function attentionItems(ctx, d) {
   const items = [];
-  if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte' });
-  if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad' });
-  if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc' });
+  if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte', tone: 'info', icon: '👥' });
+  if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad', icon: '⚠️' });
+  if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc', tone: 'warn', icon: '📈' });
   const overdue = d.teams.filter((t) => t.counts.overdue);
-  for (const t of overdue) items.push({ text: `${T.modules[t.team].name}: ${f(T.home.att_overdue, { n: t.counts.overdue })}`, href: `${t.path}?overdue=1`, tone: 'bad' });
-  if (d.mine.length) items.push({ text: f(T.home.att_mine, { n: d.mine.length }), href: `${d.teams.find((t) => t.team === d.mine[0].team).path}?mine=1` });
-  if (d.unread) items.push({ text: f(T.home.att_unread, { n: d.unread }), href: '/notificari' });
-  if (d.setup.length) items.push({ text: f(T.home.att_setup, { n: d.setup.filter((x) => !x.done).length }), href: '#setup' });
+  for (const t of overdue) items.push({ text: `${T.modules[t.team].name}: ${f(T.home.att_overdue, { n: t.counts.overdue })}`, href: `${t.path}?overdue=1`, tone: 'bad', icon: '⏰' });
+  if (d.mine.length) items.push({ text: f(T.home.att_mine, { n: d.mine.length }), href: `${d.teams.find((t) => t.team === d.mine[0].team).path}?mine=1`, tone: 'info', icon: '✅' });
+  if (d.unread) items.push({ text: f(T.home.att_unread, { n: d.unread }), href: '/notificari', tone: 'info', icon: '🔔' });
+  if (d.setup.length) items.push({ text: f(T.home.att_setup, { n: d.setup.filter((x) => !x.done).length }), href: '#setup', tone: 'warn', icon: '🧰' });
   return items;
 }
 
@@ -55,8 +55,8 @@ function homePage(ctx, d) {
     <p class="muted">${f(T.home.current_shift, { shift: T.shift[cur.shift], crew: cur.crew ? cur.crew.name : T.common.none })}</p></div>
   <a class="btn primary big" href="/masuratori/nou">${T.home.new_measurement}</a></section>
 
-<section class="card attention${att.length ? '' : ' clear'}" aria-live="polite"><p class="eyebrow">${att.length ? html`<span aria-hidden="true">● </span>` : ''}${T.home.attention}${att.length ? ` · ${att.length}` : ''}</p>
-  ${att.length ? html`<ul>${att.map((a) => html`<li><strong>${a.text}</strong><a class="btn small" href="${a.href}">${T.common.open}</a></li>`)}</ul>` : html`<p>${T.home.attention_none}</p>`}</section>
+<section class="card attention${att.length ? '' : ' clear'}" aria-live="polite"><div class="panel-head"><p class="eyebrow">${att.length ? html`<span class="live-dot" aria-hidden="true"></span>` : ''}${T.home.attention}</p>${att.length ? html`<span class="count-pill">${f(T.home.items_n, { n: att.length })}</span>` : ''}</div>
+  ${att.length ? html`<ul class="queue">${att.map((a) => html`<li class="sev-${a.tone || 'info'}"><a href="${a.href}"><span class="q-ico" aria-hidden="true">${a.icon}</span><span class="q-text">${a.text}</span><span class="q-go" aria-hidden="true">›</span></a></li>`)}</ul>` : html`<p>${T.home.attention_none}</p>`}</section>
 
 <section class="card"><p class="eyebrow">${T.home.quick}</p><div class="quick-actions">
   <a class="qa primary" href="/masuratori/nou"><span class="ico" aria-hidden="true">＋</span>${T.nav.new_measurement}</a>

@@ -30,18 +30,30 @@
     });
   })();
 
-  // ◐ switches the light / dark theme for this PC; the ☰ button opens the navigation drawer on narrow screens
-  document.addEventListener('click', function (e) {
-    const t = e.target instanceof Element ? e.target : null;
-    if (!t) return;
-    if (t.closest('[data-theme-toggle]')) {
-      const root = document.documentElement;
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem('ctc_theme', next); } catch (err) { /* cannot remember: still applied now */ }
-    } else if (t.closest('[data-side-toggle]')) document.body.classList.toggle('side-open');
-    else if (t.closest('[data-side-close]') || (document.body.classList.contains('side-open') && t.closest('.side a'))) document.body.classList.remove('side-open');
-  });
+  // the ◐ menu picks Light, Dark or PC default; the ☰ button opens the navigation drawer on narrow screens
+  (function () {
+    const mark = function () {
+      const pref = window.ctcTheme ? window.ctcTheme.get() : 'system';
+      document.querySelectorAll('[data-theme-set]').forEach(function (b) { b.setAttribute('aria-checked', b.getAttribute('data-theme-set') === pref ? 'true' : 'false'); });
+    };
+    mark();
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const follow = function () { if (window.ctcTheme && window.ctcTheme.get() === 'system') window.ctcTheme.apply('system'); };
+      if (mq.addEventListener) mq.addEventListener('change', follow);
+    }
+    document.addEventListener('click', function (e) {
+      const t = e.target instanceof Element ? e.target : null;
+      if (!t) return;
+      const pick = t.closest('[data-theme-set]');
+      if (pick && window.ctcTheme) {
+        window.ctcTheme.set(pick.getAttribute('data-theme-set'));
+        mark();
+        const d = pick.closest('details'); if (d) d.removeAttribute('open');
+      } else if (t.closest('[data-side-toggle]')) document.body.classList.toggle('side-open');
+      else if (t.closest('[data-side-close]') || (document.body.classList.contains('side-open') && t.closest('.side a'))) document.body.classList.remove('side-open');
+    });
+  })();
 
   // a success notice fades after a few seconds; errors stay until the page changes
   document.querySelectorAll('.flash-ok').forEach(function (el) {

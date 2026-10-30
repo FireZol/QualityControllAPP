@@ -495,3 +495,79 @@ html[data-theme=dark] .tag.ms-held { background: var(--ok-bg); } html[data-theme
 html[data-theme=dark] .tag.team-maintenance { background: #3a2e10; color: #f2c14e; } html[data-theme=dark] .tag.team-technical { background: #172c44; color: #8dbbf0; } html[data-theme=dark] .tag.team-quality { background: #2a2447; color: #b9a8ff; }
 table.meetings tr.group-row th { background: #e8edf3; text-align: left; padding: 10px; }
 html[data-theme=dark] table.meetings tr.group-row th { background: #1f2d3d; color: var(--ink); }
+
+/* ---------- richer look after the owner's MaintTrack example (2026-10-30): icons, status chips, tinted action queue, pill controls ---------- */
+.side-nav a .ico { width: 24px; text-align: center; flex: none; font-size: 1.05rem; }
+.side-nav a .lab { flex: 1; }
+.side-nav a { justify-content: flex-start; gap: 10px; }
+.side-nav a.active { background: rgba(59,130,246,0.18); box-shadow: inset 3px 0 0 #3b82f6; }
+.side-sec > summary { color: #7f93ad; }
+.chips { display: flex; gap: 8px; align-items: center; }
+.chip-pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; text-decoration: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; }
+.chip-pill strong { font-size: 1.05rem; color: #7cb4ff; letter-spacing: 0; }
+.chip-pill.is-crit strong { color: #fbbf24; }
+.chip-pill:hover { background: rgba(255,255,255,0.16); }
+.page-title { flex: 0 1 auto; margin-right: auto; }
+.top .who { margin-left: 0; }
+.acc-who { display: inline-flex; flex-direction: column; line-height: 1.15; text-align: left; }
+.acc-who small { opacity: 0.7; font-size: 0.72rem; }
+.avatar { background: #22c55e; color: #052e14; }
+@media (max-width: 760px) { .chips { display: none; } .acc-who small { display: none; } }
+.card { border-radius: 12px; }
+.attention, .attention.clear { background: var(--panel); border: 1px solid var(--line); color: var(--ink); }
+.attention .panel-head { margin-bottom: 8px; }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; margin-right: 8px; box-shadow: 0 0 0 3px rgba(239,68,68,0.25); }
+.count-pill { background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 12px; padding: 2px 10px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.queue { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.queue li { border: 1px solid var(--line); border-radius: 10px; }
+.queue li a { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 14px; border-radius: 10px; text-decoration: none; color: inherit; }
+.queue li a:hover { filter: brightness(1.08); }
+.queue .q-ico { font-size: 1.3rem; width: 28px; text-align: center; flex: none; }
+.queue .q-text { flex: 1; font-weight: 600; }
+.queue .q-go { font-size: 1.5rem; opacity: 0.55; }
+.queue li.sev-bad { background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.4); color: #b3261e; }
+.queue li.sev-warn { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.4); color: #9a5b00; }
+.queue li.sev-info { background: var(--surface-2); color: var(--ink); }
+.tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; }
+.tabs a { border-radius: 8px; padding: 10px 16px; }
+.tabs a.active { background: var(--brand); color: var(--brand-ink); }
+table.grid th { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.stat span, .tile span { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.74rem; }
+.stat strong { font-size: 2.1rem; }
+.eyebrow { color: var(--muted); }
+html[data-theme=dark] { --bg: #0a0f18; --panel: #101826; --ink: #e6edf7; --muted: #8b9bb2; --line: #1e2a3b; --brand: #2f6fe0; --chrome: #0d1420; --side-bg: #0c121c; --surface-2: #0d1522; }
+html[data-theme=dark] .top { border-bottom: 1px solid var(--line); }
+html[data-theme=dark] main a:not([class]), html[data-theme=dark] .panel-list a, html[data-theme=dark] .panel-head a, html[data-theme=dark] .foot a { color: #6aa8ff; }
+html[data-theme=dark] .queue li.sev-bad { color: #fca5a5; } html[data-theme=dark] .queue li.sev-warn { color: #fcd34d; }
+html[data-theme=dark] .tabs a:hover { background: #17243a; }
+html[data-theme=dark] .tabs a.active { background: var(--brand); color: #fff; }
+html[data-theme=dark] .attention { background: var(--panel); border-color: var(--line); }
+html[data-theme=dark] table.grid th, html[data-theme=dark] table.meetings tr.group-row th, html[data-theme=dark] table.tasks tr.group-row th { background: #0d1522; color: #8b9bb2; }
+html[data-theme=dark] .btn { background: #152033; border-color: #243349; }
+html[data-theme=dark] .qa { background: #0d1522; border-color: var(--line); }
+html[data-theme=dark] .qa:hover, html[data-theme=dark] .stat:hover, html[data-theme=dark] .tile:hover { border-color: #3b82f6; }
+
+.theme-menu > summary { display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 1.3rem; border: 2px solid currentColor; border-radius: 6px; min-width: 44px; min-height: 44px; }
+.theme-menu .navmore-box button[aria-checked=true] { background: rgba(255,255,255,0.2); font-weight: 700; }
+.theme-menu .navmore-box button[aria-checked=true]::after { content: ' ✓'; }
+
+/* ---------- theme fixes found by tools/contrast-audit.js ---------- */
+.navmore-box { background: var(--chrome); }
+.count-pill { color: #b3261e; background: rgba(239,68,68,0.14); }
+html[data-theme=dark] .count-pill { color: #fca5a5; }
+.chip-pill strong { color: #bfe0ff; }
+html[data-theme=dark] .chip { background: #17243a; color: var(--ink); border-color: #2a3b55; }
+html[data-theme=dark] .chip.done { background: var(--ok-bg); color: var(--ok); border-color: #2c6b45; }
+html[data-theme=dark] .tag { color: #c8d3e0; }
+html[data-theme=dark] .tag.ok, html[data-theme=dark] .tag.st-activa, html[data-theme=dark] .tag.ts-closed { background: var(--ok-bg); color: var(--ok); }
+html[data-theme=dark] .tag.warn, html[data-theme=dark] .tag.st-in_verificare { background: var(--warn-bg); color: var(--warn); }
+html[data-theme=dark] .tag.added { background: var(--info-bg); color: var(--info); }
+html[data-theme=dark] .tag.red-paper { background: #3d1b19; color: #ffb4ab; border-color: #8c3a35; }
+html[data-theme=dark] .tag.yellow-paper { background: #3a3510; color: #f2e27a; }
+html[data-theme=dark] .tag.st-ciorna { background: var(--undef-bg); }
+html[data-theme=dark] .tag.st-arhivata, html[data-theme=dark] .tag.ts-cancelled { background: #222d3a; color: #9fb0c3; }
+html[data-theme=dark] .tag.ts-overdue { background: var(--bad-bg); color: var(--bad); }
+.side-sec > summary { color: #a9bdd4; }
+.stat.bad span { color: var(--bad); } .stat.warn span { color: var(--warn); }
+html[data-theme=dark] .more-filters summary, html[data-theme=dark] .step-box { color: #6aa8ff; }
+html[data-theme=dark] main details > summary { color: #6aa8ff; }

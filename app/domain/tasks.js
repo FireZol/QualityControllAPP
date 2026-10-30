@@ -307,6 +307,18 @@ function copyValues(db, id, team) {
   return { title: t.title, description: t.description, priority_id: t.priority_id, machine_id: t.machine_id, area: t.area };
 }
 
+/** The two numbers of the top bar for some teams: tasks still being worked on, and active tasks of the highest priority ("critical"). */
+function barCounts(db, teams) {
+  if (!teams.length) return { open: 0, critical: 0, topPriority: null };
+  const ph = teams.map(() => '?').join(',');
+  const top = db.get('SELECT id, sort FROM priorities WHERE active = 1 ORDER BY sort DESC LIMIT 1');
+  return {
+    open: db.value(`SELECT count(*) FROM tasks WHERE team IN (${ph}) AND status IN ('open', 'in_progress', 'waiting')`, ...teams),
+    critical: top ? db.value(`SELECT count(*) FROM tasks WHERE team IN (${ph}) AND priority_id = ? AND status IN ('open', 'in_progress', 'waiting', 'done')`, ...teams, top.id) : 0,
+    topPriority: top ? top.id : null,
+  };
+}
+
 /** Open tasks assigned to a user (through their people row), soonest due first. */
 function mine(db, userId, limit) {
   return db.all(`SELECT DISTINCT t.id, t.no, t.title, t.team, t.status, t.due_date FROM tasks t JOIN task_assignees a ON a.task_id = t.id JOIN people p ON p.id = a.person_id
@@ -324,4 +336,4 @@ function counts(db, team) {
   return { active: r.active, overdue: r.overdue, finished: r.finished, by };
 }
 
-module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, mine, today, addDays, SORT_KEYS, checklistOf, addChecklist, setChecked, removeChecklistItem, copyChecklist, plan, bulk, copyValues };
+module.exports = { TEAMS, STATUSES, ACTIVE, FINISHED, teamPath, canView, canCreate, canUpdate, validate, create, update, setAssignees, changeStatus, comment, detail, list, get, counts, mine, barCounts, today, addDays, SORT_KEYS, checklistOf, addChecklist, setChecked, removeChecklistItem, copyChecklist, plan, bulk, copyValues };

@@ -7,7 +7,7 @@ module.exports = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Technological Quality Control' },
 
   nav: {
-    label: 'Main navigation', menu: 'Menu', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
+    label: 'Main navigation', chip_open: 'OPEN', chip_open_title: 'Tasks being worked on (open, in progress, waiting)', chip_critical: 'CRITICAL', chip_critical_title: 'Active tasks of the highest priority', menu: 'Menu', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
     m_tasks: 'Tasks', m_preventive: 'Preventive', m_ncr: 'Non-conformities', m_top: 'Top non-conformities', m_meetings: 'Meetings', m_series: 'Schedules', modules: 'Modules', notifications: 'Notifications', notifications_n: 'Notifications ({n} unread)',
     admin: 'Administration', lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
   },
@@ -29,7 +29,7 @@ module.exports = {
     analyses: ['Analyses use the saved measurements; choose the product and the quantity, then the period.'],
   },
 
-  layout: { theme: 'Light / dark theme', comfort: 'Larger text and buttons (for hall screens)', report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
+  layout: { theme_light: 'Light', theme_dark: 'Dark', theme_system: 'PC default', theme: 'Appearance (theme)', comfort: 'Larger text and buttons (for hall screens)', report_problem: 'Report a problem', report_body: 'Describe what you did and what happened:', beta_title: 'Test version: the application is in its testing period' },
 
   modules: {
     qc: { name: 'Quality control (CTC)', desc: 'Measurements, data sheets, database' },
