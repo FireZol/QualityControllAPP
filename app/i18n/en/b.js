@@ -15,6 +15,7 @@ module.exports = {
 
   flash: {
     saved: 'The changes were saved.', added: 'The entry was added.', toggled: 'The status was changed.', password_changed: 'The password was changed.',
+    task_created: 'The task was created.', task_saved: 'The task was saved.', task_status_changed: 'The task status was changed.', task_comment_added: 'The comment was added.',
     measurement_saved: 'The measurement was saved.',
     measurement_saved_temp: 'The measurement was saved. Warning: the temperature is outside the allowed range (Database → Targets and thresholds); the correction was calculated, but please check the value.',
     measurement_corrected: 'The correction was saved as a new version; the previous version stays in the history.',

@@ -86,6 +86,28 @@ ul.notif-list li a { display: flex; flex-wrap: wrap; justify-content: space-betw
 ul.notif-list li.unread a { font-weight: 600; background: var(--info-bg); }
 ul.notif-list li.read a { color: var(--muted); }
 fieldset.access { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
+/* tasks */
+.prio { display: inline-block; padding: 1px 9px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--line); background: var(--undef-bg); color: var(--undef); }
+.prio.prio-1 { background: var(--info-bg); color: var(--info); border-color: #b9cfe9; }
+.prio.prio-2 { background: var(--warn-bg); color: var(--warn); border-color: #ecd28a; }
+.prio.prio-3 { background: var(--bad-bg); color: var(--bad); border-color: #efb1ac; }
+.tag.ts-open { background: var(--info-bg); color: var(--info); } .tag.ts-in_progress { background: #e8e2f8; color: #4a3a92; } .tag.ts-waiting { background: var(--warn-bg); color: var(--warn); }
+.tag.ts-done { background: #dff3f1; color: #0b6b63; } .tag.ts-closed { background: var(--ok-bg); color: var(--ok); } .tag.ts-cancelled { background: #eee; color: #777; } .tag.ts-overdue { background: var(--bad-bg); color: var(--bad); }
+.overdue { color: var(--bad); font-weight: 700; } tr.is-overdue td { background: #fff6f5; }
+table.tasks td.task-title { min-width: 240px; }
+.tabs a .count { background: rgba(0,0,0,0.1); border-radius: 9px; padding: 0 7px; font-size: 0.8rem; }
+.facts-line { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.task-desc { white-space: pre-wrap; }
+fieldset.people-pick { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+ol.timeline { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 3px solid var(--line); }
+ol.timeline li { margin: 0 0 14px; padding-left: 12px; position: relative; }
+ol.timeline li::before { content: ''; position: absolute; left: -22px; top: 6px; width: 11px; height: 11px; border-radius: 50%; background: var(--brand); }
+ol.timeline li.ev-comment::before { background: var(--ok); } ol.timeline li.ev-status::before { background: #4a3a92; }
+.ev-text { white-space: pre-wrap; background: var(--bg); padding: 6px 10px; border-radius: 6px; margin-top: 4px; }
+.status-form .actions { margin-top: 6px; }
+.card-in { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; }
+table.tasks-print td.box { font-size: 1.3rem; text-align: center; width: 60px; } table.tasks-print td.blank { min-width: 140px; }
+h3.group-head { margin: 14px 0 4px; }
 .comfort-btn { background: transparent; color: inherit; border: 2px solid currentColor; border-radius: 6px; font: inherit; font-weight: 700; padding: 1px 8px; cursor: pointer; line-height: 1.4; }
 .comfort-btn small { font-size: 0.7em; }
 .comfort-btn[aria-pressed=true] { background: var(--brand-ink); color: var(--brand); }

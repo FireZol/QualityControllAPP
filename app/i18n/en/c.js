@@ -133,7 +133,7 @@ module.exports = {
       construction_add: 'construction added', construction_edit: 'construction changed', construction_deactivate: 'construction deactivated', construction_activate: 'construction activated',
       setting_change: 'setting changed', backup: 'backup', backup_failed: 'backup failed', restore: 'restore', material_change: 'material constant',
       targets_change: 'targets changed', family_change: 'family changed', iec_add: 'IEC: value added', iec_change: 'IEC: value changed',
-      access_change: 'module access changed', row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
+      task_create: 'task created', task_edit: 'task edited', task_status: 'task status', access_change: 'module access changed', row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
     },
   },
 };

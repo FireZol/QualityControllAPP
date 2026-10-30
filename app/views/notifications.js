@@ -5,7 +5,13 @@ const { displayDateTime } = require('../lib/time');
 const { layout, csrf } = require('./layout');
 
 /** The text of a notification in the reader's language (unknown kinds show their name). */
-const textOf = (n) => { const tpl = opt('notify', n.kind, null); return tpl ? f(tpl, n.params) : f(T.notif.generic, { kind: n.kind }); };
+const textOf = (n) => {
+  const tpl = opt('notify', n.kind, null);
+  if (!tpl) return f(T.notif.generic, { kind: n.kind });
+  const p = { ...n.params };
+  for (const k of ['from', 'to']) if (p[k] && opt('taskstatus', p[k], null)) p[k] = opt('taskstatus', p[k], p[k]); // status names in the reader's language
+  return f(tpl, p);
+};
 
 function notificationsPage(ctx, d) {
   const unread = d.rows.filter((r) => !r.read_at).length;

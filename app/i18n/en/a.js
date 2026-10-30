@@ -42,7 +42,22 @@ module.exports = {
     levels: { none: 'no access', view: 'view only', enter: 'adds and comments', lead: 'lead (assigns, closes)' }, default: 'default ({level})',
   },
   notif: { title: 'Notifications', empty: 'No notifications.', mark_all: 'Mark all as read', unread: 'unread', open: 'Open', generic: '{kind}' },
-  notify: {},
+  taskstatus: { open: 'Open', in_progress: 'In progress', waiting: 'Waiting', done: 'Done', closed: 'Closed', cancelled: 'Cancelled' },
+  taskact: { open: 'Reopen', in_progress: 'Start', resume: 'Resume', waiting: 'Put on hold', done: 'Mark as done', closed: 'Close', cancelled: 'Cancel' },
+  tasks: {
+    title: 'Tasks', new: 'New task', edit_title: 'Edit task {no}', no: 'No.', task: 'Task', description: 'Description', priority: 'Priority', due: 'Due date', where: 'Machine / area', area: 'Area',
+    area_hint: 'When it is not a machine from the list (workshop, utilities …).', assigned: 'Assigned to', unassigned: 'unassigned', person: 'Person', only_overdue: 'Overdue only', count: '{n} tasks',
+    print_list: 'Work list (print)', empty: 'No tasks.', view_active: 'Active', view_closed: 'Closed', view_all: 'All', overdue: 'overdue', overdue_n: '{n} tasks are overdue.', show: 'Show',
+    created: 'Created', closed: 'Closed', source_label: 'Source', source: { manual: 'manual', meeting: 'meeting', ncr: 'non-conformity', measurement: 'measurement', preventive: 'preventive' },
+    change_status: 'Change the status', comment_optional: 'Comment (required to cancel and to reopen)', reason_hint: 'It is kept in the history.', save_assignees: 'Save the assignment',
+    add_comment: 'Add a comment', comment: 'Comment', send: 'Send', history: 'History', system: 'system', ev_created: 'Task created.', ev_status: 'Status: {from} → {to}.',
+    ev_assign: 'Assignment changed. Added: {added} Removed: {removed}', ev_edit: 'Changed: {fields}.', ev_comment: 'Comment.',
+    field: { title: 'title', description: 'description', priority_id: 'priority', due_date: 'due date', machine_id: 'machine', area: 'area' },
+    no_people: 'There are no people yet; add them under Database → People (teams).', work_list: 'Work list', done_col: 'Done',
+  },
+  notify: {
+    task_new: 'New task {no}: {title} (from {by})', task_assigned: 'Task {no} was assigned to you: {title}', task_status: '{by}: task {no} “{title}” — {from} → {to}', task_comment: '{by} commented on task {no} “{title}”',
+  },
 
   roles: { administrator: 'Administrator', inginer: 'Engineer', personal: 'Staff' },
   shift: { zi: 'Day shift', noapte: 'Night shift' },

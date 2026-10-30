@@ -42,7 +42,22 @@ const S = {
     levels: { none: 'fără acces', view: 'doar vizualizare', enter: 'adaugă și comentează', lead: 'responsabil (atribuie, închide)' }, default: 'implicit ({level})',
   },
   notif: { title: 'Notificări', empty: 'Nicio notificare.', mark_all: 'Marchează toate ca citite', unread: 'necitită', open: 'Deschide', generic: '{kind}' },
-  notify: {},
+  taskstatus: { open: 'Deschisă', in_progress: 'În lucru', waiting: 'În așteptare', done: 'Executată', closed: 'Închisă', cancelled: 'Anulată' },
+  taskact: { open: 'Redeschide', in_progress: 'Începe', resume: 'Reia lucrul', waiting: 'Pune în așteptare', done: 'Marchează executată', closed: 'Închide', cancelled: 'Anulează' },
+  tasks: {
+    title: 'Sarcini', new: 'Sarcină nouă', edit_title: 'Modificare sarcină {no}', no: 'Nr.', task: 'Sarcina', description: 'Descriere', priority: 'Prioritate', due: 'Termen', where: 'Utilaj / zonă', area: 'Zonă',
+    area_hint: 'Dacă nu este un utilaj din listă (hală, utilități …).', assigned: 'Atribuită', unassigned: 'neatribuită', person: 'Persoana', only_overdue: 'Doar cele întârziate', count: '{n} sarcini',
+    print_list: 'Listă de lucru (tipărire)', empty: 'Nicio sarcină.', view_active: 'Active', view_closed: 'Închise', view_all: 'Toate', overdue: 'întârziată', overdue_n: '{n} sarcini întârziate.', show: 'Arată',
+    created: 'Creată', closed: 'Închisă', source_label: 'Sursă', source: { manual: 'manuală', meeting: 'ședință', ncr: 'neconformitate', measurement: 'măsurătoare', preventive: 'preventiv' },
+    change_status: 'Schimbă starea', comment_optional: 'Comentariu (obligatoriu la anulare și la redeschidere)', reason_hint: 'Se păstrează în istoric.', save_assignees: 'Salvează atribuirea',
+    add_comment: 'Adaugă un comentariu', comment: 'Comentariu', send: 'Trimite', history: 'Istoric', system: 'sistem', ev_created: 'Sarcină creată.', ev_status: 'Starea: {from} → {to}.',
+    ev_assign: 'Atribuire modificată. Adăugat: {added} Eliminat: {removed}', ev_edit: 'Modificat: {fields}.', ev_comment: 'Comentariu.',
+    field: { title: 'titlu', description: 'descriere', priority_id: 'prioritate', due_date: 'termen', machine_id: 'utilaj', area: 'zonă' },
+    no_people: 'Nu există persoane; adăugați-le în Date de bază → Persoane (echipe).', work_list: 'Listă de lucru', done_col: 'Executat',
+  },
+  notify: {
+    task_new: 'Sarcină nouă {no}: {title} (de la {by})', task_assigned: 'Ți-a fost atribuită sarcina {no}: {title}', task_status: '{by}: sarcina {no} „{title}” — {from} → {to}', task_comment: '{by} a comentat sarcina {no} „{title}”',
+  },
 
   roles: { administrator: 'Administrator', inginer: 'Inginer', personal: 'Personal' },
   shift: { zi: 'Tura de zi', noapte: 'Tura de noapte' },
@@ -160,6 +175,7 @@ const S = {
 
   flash: {
     saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
+    task_created: 'Sarcina a fost creată.', task_saved: 'Sarcina a fost salvată.', task_status_changed: 'Starea sarcinii a fost schimbată.', task_comment_added: 'Comentariul a fost adăugat.',
     measurement_saved: 'Măsurătoarea a fost salvată.',
     measurement_saved_temp: 'Măsurătoarea a fost salvată. Atenție: temperatura este în afara intervalului admis (Date de bază → Ținte și praguri); corecția a fost calculată, dar verificați valoarea.',
     measurement_corrected: 'Corecția a fost salvată ca versiune nouă; versiunea anterioară rămâne în istoric.',
@@ -393,7 +409,7 @@ const S = {
       construction_add: 'construcție adăugată', construction_edit: 'construcție modificată', construction_deactivate: 'construcție dezactivată', construction_activate: 'construcție activată',
       setting_change: 'setare modificată', backup: 'backup', backup_failed: 'backup eșuat', restore: 'restaurare', material_change: 'constantă material',
       targets_change: 'ținte modificate', family_change: 'familie modificată', iec_add: 'IEC: valoare adăugată', iec_change: 'IEC: valoare modificată',
-      access_change: 'acces la module modificat', row_check: 'rând verificat față de original', row_uncheck: 'bifă de verificare ștearsă', golive_reset: 'început producție', list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
+      task_create: 'sarcină creată', task_edit: 'sarcină modificată', task_status: 'stare sarcină', access_change: 'acces la module modificat', row_check: 'rând verificat față de original', row_uncheck: 'bifă de verificare ștearsă', golive_reset: 'început producție', list_add: 'listă: adăugare', list_edit: 'listă: modificare', list_toggle: 'listă: stare', forbidden: 'acces refuzat', seed: 'inițializare',
     },
   },
 };
