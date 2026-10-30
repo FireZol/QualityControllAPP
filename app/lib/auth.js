@@ -4,14 +4,15 @@ const { randomToken, sha256 } = require('./http');
 const { nowIso } = require('./time');
 const settings = require('../domain/settings');
 
-const SCRYPT = { N: 16384, r: 8, p: 1, keylen: 64 };
+const SCRYPT = { N: 65536, r: 8, p: 1, keylen: 64 };   // 64 MiB, about 100 ms; older hashes (N=16384) keep working and are upgraded at the next sign-in
 const LOCK_FAILS = 5;
 const LOCK_WINDOW_MS = 15 * 60 * 1000;
 const MIN_PASSWORD = 8;
+const ABSOLUTE_SESSION_MS = 14 * 24 * 3600 * 1000;   // a session never lives longer than this, however active it is
 
 function scrypt(password, salt, params) {
   return new Promise((resolve, reject) => {
-    crypto.scrypt(password.normalize('NFC'), salt, params.keylen, { N: params.N, r: params.r, p: params.p, maxmem: 64 * 1024 * 1024 }, (err, key) => (err ? reject(err) : resolve(key)));
+    crypto.scrypt(password.normalize('NFC'), salt, params.keylen, { N: params.N, r: params.r, p: params.p, maxmem: 256 * 1024 * 1024 }, (err, key) => (err ? reject(err) : resolve(key)));
   });
 }
 
@@ -32,12 +33,20 @@ async function verifyPassword(password, stored) {
   return key.length === expected.length && crypto.timingSafeEqual(key, expected);
 }
 
-/** One-time password: unambiguous characters only. */
+/** True when a stored hash was made with weaker parameters than the current ones (it is then re-made at the next successful sign-in). */
+function needsRehash(stored) {
+  const p = String(stored).split('$');
+  return p.length !== 6 || p[0] !== 'scrypt' || Number(p[1]) < SCRYPT.N || Number(p[2]) < SCRYPT.r;
+}
+
+/** One-time password: unambiguous characters only, drawn without modulo bias (bytes above the largest multiple of the alphabet are skipped). */
 function generatePassword(length) {
   const alphabet = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const limit = 256 - (256 % alphabet.length);
   let out = '';
-  const bytes = crypto.randomBytes(length || 12);
-  for (const b of bytes) out += alphabet[b % alphabet.length];
+  while (out.length < (length || 12)) {
+    for (const b of crypto.randomBytes(32)) { if (b < limit && out.length < (length || 12)) out += alphabet[b % alphabet.length]; }
+  }
   return out;
 }
 
@@ -77,6 +86,8 @@ function findSession(db, token) {
   const s = db.get('SELECT * FROM sessions WHERE token_hash = ?', hash);
   if (!s) return null;
   const idleMs = Number(settings.get(db, 'session.idle_hours')) * 3600 * 1000;
+  const born = Date.parse(s.created_at);
+  if (Number.isFinite(born) && Date.now() - born > ABSOLUTE_SESSION_MS) { db.run('DELETE FROM sessions WHERE token_hash = ?', hash); return null; }
   const last = Date.parse(s.last_seen_at);
   if (Number.isFinite(last) && Date.now() - last > idleMs) {
     db.run('DELETE FROM sessions WHERE token_hash = ?', hash);
@@ -110,7 +121,7 @@ function validateNewPassword(pw, username) {
 const ROLES = ['administrator', 'inginer', 'personal'];
 
 module.exports = {
-  hashPassword, verifyPassword, generatePassword,
+  hashPassword, verifyPassword, needsRehash, generatePassword,
   isLocked, recordAttempt, createSession, findSession, destroySession, destroyUserSessions,
   validateNewPassword, ROLES, MIN_PASSWORD, LOCK_FAILS,
 };

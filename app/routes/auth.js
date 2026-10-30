@@ -5,7 +5,7 @@ const audit = require('../domain/audit');
 const { T } = require('../i18n');
 const views = require('../views/auth');
 
-const DUMMY_HASH = 'scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA$' + Buffer.alloc(64).toString('base64url');
+const DUMMY_HASH = 'scrypt$65536$8$1$AAAAAAAAAAAAAAAAAAAAAA$' + Buffer.alloc(64).toString('base64url');
 
 function safeNext(n) {
   return typeof n === 'string' && n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') && !n.startsWith('/login') ? n : '/';
@@ -65,6 +65,8 @@ module.exports = function register(app) {
       return fail(after.locked ? { lockedMinutes: after.minutes } : { error: T.login.failed });
     }
     auth.recordAttempt(db, username, true);
+    if (auth.needsRehash(user.password_hash)) db.run('UPDATE users SET password_hash = ? WHERE id = ?', await auth.hashPassword(password), user.id);   // quietly move to the stronger parameters
+    auth.destroySession(db, ctx.cookies.ctc_sid);   // a new session replaces the one this browser had
     const token = auth.createSession(db, user.id);
     audit.log(db, user.id, 'login', 'users', user.id, { ip: ctx.req.socket.remoteAddress });
     const res = redirect(user.must_change_password ? '/parola' : next);

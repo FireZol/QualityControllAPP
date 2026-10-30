@@ -19,6 +19,9 @@ Reviewed 2026-09-30 for the pilot. The automated checks are in `app/test/securit
 | Dependencies | none (Node.js built-ins only), so nothing to patch except Node.js itself |
 | Requests | 1 MB body limit; Node's default header / request timeouts |
 
+## What the code guarantees (checked by `app/test/foundation-audit.test.js`)
+Sessions: random 256-bit token, stored only as a SHA-256 hash, idle limit (Settings) and a 14-day absolute limit, replaced at every sign-in, ended by sign-out and by a password change. Passwords: scrypt N=65536 (older hashes upgraded at sign-in), constant-time comparison, a dummy hash against user-name probing, lock-out after 5 failures. Every POST needs a CSRF token; every route needs a session except the public ones; roles are checked in Rust-side code before the handler. Headers: strict CSP (no inline script or style, no `data:`), `X-Frame-Options: DENY`, `nosniff`, `no-referrer`, Permissions-Policy, COOP / CORP. Cookies: HttpOnly, SameSite=Strict (and Secure behind HTTPS). All SQL uses bound values; the few dynamic fragments are code-defined names. Measurements, revisions and the audit log are never deleted or overwritten.
+
 ## Known limits — decide before the pilot
 1. **Plain HTTP.** Passwords and session cookies cross the network unencrypted. On a closed factory LAN this is a common pilot choice; for anything wider put HTTPS in front (IIS with URL Rewrite, or Caddy / nginx as a reverse proxy with a company certificate, forwarding to `127.0.0.1:8080`), bind the application to `127.0.0.1` (Settings → Network address) and set `"secureCookies": true`.
 2. **Lockout can be abused.** Anyone on the network can lock a known user name (including `admin`) for 15 minutes by typing wrong passwords. The audit log shows the client address. A per-address throttle can be added if it happens.

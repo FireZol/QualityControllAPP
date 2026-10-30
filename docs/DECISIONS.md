@@ -88,3 +88,18 @@ Owner: Zoltan Biro (engineer, ROMCAB S.A.). Date locked: 2026-09-25.
 
 ## ADR-021 — Mass check band (2026-09-30)
 **Decision.** The warning "mass does not match wires × wire mass" uses a band of ±1 % by default (0.99 … 1.01), an editable target. The owner calls it the standard value and changes it as needed; about 45 of the 69 seeded aluminium rows warn at ±1 % (warnings only, folded into one line).
+
+## ADR-022 — Foundation audit (2026-10-30)
+**Context.** The owner asked whether the first building blocks (calculations, database layer, request pipeline, sessions, escaping) are sound. They were audited with `app/test/foundation-audit.test.js` (automated, on a demo-filled database) and a read-through of the core files.
+**Found and fixed.**
+1. **Verdict on the limit (a real defect).** `calc.verdict` compared floating-point numbers exactly, and values computed from a sample (g on mm → g/m) carry noise: in about 10 % of the combinations 127.4 g/m came out as 127.40000000000002 and a reading *exactly on* a maximum was judged "over". Now a relative tolerance of 1e-9 is allowed (ADR-014 still holds: the reading is never rounded; the tolerance is far below anything physical). An exhaustive test (40 005 combinations, all three limit forms) and a test that real deviations of 1e-7 are still caught guard it.
+2. **A crafted URL could crash a page** (`/calitate?days=999…` overflowed the date arithmetic → HTTP 500): the period is now clamped. Found by the hostile-parameter fuzz over every list page.
+3. **Oversized uploads** were cut off without an answer; the server now replies 413 and closes the connection.
+4. **Passwords:** scrypt raised from N=16384 to 65536; older hashes still work and are upgraded silently at the next sign-in; the dummy hash used against user-name probing follows the same cost; one-time passwords are drawn without modulo bias.
+5. **Sessions:** an absolute lifetime of 14 days on top of the idle limit; a sign-in replaces the browser's previous session.
+6. **Migrations:** every applied file is stored with a SHA-256 checksum and a later edit is reported at start; a database made by a *newer* program is refused (never run old code on new data); the statement cache is bounded.
+7. **Headers:** `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, `object-src 'none'`; `data:` images no longer allowed (nothing uses them).
+8. **Browser code:** the one `innerHTML` (copying page header markup between two nodes) replaced by node cloning, so no browser file uses an HTML-string API.
+**Verified, no change needed.** Every route needs a session except the public ones; every POST is refused without a valid CSRF token (all 50+ POST routes, tested by enumeration); role checks run before CSRF; session tokens are stored only as SHA-256 hashes; no path trick reaches a file outside `app/public`; a hostile string planted in every text column never reaches any of ~190 crawled pages as markup, in both languages; 300+ hostile filter values never produce an SQL error and never change data; every dynamic SQL fragment is a placeholder list or a code-defined name (static scan, each reviewed); the code never deletes or overwrites measurements, results, inputs or the audit log (the one exception, "Start production", empties exactly six tables, is backed up and audited, and a before/after snapshot of every table proves nothing else changes); no delete routes except removing a checklist step (kept in the task history); zero dependencies, only Node built-ins, no external address, no `eval`.
+**Not done (decided).** No per-address rate limit and no `Host`-header allow-list (the LAN, SameSite=Strict and CSRF tokens cover the cases that matter); plain HTTP stays (owner, item 34).
+

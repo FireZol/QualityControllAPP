@@ -205,7 +205,7 @@ function list(db, f) {
   if (f.status && STATUSES.includes(f.status)) { where.push('n.status = ?'); p.push(f.status); }
   for (const [k, col] of [['type', 'n.type_id'], ['severity', 'n.severity_id'], ['machine', 'n.machine_id']]) if (f[k]) { where.push(`${col} = ?`); p.push(f[k]); }
   if (f.mine) { where.push('n.reported_by = ?'); p.push(f.mine); }
-  if (f.days) { where.push('n.reported_at >= ?'); p.push(tasks.addDays(today(), -Number(f.days))); }
+  if (f.days) { where.push('n.reported_at >= ?'); p.push(tasks.addDays(today(), -Math.min(Math.max(Number(f.days) || 0, 0), 36500))); }
   if (f.eval_overdue) { where.push("n.status = 'reported' AND n.reported_at < ?"); p.push(tasks.addDays(today(), -rules(db).evalDays)); }
   if (f.q) { where.push("(n.title LIKE ? ESCAPE '\\' OR n.no LIKE ? ESCAPE '\\' OR n.description LIKE ? ESCAPE '\\' OR n.product LIKE ? ESCAPE '\\' OR n.external_ref LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like, like, like); }
   const rows = db.all(`SELECT n.*, t.name AS type_name, t.name_en AS type_name_en, p.name AS severity_name, p.name_en AS severity_name_en, p.sort AS severity_sort, m.name AS machine_name, u.full_name AS reported_by_name,
@@ -232,7 +232,7 @@ function counts(db) {
  * how many of them are still open, and when the last one was reported. @returns rows sorted by count
  */
 function top(db, { days, by }) {
-  const since = tasks.addDays(today(), -(Number(days) || 30));
+  const since = tasks.addDays(today(), -Math.min(Math.max(Number(days) || 30, 1), 36500));
   const key = by === 'machine' ? { col: 'n.machine_id', name: 'm.name', join: 'LEFT JOIN machines m ON m.id = n.machine_id' }
     : by === 'product' ? { col: "COALESCE(n.product, '')", name: "COALESCE(NULLIF(n.product, ''), '')", join: '' }
       : { col: 'n.type_id', name: 't.name', join: 'LEFT JOIN ncr_types t ON t.id = n.type_id' };

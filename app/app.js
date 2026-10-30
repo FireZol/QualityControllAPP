@@ -35,6 +35,7 @@ async function createApp(config, opts) {
   const mig = migrate(db, { dir: o.migrationsDir || path.join(__dirname, 'db', 'migrations'), backupDir: () => backup.backupDir(db, config) });
   if (mig.backup) log(`Backup înainte de migrare: ${mig.backup}`);
   if (mig.applied.length) log(`Migrări aplicate: ${mig.applied.join(', ')}`);
+  if (mig.changed.length) log(`ATENȚIE: fișierele de migrare ${mig.changed.join(', ')} au fost modificate după aplicare; baza de date poate să nu corespundă codului.`);
   seedIfEmpty(db, { seedDir: config.seedDir, config, log });
   require('./domain/tests').refresh(db);
   ensureReference(db, config.seedDir);
@@ -181,7 +182,11 @@ async function handleRequest(app, req, res, langStore) {
   if (method === 'POST') {
     if (app.state.maintenance) return send(res, H.page(errorPage(ctx, 'maintenance'), 503), extra);
     let raw;
-    try { raw = await H.readBody(req); } catch (e) { return send(res, { status: e.status || 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: 'Bad request' }, extra); }
+    try { raw = await H.readBody(req); } catch (e) {
+      // answer first, then close the connection (an oversized upload is not read to the end)
+      res.on('finish', () => req.destroy());
+      return send(res, { status: e.status || 400, headers: { 'Content-Type': 'text/plain; charset=utf-8', Connection: 'close' }, body: e.status === 413 ? 'Request too large' : 'Bad request' }, extra);
+    }
     ctx.form = new H.Form(new URLSearchParams(raw));
     const token = ctx.form.get('_csrf');
     const expected = ropts.csrf === 'login' ? cookies.ctc_lt : (ctx.session && ctx.session.csrf);

@@ -58,14 +58,19 @@
   /** Theoretical resistance [Ω/km] at 20 °C from the area and rho20 [Ω·mm²/m]. */
   const theoreticalResistance = (rho20, areaMm2) => (1000 * rho20) / areaMm2;
 
+  // A reading exactly on a limit is in limits. Computed values carry floating-point noise (608.5 g on 1000 mm -> 127.40000000000002 g/m for 127.4),
+  // so the comparison allows a relative 1e-9: far below anything physical, far above the noise, and it does not round the reading (ADR-014).
+  const REL_TOL = 1e-9;
+  const tol = (x) => REL_TOL * Math.max(1, Math.abs(x));
+
   /** ADR-007 verdict. Never rounds. */
   function verdict(value, min, max, informative) {
     if (informative) return 'info';
     const hasMin = min !== null && min !== undefined;
     const hasMax = max !== null && max !== undefined;
     if (!hasMin && !hasMax) return 'nedeterminat';
-    if (hasMin && value < min) return 'sub';
-    if (hasMax && value > max) return 'peste';
+    if (hasMin && value < min - tol(min)) return 'sub';
+    if (hasMax && value > max + tol(max)) return 'peste';
     return 'ok';
   }
 

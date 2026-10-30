@@ -106,13 +106,13 @@
       sec.style.minHeight = (pageH - 6) + 'px';
       const head = document.createElement('div');
       head.className = 'pg-head';
-      head.innerHTML = headTd.innerHTML;
+      Array.prototype.forEach.call(headTd.childNodes, (n) => head.appendChild(n.cloneNode(true)));
       const body = document.createElement('div');
       body.className = 'pg-body';
       p.nodes.forEach((n) => body.appendChild(n));
       const foot = document.createElement('div');
       foot.className = 'pg-foot';
-      foot.innerHTML = footTd.innerHTML;
+      Array.prototype.forEach.call(footTd.childNodes, (n) => foot.appendChild(n.cloneNode(true)));
       const num = document.createElement('div');
       num.className = 'pg-num';
       num.textContent = label + ' ' + (i + 1) + ' / ' + pages.length;

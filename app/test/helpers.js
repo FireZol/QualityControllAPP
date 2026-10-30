@@ -38,6 +38,7 @@ class Client {
       payload = body instanceof URLSearchParams ? body.toString() : new URLSearchParams(body).toString();
     }
     const res = await fetch(this.base + url, { method, headers, body: payload, redirect: 'manual' });
+    this.lastSetCookie = res.headers.getSetCookie().join('\n');
     for (const c of res.headers.getSetCookie()) {
       const [pair] = c.split(';');
       const i = pair.indexOf('=');
@@ -49,6 +50,12 @@ class Client {
   }
 
   get(url) { return this.req('GET', url); }
+
+  /** A request with this client's cookies and a raw body (for tests that must not carry a CSRF token). */
+  async raw(method, url, bodyText) {
+    const res = await fetch(this.base + url, { method, headers: { Cookie: this.cookieHeader(), 'Content-Type': 'application/x-www-form-urlencoded' }, body: bodyText, redirect: 'manual' });
+    return { status: res.status, headers: res.headers, text: await res.text(), location: res.headers.get('location') };
+  }
 
   /** Follow redirects until a non-3xx. */
   async follow(method, url, body) {

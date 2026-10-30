@@ -2,6 +2,7 @@
 // Thin wrapper around node:sqlite: one file, WAL, foreign keys, statement cache, transactions, migrations.
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 const { nowIso, stamp } = require('../lib/time');
 
@@ -42,7 +43,10 @@ class Db {
 
   stmt(sql) {
     let s = this.cache.get(sql);
-    if (!s) { s = this.raw.prepare(sql); this.cache.set(sql, s); }
+    if (!s) {
+      if (this.cache.size >= 1000) this.cache.clear();   // dynamic IN (...) lists make many distinct statements; never let the cache grow without bound
+      s = this.raw.prepare(sql); this.cache.set(sql, s);
+    }
     return s;
   }
 
@@ -86,14 +90,29 @@ class Db {
 }
 
 /**
- * Apply pending numbered migrations. A backup is taken before anything pending runs
- * (only when the database already holds data).
- * @returns {{applied: number[], backup: string|null}}
+ * Apply pending numbered migrations. A backup is taken before anything pending runs (only when the database already holds data).
+ * Guards: a database made by a NEWER version of the program is refused (never run old code on new data); each applied file is remembered with a
+ * checksum, and a file that was edited after it was applied is reported (`changed`), because the database no longer matches what the code says.
+ * @returns {{applied: number[], backup: string|null, changed: number[]}}
  */
 function migrate(db, { dir, backupDir }) {
   const files = fs.readdirSync(dir).filter((f) => /^\d{3}_.+\.sql$/.test(f)).sort();
+  const sum = (f) => crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f))).digest('hex');
   const hasTable = db.value("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='schema_migrations'") > 0;
-  const done = new Set(hasTable ? db.all('SELECT version FROM schema_migrations').map((r) => r.version) : []);
+  const ensureChecksumColumn = () => { if (!db.all('PRAGMA table_info(schema_migrations)').some((c) => c.name === 'checksum')) db.exec('ALTER TABLE schema_migrations ADD COLUMN checksum TEXT'); };
+  if (hasTable) ensureChecksumColumn();
+  const doneRows = hasTable ? db.all('SELECT version, checksum FROM schema_migrations') : [];
+  const done = new Set(doneRows.map((r) => r.version));
+  const known = new Set(files.map((f) => Number(f.slice(0, 3))));
+  const newest = doneRows.length ? Math.max(...doneRows.map((r) => r.version)) : 0;
+  if (newest > Math.max(0, ...known)) throw new Error(`This database was made by a newer version of the program (migration ${newest}; this program knows up to ${Math.max(...known)}). Install the newer version.`);
+  const changed = [];
+  for (const r of doneRows) {
+    const f = files.find((x) => Number(x.slice(0, 3)) === r.version);
+    if (!f) continue;
+    if (!r.checksum) db.run('UPDATE schema_migrations SET checksum = ? WHERE version = ?', sum(f), r.version);   // first sight of an older database: trust what is there now
+    else if (r.checksum !== sum(f)) changed.push(r.version);
+  }
   const pending = files.filter((f) => !done.has(Number(f.slice(0, 3))));
   let backup = null;
   if (pending.length && done.size > 0) {
@@ -106,11 +125,12 @@ function migrate(db, { dir, backupDir }) {
     const sql = fs.readFileSync(path.join(dir, f), 'utf8');
     db.tx(() => {
       db.exec(sql);
-      db.run('INSERT INTO schema_migrations(version, applied_at) VALUES (?, ?)', version, nowIso());
+      ensureChecksumColumn();
+      db.run('INSERT INTO schema_migrations(version, applied_at, checksum) VALUES (?, ?, ?)', version, nowIso(), sum(f));
     });
     applied.push(version);
   }
-  return { applied, backup };
+  return { applied, backup, changed };
 }
 
 module.exports = { Db, migrate };

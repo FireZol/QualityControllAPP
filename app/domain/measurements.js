@@ -385,7 +385,7 @@ function attachVersionCounts(db, rows) {
 
 /** @returns {{rows, total, page, pages}} */
 function register(db, f, page, size) {
-  const pageSize = size || PAGE_SIZE;
+  const pageSize = Math.max(1, Math.floor(Number(size)) || PAGE_SIZE);   // a plain integer: it is written into LIMIT (callers, not users, choose it: the full export asks for everything)
   const where = [];
   const p = [];
   if (!f.all_versions) where.push('m.is_current = 1');
@@ -401,7 +401,7 @@ function register(db, f, page, size) {
   const w = where.length ? 'WHERE ' + where.join(' AND ') : '';
   const total = db.value(`SELECT count(*) FROM measurements m JOIN constructions c ON c.id = m.construction_id ${w}`, ...p);
   const pages = Math.max(1, Math.ceil(total / pageSize));
-  const pg = Math.min(Math.max(1, page || 1), pages);
+  const pg = Math.min(Math.max(1, Math.floor(Number(page)) || 1), pages);   // and so is the page (OFFSET)
   const sql = `${SELECT_MEAS} ${w} ORDER BY m.created_at DESC, m.id DESC LIMIT ${pageSize} OFFSET ${(pg - 1) * pageSize}`;
   const rows = db.all(sql, ...p);
   attachResults(db, rows);
