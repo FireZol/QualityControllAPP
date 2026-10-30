@@ -732,3 +732,8 @@ html[data-theme=dark] { --brand-hover: #2760c9; }
 html[data-theme] .btn { min-height: 44px; }
 html[data-theme] .btn.small { min-height: 44px; }
 html[data-theme] main .notif-list li a:not([class]) { color: var(--ink); text-decoration: none; }
+
+/* long page titles shrink with an ellipsis instead of pushing the controls onto a second row */
+html[data-theme] .page-title { flex: 1 1 0; min-width: 0; margin-right: 0; }
+@media (min-width: 1001px) { html[data-theme] .top { flex-wrap: nowrap; } }
+html[data-theme] .card .scroll { border: 0; box-shadow: none; border-radius: 0; background: transparent; }
