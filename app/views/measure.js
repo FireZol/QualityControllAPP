@@ -259,6 +259,7 @@ ${verdictBanner(cur)}
   <div class="actions">
     ${canCorrect ? html`<a class="btn" href="/masuratori/${cur.record_no}/corecteaza">${T.detail.correct}</a>` : html`<span class="muted">${opt('detail', 'denied_' + denied, '')}</span>`}
     <a class="btn primary" autofocus href="/masuratori/nou?family=${cur.family_id}&amp;machine=${cur.machine_id}&amp;construction=${cur.construction_id}&amp;level=${cur.level}">${T.detail.new_same}</a>
+    ${ctx.modules && ctx.modules.quality && ctx.level && ctx.level('quality') !== 'none' && ctx.level('quality') !== 'view' ? html`<a class="btn" href="/calitate/nou?record=${cur.record_no}">${T.detail.report_ncr}</a>` : ''}
     <a class="btn" href="/masuratori">${T.common.back}</a>
   </div>
 </section>

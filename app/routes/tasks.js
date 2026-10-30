@@ -69,7 +69,6 @@ module.exports = function register(app) {
     });
   }
 
-  router.get('/calitate', {}, () => redirect('/calitate/sarcini'));
 
   // ---- the printable work list (hand-off sheet) ----
   router.get('/sarcini/tipar', {}, (ctx) => {

@@ -575,3 +575,10 @@ html[data-theme=dark] main details > summary { color: #6aa8ff; }
 html[data-theme=dark] ::placeholder { color: #8b9bb2; opacity: 1; }
 html[data-theme=dark] .flash-ok { background: #12361f; color: #86efac; border-color: #2c6b45; }
 html[data-theme=dark] .flash-err { background: #3d1b19; color: #fca5a5; border-color: #8c3a35; }
+
+/* non-conformities */
+.tag.ns-reported { background: var(--bad-bg); color: var(--bad); } .tag.ns-evaluation { background: var(--warn-bg); color: var(--warn); } .tag.ns-action { background: #e8e2f8; color: #4a3a92; }
+.tag.ns-closed { background: var(--ok-bg); color: var(--ok); } .tag.ns-cancelled { background: #eee; color: #777; }
+.tag.pm-upcoming { background: var(--info-bg); color: var(--info); } .tag.pm-due { background: var(--warn-bg); color: var(--warn); } .tag.pm-overdue { background: var(--bad-bg); color: var(--bad); } .tag.pm-inactive, .tag.pm-skipped { background: #eee; color: #777; }
+td.barcell { width: 32%; min-width: 120px; } td.barcell progress { width: 100%; height: 14px; }
+html[data-theme=dark] .tag.ns-action { background: #2a2447; color: #b9a8ff; } html[data-theme=dark] .tag.ns-cancelled, html[data-theme=dark] .tag.pm-inactive, html[data-theme=dark] .tag.pm-skipped { background: #222d3a; color: #9fb0c3; }

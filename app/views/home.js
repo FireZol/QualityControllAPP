@@ -33,6 +33,7 @@ const greeting = () => { const h = new Date().getHours(); return h < 12 ? T.home
 function attentionItems(ctx, d) {
   const items = [];
   if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte', tone: 'info', icon: '👥' });
+  if (d.ncr && d.ncr.reported) items.push({ text: f(T.home.att_ncr, { n: d.ncr.reported }), href: '/calitate?status=reported', tone: 'bad', icon: '🧾' });
   if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad', icon: '⚠️' });
   if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc', tone: 'warn', icon: '📈' });
   const overdue = d.teams.filter((t) => t.counts.overdue);
@@ -64,6 +65,7 @@ function homePage(ctx, d) {
   <a class="qa" href="/fise"><span class="ico" aria-hidden="true">📄</span>${T.nav.specs}</a>
   ${ctx.modules.cable ? html`<a class="qa" href="/loturi"><span class="ico" aria-hidden="true">📦</span>${T.nav.batches}</a>` : ''}
   ${ctx.modules.analytics ? html`<a class="qa" href="/analize"><span class="ico" aria-hidden="true">📈</span>${T.nav.analyses}</a>` : ''}
+  ${d.canReportNcr ? html`<a class="qa" href="/calitate/nou"><span class="ico" aria-hidden="true">🧾</span>${T.ncr.new}</a>` : ''}
   ${d.canMeet ? html`<a class="qa" href="/sedinte/nou"><span class="ico" aria-hidden="true">👥</span>${T.meetings.new}</a>` : ''}
   ${create.map((t) => html`<a class="qa" href="${t.path}/nou"><span class="ico" aria-hidden="true">🛠</span>${T.home.new_task} · ${T.modules[t.team].name}</a>`)}</div></section>
 

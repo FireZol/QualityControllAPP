@@ -39,6 +39,22 @@ const LISTS = {
       { name: 'sort', type: 'int', required: false },
     ],
   },
+  'tipuri-neconformitate': {
+    table: 'ncr_types', title: 'ncr_types', nameField: 'name', order: 'sort, name',
+    fields: [
+      { name: 'name', type: 'text', required: true, max: 80 },
+      { name: 'name_en', type: 'text', required: false, max: 80 },
+      { name: 'sort', type: 'int', required: false },
+    ],
+  },
+  'dispozitii-neconformitate': {
+    table: 'ncr_dispositions', title: 'ncr_dispositions', nameField: 'name', order: 'sort, name',
+    fields: [
+      { name: 'name', type: 'text', required: true, max: 80 },
+      { name: 'name_en', type: 'text', required: false, max: 80 },
+      { name: 'sort', type: 'int', required: false },
+    ],
+  },
   operatori: {
     table: 'operators', title: 'operators', nameField: 'full_name', order: 'full_name',
     fields: [{ name: 'full_name', type: 'text', required: true, max: 120 }],

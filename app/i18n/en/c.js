@@ -76,11 +76,11 @@ module.exports = {
   lists: {
     title: 'Database', intro: 'The lists can be completed, renamed and deactivated. An entry used in measurements is never deleted, only deactivated.',
     names: {
-      people: 'People (teams)', priorities: 'Priorities', machine_types: 'Machine types', machines: 'Machines', operators: 'Operators', clients: 'Clients', sample_types: 'Sample types', crews: 'Crews',
+      people: 'People (teams)', ncr_types: 'Non-conformity types', ncr_dispositions: 'Decisions on the product', priorities: 'Priorities', machine_types: 'Machine types', machines: 'Machines', operators: 'Operators', clients: 'Clients', sample_types: 'Sample types', crews: 'Crews',
       shapes: 'Shapes', destinations: 'Destinations', materials: 'Material constants', compounds: 'Compounds (insulation / sheath)', cable_standards: 'Cable standards',
     },
     descriptions: {
-      people: 'Who receives tasks: name, team, user account (for notifications)', priorities: 'The priority scale of tasks, from low to high', machine_types: 'The process and the allowed product families', machines: 'Name, type and rotor configuration', operators: 'First and last name', clients: 'Short name',
+      people: 'Who receives tasks: name, team, user account (for notifications)', ncr_types: 'The types in the non-conformity register (for filters and the top)', ncr_dispositions: 'What is decided about the non-conforming product (accepted, rework, scrap …)', priorities: 'The priority scale of tasks, from low to high', machine_types: 'The process and the allowed product families', machines: 'Name, type and rotor configuration', operators: 'First and last name', clients: 'Short name',
       sample_types: 'The list of sample types', crews: 'Crews A / B / C and the cycle start date', shapes: 'RE, RM, RMC, SM …', destinations: 'Single-wire, Multi-wire, Armoured …',
       materials: 'Resistivity, density, temperature coefficient', compounds: 'PVC, XLPE, HFFR … used on the cable sheets', cable_standards: 'IEC 60502-1, HD 603, VDE 0276-603 …',
     },
@@ -133,7 +133,7 @@ module.exports = {
       construction_add: 'construction added', construction_edit: 'construction changed', construction_deactivate: 'construction deactivated', construction_activate: 'construction activated',
       setting_change: 'setting changed', backup: 'backup', backup_failed: 'backup failed', restore: 'restore', material_change: 'material constant',
       targets_change: 'targets changed', family_change: 'family changed', iec_add: 'IEC: value added', iec_change: 'IEC: value changed',
-      task_create: 'task created', pm_plan_save: 'preventive plan', pm_task: 'task from preventive plan', pm_skip: 'preventive plan: date skipped', meeting_create: 'meeting created', meeting_edit: 'meeting edited', meeting_status: 'meeting status', meeting_decision: 'meeting decision', meeting_series_save: 'meeting schedule', task_edit: 'task edited', task_status: 'task status', access_change: 'module access changed', row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
+      task_create: 'task created', ncr_create: 'non-conformity reported', ncr_edit: 'non-conformity edited', ncr_status: 'non-conformity status', pm_plan_save: 'preventive plan', pm_task: 'task from preventive plan', pm_skip: 'preventive plan: date skipped', meeting_create: 'meeting created', meeting_edit: 'meeting edited', meeting_status: 'meeting status', meeting_decision: 'meeting decision', meeting_series_save: 'meeting schedule', task_edit: 'task edited', task_status: 'task status', access_change: 'module access changed', row_check: 'row checked against the original', row_uncheck: 'check tick removed', golive_reset: 'production started', list_add: 'list: added', list_edit: 'list: changed', list_toggle: 'list: status', forbidden: 'access denied', seed: 'initialisation',
     },
   },
 };

@@ -8,6 +8,7 @@ const tasks = require('../domain/tasks');
 const notifications = require('../domain/notifications');
 const meetings = require('../domain/meetings');
 const preventive = require('../domain/preventive');
+const ncr = require('../domain/ncr');
 
 module.exports = function register(app) {
   const { db } = app;
@@ -17,6 +18,7 @@ module.exports = function register(app) {
     const meet = ctx.modules.meetings && meetings.canView(db, ctx.user, ctx.modules);
     if (meet) { meetings.ensure(db); meetings.remindToday(db); }
     return page(views.homePage(ctx, {
+      ncr: ctx.modules.quality && ncr.canView(db, ctx.user, ctx.modules) ? ncr.counts(db) : null, canReportNcr: !!ctx.modules.quality && ncr.canReport(db, ctx.user, ctx.modules),
       meetings: meet ? meetings.next(db, 5) : null, canMeet: !!meet && meetings.canCreate(db, ctx.user, ctx.modules),
       setup: ctx.user.role === 'personal' ? [] : setup.checklist(db, app.config).filter((_, __, all) => !setup.isComplete(all)),
       today: M.today(db), out: M.outOfLimit24h(db),
