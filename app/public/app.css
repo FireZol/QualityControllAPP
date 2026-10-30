@@ -480,3 +480,18 @@ html[data-theme=dark] .mini { background: #223142; }
 html[data-theme=dark] .attention { border-color: #6b5a22; }
 .panel-head a { display: inline-flex; align-items: center; min-height: 44px; }
 .panel-list a { display: inline-block; padding: 8px 0; }
+
+/* meetings */
+.day-head { margin: 18px 0 6px; font-size: 1.05rem; }
+tr.is-cancelled td { color: var(--muted); text-decoration: line-through; }
+tr.is-cancelled td .tag { text-decoration: none; }
+.tag.ms-planned { background: var(--info-bg); color: var(--info); } .tag.ms-held { background: var(--ok-bg); color: var(--ok); } .tag.ms-cancelled { background: #eee; color: #777; }
+.tag.team-maintenance { background: #fff1cf; color: #8a5a00; } .tag.team-technical { background: #e2ecf8; color: #275a8f; } .tag.team-quality { background: #e8e2f8; color: #4a3a92; }
+.pick-group { margin: 4px 0 8px; }
+.pick-group .check { display: inline-flex; margin-right: 14px; }
+.decisions { padding-left: 22px; } .decisions li { margin: 8px 0; }
+.notes-box.tall { min-height: 220px; white-space: pre-wrap; } .notes-box { white-space: pre-wrap; padding: 6px; }
+html[data-theme=dark] .tag.ms-held { background: var(--ok-bg); } html[data-theme=dark] .tag.ms-cancelled { background: #2a323b; color: #9fb0c3; }
+html[data-theme=dark] .tag.team-maintenance { background: #3a2e10; color: #f2c14e; } html[data-theme=dark] .tag.team-technical { background: #172c44; color: #8dbbf0; } html[data-theme=dark] .tag.team-quality { background: #2a2447; color: #b9a8ff; }
+table.meetings tr.group-row th { background: #e8edf3; text-align: left; padding: 10px; }
+html[data-theme=dark] table.meetings tr.group-row th { background: #1f2d3d; color: var(--ink); }

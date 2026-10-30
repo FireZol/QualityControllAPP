@@ -32,6 +32,7 @@ const greeting = () => { const h = new Date().getHours(); return h < 12 ? T.home
 /** What waits for this user, most urgent first; each line has one place to go. */
 function attentionItems(ctx, d) {
   const items = [];
+  if (d.meetings && d.meetings.some((m) => m.isToday)) items.push({ text: f(T.home.att_meetings, { n: d.meetings.filter((m) => m.isToday).length }), href: '/sedinte' });
   if (d.out.length) items.push({ text: f(T.home.att_out, { n: d.out.length }), href: '#out', tone: 'bad' });
   if (d.spc.length) items.push({ text: f(T.home.att_spc, { n: d.spc.length }), href: '#spc' });
   const overdue = d.teams.filter((t) => t.counts.overdue);
@@ -63,6 +64,7 @@ function homePage(ctx, d) {
   <a class="qa" href="/fise"><span class="ico" aria-hidden="true">📄</span>${T.nav.specs}</a>
   ${ctx.modules.cable ? html`<a class="qa" href="/loturi"><span class="ico" aria-hidden="true">📦</span>${T.nav.batches}</a>` : ''}
   ${ctx.modules.analytics ? html`<a class="qa" href="/analize"><span class="ico" aria-hidden="true">📈</span>${T.nav.analyses}</a>` : ''}
+  ${d.canMeet ? html`<a class="qa" href="/sedinte/nou"><span class="ico" aria-hidden="true">👥</span>${T.meetings.new}</a>` : ''}
   ${create.map((t) => html`<a class="qa" href="${t.path}/nou"><span class="ico" aria-hidden="true">🛠</span>${T.home.new_task} · ${T.modules[t.team].name}</a>`)}</div></section>
 
 <div class="stats">
@@ -85,6 +87,8 @@ ${d.spc.length ? html`<section class="card" id="spc"><h2>${T.home.spc}</h2><p cl
 </section></div>
 
 <aside>
+  ${d.meetings ? html`<section class="card"><div class="panel-head"><p class="eyebrow">${T.home.side_meetings}</p><a href="/sedinte">${T.home.see_all}</a></div>
+    ${d.meetings.length ? html`<ul class="panel-list">${d.meetings.map((m) => html`<li><a href="/sedinte/${m.id}">${m.isToday ? '' : `${displayDate(m.meeting_date)} `}<strong>${m.start_time}</strong> ${m.title}</a></li>`)}</ul>` : html`<p class="muted">${T.home.no_meetings}</p>`}</section>` : ''}
   <section class="card"><p class="eyebrow">${T.home.side_shift}</p><p><strong>${T.shift[cur.shift]}</strong><br><span class="muted">${cur.crew ? cur.crew.name : T.home.crew_none}</span></p></section>
   ${d.teams.length ? html`<section class="card"><div class="panel-head"><p class="eyebrow">${T.home.side_tasks}</p>${firstTeam ? html`<a href="${firstTeam.path}?mine=1">${T.home.see_all}</a>` : ''}</div>
     ${d.mine.length ? html`<ul class="panel-list">${d.mine.map((t) => html`<li><a href="/sarcini/${t.id}">${t.no} ${t.title}</a>${t.due_date ? html`<span class="${t.overdue ? 'overdue' : 'muted'}">${displayDate(t.due_date)}</span>` : ''}</li>`)}</ul>` : html`<p class="muted">${T.home.no_tasks_mine}</p>`}</section>` : ''}

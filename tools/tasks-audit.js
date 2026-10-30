@@ -7,6 +7,7 @@ const { execSync } = require('node:child_process');
 const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
 const { startApp, adminClient } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
+const meetings = require('../app/domain/meetings');
 
 const SIZES = { laptop: { width: 1360, height: 860 }, tablet: { width: 1024, height: 768 }, phone: { width: 390, height: 844 } };
 const shots = process.argv[2];
@@ -32,7 +33,10 @@ async function main() {
   void people; void done;
   tasks.addChecklist(db, { id: adminId }, first, ['Oprire utilaj', 'Verificare lagăre', 'Pornire și probă']);
   tasks.setChecked(db, { id: adminId }, first, db.get('SELECT id FROM task_checklist WHERE task_id = ? ORDER BY id', first).id, true);
-  const screens = [['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['board grouped', '/mentenanta?group=status&sort=due'], ['work order', `/sarcini/${first}/tipar`], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
+  meetings.ensure(db);
+  const mid = meetings.createMeeting(db, { id: adminId, full_name: 'Administrator' }, { title: 'Neconformități — comună', meeting_date: meetings.today(), start_time: '10:00', duration_min: 45, location: 'Sala 1', teams: ['maintenance', 'technical', 'quality'], agenda: 'Top neconformități', attendees: db.all('SELECT id FROM people LIMIT 3').map((r) => r.id) }).id;
+  meetings.addDecision(db, { id: adminId, full_name: 'Administrator' }, mid, { text: 'Înlocuit rulment la LITARE 2', team: 'maintenance', due_date: meetings.today() });
+  const screens = [['meetings', '/sedinte'], ['meetings past', '/sedinte?view=past'], ['meeting', `/sedinte/${mid}`], ['meeting new', '/sedinte/nou'], ['meeting edit', `/sedinte/${mid}/editeaza`], ['meeting print', `/sedinte/${mid}/tipar`], ['series', '/sedinte/serii'], ['series new', '/sedinte/serii/nou'], ['board', '/mentenanta'], ['board closed', '/mentenanta?view=closed'], ['board grouped', '/mentenanta?group=status&sort=due'], ['work order', `/sarcini/${first}/tipar`], ['task', `/sarcini/${first}`], ['new', '/mentenanta/nou'], ['edit', `/sarcini/${first}/editeaza`], ['technical', '/tehnic'], ['quality', '/calitate/sarcini'], ['print', '/sarcini/tipar?team=maintenance&group=person'], ['bell', '/notificari']];
   const browser = await pw.chromium.launch();
   let total = 0;
   for (const [sizeName, viewport] of Object.entries(SIZES)) {

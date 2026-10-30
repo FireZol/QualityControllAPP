@@ -1,7 +1,7 @@
 'use strict';
 const { html } = require('../lib/html');
 const { T, f, opt } = require('../i18n');
-const { displayDateTime } = require('../lib/time');
+const { displayDateTime, displayDate } = require('../lib/time');
 const { layout, csrf } = require('./layout');
 
 /** The text of a notification in the reader's language (unknown kinds show their name). */
@@ -10,6 +10,8 @@ const textOf = (n) => {
   if (!tpl) return f(T.notif.generic, { kind: n.kind });
   const p = { ...n.params };
   for (const k of ['from', 'to']) if (p[k] && opt('taskstatus', p[k], null)) p[k] = opt('taskstatus', p[k], p[k]); // status names in the reader's language
+  if (p.date && /^\d{4}-\d{2}-\d{2}$/.test(p.date)) p.date = displayDate(p.date);
+  if (n.kind === 'meeting_series') p.schedule = require('./meetings').scheduleText({ days: p.days, interval_weeks: Number(p.every) || 1, start_time: p.time });
   return f(tpl, p);
 };
 

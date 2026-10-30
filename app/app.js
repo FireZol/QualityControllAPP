@@ -42,7 +42,7 @@ async function createApp(config, opts) {
 
   const router = new Router();
   const app = { config, db, router, state, log, server: null, timer: null, adminPassword, afterRestore: () => require('./domain/tests').refresh(db) };
-  for (const r of ['auth', 'home', 'print', 'analytics', 'cable', 'measure', 'specs', 'config', 'lists', 'admin', 'notifications', 'tasks']) {
+  for (const r of ['auth', 'home', 'print', 'analytics', 'cable', 'measure', 'specs', 'config', 'lists', 'admin', 'notifications', 'tasks', 'meetings']) {
     const file = path.join(__dirname, 'routes', r + '.js');
     if (fs.existsSync(file)) require(file)(app);
   }

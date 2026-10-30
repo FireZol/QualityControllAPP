@@ -31,7 +31,8 @@ test.before(async () => {
 });
 test.after(async () => { await app.cleanup(); });
 
-const unread = (uid) => notifications.list(app.db, uid, { onlyUnread: true });
+const taskOnly = (rows) => rows.filter((n) => n.kind.startsWith('task_'));   // meeting reminders are tested in meetings.test.js
+const unread = (uid) => taskOnly(notifications.list(app.db, uid, { onlyUnread: true }));
 const events = (id) => app.db.all('SELECT * FROM task_events WHERE task_id = ? ORDER BY id', id);
 const post = (c, path, fields, page = '/') => c.postForm(page, path, fields);
 const year = new Date().getFullYear();
@@ -86,7 +87,7 @@ test('the lead assigns (people with and without a login), changes status; everyb
   assert.equal(app.db.get('SELECT status FROM tasks WHERE id = ?', t).status, 'in_progress');
   assert.deepEqual(unread(ids.worker).map((n) => n.kind), ['task_status']);
   assert.equal(unread(ids.lead).length, 0, 'not told about their own action');
-  assert.equal(notifications.list(app.db, ids.worker)[0].params.to, 'in_progress');
+  assert.equal(taskOnly(notifications.list(app.db, ids.worker))[0].params.to, 'in_progress');
   // an unknown or same status is refused; a hostile back address is ignored
   assert.match((await post(lead, `/sarcini/${t}/stare`, { to: 'in_progress' })).location, /\/sarcini\//);
   r = await post(lead, `/sarcini/${t}/stare`, { to: 'waiting', back: '//evil.example' });

@@ -15,7 +15,7 @@ module.exports = {
 
   flash: {
     saved: 'The changes were saved.', added: 'The entry was added.', toggled: 'The status was changed.', password_changed: 'The password was changed.',
-    task_bulk: 'The selected tasks were changed.', task_bulk_partial: 'Some tasks were changed, others were not (for example they already had that status).', task_step_added: 'The steps were added.', e_nothing_selected: 'No task is selected.', e_bulk_none: 'No task could be changed.', task_created: 'The task was created.', task_saved: 'The task was saved.', task_status_changed: 'The task status was changed.', task_comment_added: 'The comment was added.',
+    meeting_created: 'The meeting was created.', meeting_saved: 'The meeting was saved.', meeting_status_changed: 'The meeting status was changed.', meeting_decision_added: 'The decision was added.', meeting_attendance_saved: 'Attendance was saved.', series_saved: 'The schedule was saved.', task_bulk:'The selected tasks were changed.', task_bulk_partial: 'Some tasks were changed, others were not (for example they already had that status).', task_step_added: 'The steps were added.', e_nothing_selected: 'No task is selected.', e_bulk_none: 'No task could be changed.', task_created: 'The task was created.', task_saved: 'The task was saved.', task_status_changed: 'The task status was changed.', task_comment_added: 'The comment was added.',
     measurement_saved: 'The measurement was saved.',
     measurement_saved_temp: 'The measurement was saved. Warning: the temperature is outside the allowed range (Database → Targets and thresholds); the correction was calculated, but please check the value.',
     measurement_corrected: 'The correction was saved as a new version; the previous version stays in the history.',
@@ -60,6 +60,7 @@ module.exports = {
   },
 
   home: {
+    side_meetings: 'Meetings', no_meetings: 'No meetings in the next 7 days.', att_meetings: 'Meetings today: {n}',
     greet_morning: 'Good morning', greet_afternoon: 'Good afternoon', greet_evening: 'Good evening', attention: 'Needs your attention', attention_none: 'All clear — nothing is waiting for you.', att_out: 'Measurements with out-of-limit values (24 h): {n}', att_spc: 'SPC alerts: {n}', att_setup: 'First-setup steps left: {n}', att_overdue: 'Overdue tasks: {n}', att_unread: 'Unread notifications: {n}', att_mine: 'Open tasks assigned to you: {n}', quick: 'Quick actions', tile_today: 'Measurements today', tile_out: 'Out of limits (24 h)', tile_sheets: 'Active data sheets', tile_tasks: 'Active tasks', tile_overdue: 'overdue', side_shift: 'On shift now', side_tasks: 'My tasks', side_notes: 'Recent notifications', see_all: 'See all', no_tasks_mine: 'No tasks assigned to you.', no_notes: 'No notifications.', new_task: 'New task', crew_none: 'no crew',
     title: 'Home', new_measurement: 'New measurement', current_shift: 'Current shift: {shift} · crew {crew}',
     setup_title: 'First setup', setup_hint: 'The steps below tick themselves off. The panel disappears once all are done.',
