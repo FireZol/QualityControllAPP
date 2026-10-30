@@ -571,3 +571,7 @@ html[data-theme=dark] .tag.ts-overdue { background: var(--bad-bg); color: var(--
 .stat.bad span { color: var(--bad); } .stat.warn span { color: var(--warn); }
 html[data-theme=dark] .more-filters summary, html[data-theme=dark] .step-box { color: #6aa8ff; }
 html[data-theme=dark] main details > summary { color: #6aa8ff; }
+
+html[data-theme=dark] ::placeholder { color: #8b9bb2; opacity: 1; }
+html[data-theme=dark] .flash-ok { background: #12361f; color: #86efac; border-color: #2c6b45; }
+html[data-theme=dark] .flash-err { background: #3d1b19; color: #fca5a5; border-color: #8c3a35; }

@@ -1,6 +1,6 @@
 'use strict';
 // Contrast audit (development tool): opens the main screens in the light and the dark theme and lists text whose colour against its real
-// background is below the threshold (default 3.5; WCAG AA for normal text is 4.5). Groups by element and colours.
+// background is below the threshold (default 4.5, WCAG AA for normal text). Groups by element and colours.
 //   node tools/contrast-audit.js [threshold]       needs Playwright (npm root -g)
 const path = require('node:path');
 const { execSync } = require('node:child_process');
@@ -9,7 +9,31 @@ const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');
 
-const MIN = Number(process.argv[2]) || 3.5;
+const MIN = Number(process.argv[2]) || 4.5;
+/** Runs in the page: every visible text (and every field's value and placeholder) below MIN contrast against its real background. */
+const SCAN = (MIN) => {
+  const parse = (c) => { const m = c && c.match(/rgba?\(([^)]+)\)/); if (!m) return null; const p = m[1].split(',').map((x) => parseFloat(x)); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
+  const lum = ({ r, g, b }) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+  const over = (top, bottom) => ({ r: top.r * top.a + bottom.r * (1 - top.a), g: top.g * top.a + bottom.g * (1 - top.a), b: top.b * top.a + bottom.b * (1 - top.a), a: 1 });
+  const bgOf = (el) => { const stack = []; for (let e = el; e; e = e.parentElement) { const c = parse(getComputedStyle(e).backgroundColor); if (c && c.a > 0) { stack.push(c); if (c.a >= 1) break; } } let base = { r: 255, g: 255, b: 255, a: 1 }; for (let i = stack.length - 1; i >= 0; i--) base = over(stack[i], base); return base; };
+  const ratioOf = (fg, bg) => { const f = over(fg, bg); const L1 = lum(f), L2 = lum(bg); return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05); };
+  const rgb = (b) => `rgb(${Math.round(b.r)}, ${Math.round(b.g)}, ${Math.round(b.b)})`;
+  const out = [];
+  const hidden = (el, cs, r) => cs.visibility === 'hidden' || cs.display === 'none' || r.width === 0 || r.height === 0 || parseFloat(cs.opacity) === 0 || el.closest('[hidden], script, style, option');
+  for (const el of document.querySelectorAll('body *')) {
+    const cs = getComputedStyle(el); const r = el.getBoundingClientRect();
+    const isField = /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName) && !['hidden', 'checkbox', 'radio', 'submit', 'button', 'range', 'color', 'file'].includes(el.type);
+    const hasText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+    if (!hasText && !isField) continue;
+    if (hidden(el, cs, r)) continue;
+    const bg = bgOf(el);
+    const add = (colorStr, what, text) => { const fg = parse(colorStr); if (!fg) return; const ratio = ratioOf(fg, bg); if (ratio < MIN) out.push({ tag: el.tagName.toLowerCase(), cls: `${String(el.className).slice(0, 36)}${what ? ' ' + what : ''}`.trim(), text: String(text).trim().slice(0, 24), fg: colorStr, bg: rgb(bg), ratio: Math.round(ratio * 10) / 10 }); };
+    if (isField) { add(cs.color, 'value', el.value || el.name || ''); if (el.placeholder) add(getComputedStyle(el, '::placeholder').color, 'placeholder', el.placeholder); continue; }
+    add(el instanceof SVGElement && cs.fill && cs.fill.startsWith('rgb') ? cs.fill : cs.color, '', el.textContent);
+  }
+  return out;
+};
+
 
 async function main() {
   const app = await startApp();
@@ -38,8 +62,10 @@ async function main() {
   meetings.ensure(db);
   const mid = meetings.createMeeting(db, u, { title: 'Neconformități — comună', meeting_date: meetings.today(), start_time: '10:00', duration_min: 45, teams: ['maintenance', 'technical'], attendees: [pid] }).id;
   meetings.addDecision(db, u, mid, { text: 'Înlocuit rulment', team: 'maintenance' });
-  const screens = [['home', '/'], ['new measurement', `/masuratori/nou?family=${fam}&machine=${machine}&construction=${cons.id}&level=funie`], ['register', '/masuratori'], ['record (out of limit)', `/masuratori/${record}`],
-    ['sheets', '/fise'], ['revision', `/fise/${doc}/revizii/${rv}`], ['paper check', `/fise/${doc}/revizii/${rv}/verificare/${row}`], ['row editor', `/fise/${doc}/revizii/${rv}/constructii/${row}`],
+  const draft = db.get("SELECT d.id AS doc, r.id AS rev FROM spec_documents d JOIN spec_revisions r ON r.document_id = d.id WHERE r.status = 'ciorna' AND d.id <> ? ORDER BY d.id LIMIT 1", doc);
+  const draftRow = draft ? db.get('SELECT id FROM constructions WHERE revision_id = ? AND active = 1 ORDER BY sort, id', draft.rev) : null;
+  const screens = [...(draft ? [["draft revision", `/fise/${draft.doc}/revizii/${draft.rev}`], ...(draftRow ? [["row editor (draft)", `/fise/${draft.doc}/revizii/${draft.rev}/constructii/${draftRow.id}`]] : [])] : []), ['home', '/'], ['new measurement', `/masuratori/nou?family=${fam}&machine=${machine}&construction=${cons.id}&level=funie`], ['register', '/masuratori'], ['record (out of limit)', `/masuratori/${record}`],
+    ['sheets', '/fise'], ['revision', `/fise/${doc}/revizii/${rv}`], ['paper check', `/fise/${doc}/revizii/${rv}/verificare/${row}`], 
     ['database', '/liste'], ['users', '/admin/utilizatori'], ['settings', '/admin/setari'], ['audit', '/admin/jurnal'], ['analyses', '/analize'], ['batches', '/loturi'], ['notifications', '/notificari'],
     ['tasks', '/mentenanta'], ['task', `/sarcini/${t1}`], ['task new', '/mentenanta/nou'], ['meetings', '/sedinte'], ['meeting', `/sedinte/${mid}`], ['series', '/sedinte/serii'], ['password', '/parola']];
   const browser = await pw.chromium.launch();
@@ -48,34 +74,26 @@ async function main() {
     const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
     await ctx.addInitScript((t) => { try { localStorage.setItem('ctc_theme', t); } catch (e) { /* none */ } }, theme);
     const page = await ctx.newPage();
-    await page.goto(app.base + '/login');
+    const groups = new Map();
+    const scan = async (name) => {
+      await page.evaluate(() => document.querySelectorAll('details.help').forEach((d) => d.setAttribute('open', '')));
+      const found = await page.evaluate(SCAN, MIN);
+      for (const f of found) { const k = `${f.tag}.${f.cls}|${f.fg}|${f.bg}`; if (!groups.has(k)) groups.set(k, { ...f, n: 0, screens: new Set() }); const g = groups.get(k); g.n++; g.screens.add(name); }
+    };
+    await page.goto(app.base + '/login'); await scan('login');
     await page.fill('input[name=username]', 'admin'); await page.fill('input[name=password]', admin.password);
     await page.click('main button[type=submit]');
-    const groups = new Map();
     for (const [name, url] of screens) {
       const resp = await page.goto(app.base + url);
       if (resp.status() >= 400) { console.log(`  (${name}: status ${resp.status()})`); continue; }
-      await page.evaluate(() => document.querySelectorAll('details.help').forEach((d) => d.setAttribute('open', '')));
-      const found = await page.evaluate((MIN) => {
-        const parse = (c) => { const m = c.match(/rgba?\(([^)]+)\)/); if (!m) return null; const p = m[1].split(',').map((x) => parseFloat(x)); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
-        const lum = ({ r, g, b }) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
-        const over = (top, bottom) => ({ r: top.r * top.a + bottom.r * (1 - top.a), g: top.g * top.a + bottom.g * (1 - top.a), b: top.b * top.a + bottom.b * (1 - top.a), a: 1 });
-        const bgOf = (el) => { const stack = []; for (let e = el; e; e = e.parentElement) { const c = parse(getComputedStyle(e).backgroundColor); if (c && c.a > 0) { stack.push(c); if (c.a >= 1) break; } } let base = { r: 255, g: 255, b: 255, a: 1 }; for (let i = stack.length - 1; i >= 0; i--) base = over(stack[i], base); return base; };
-        const out = [];
-        for (const el of document.querySelectorAll('body *')) {
-          if (!el.childNodes || ![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
-          const cs = getComputedStyle(el); const r = el.getBoundingClientRect();
-          if (cs.visibility === 'hidden' || cs.display === 'none' || r.width === 0 || r.height === 0 || parseFloat(cs.opacity) === 0) continue;
-          if (el.closest('[hidden], script, style, option')) continue;
-          const fg = parse(cs.color); if (!fg) continue;
-          const bg = bgOf(el); const f = over(fg, bg);
-          const L1 = lum(f), L2 = lum(bg); const ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
-          if (ratio < MIN) out.push({ tag: el.tagName.toLowerCase(), cls: String(el.className).slice(0, 40), text: el.textContent.trim().slice(0, 24), fg: cs.color, bg: `rgb(${Math.round(bg.r)}, ${Math.round(bg.g)}, ${Math.round(bg.b)})`, ratio: Math.round(ratio * 10) / 10 });
-        }
-        return out;
-      }, MIN);
-      for (const f of found) { const k = `${f.tag}.${f.cls}|${f.fg}|${f.bg}`; if (!groups.has(k)) groups.set(k, { ...f, n: 0, screens: new Set() }); const g = groups.get(k); g.n++; g.screens.add(name); }
+      await scan(name);
     }
+    // states: a success notice after saving, a form with errors, a wrong password, the open menus
+    await page.goto(app.base + '/mentenanta/nou'); await page.fill('input[name=title]', 'Probă contrast'); await page.click('main form button[type=submit]'); await scan('flash ok');
+    await page.goto(app.base + '/mentenanta/nou'); await page.click('main form button[type=submit]'); await scan('form errors');
+    await page.goto(app.base + '/parola'); await page.fill('input[name=current]', 'gresit'); await page.fill('input[name=new]', 'x'); await page.fill('input[name=confirm]', 'y'); await page.click('main button[type=submit]'); await scan('password error');
+    await page.goto(app.base + '/'); await page.evaluate(() => document.querySelectorAll('details.navmore').forEach((d) => d.setAttribute('open', ''))); await scan('menus open');
+    await page.goto(app.base + '/sedinte/nou'); await page.click('main form button[type=submit]'); await scan('meeting errors');
     console.log(`\n=== ${theme}: ${groups.size} low-contrast groups (< ${MIN}) ===`);
     for (const g of [...groups.values()].sort((a, b) => a.ratio - b.ratio)) console.log(`${String(g.ratio).padStart(4)}  <${g.tag}${g.cls ? ' .' + g.cls : ''}> "${g.text}" fg ${g.fg} on ${g.bg}  ×${g.n}  [${[...g.screens].slice(0, 3).join(', ')}]`);
     total += groups.size;
