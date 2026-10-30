@@ -20,7 +20,7 @@ Owner: Zoltan Biro (engineer, ROMCAB S.A.). Date locked: 2026-09-25.
 **Why.** Simplest thing that works on old workfloor PCs and browsers; no build; easy for the owner to maintain.
 **Consequences.** Every page works without JS except live verdict preview and charts; the server re-computes verdicts on save regardless of what the browser showed.
 
-## ADR-004 — Language
+## ADR-004 — Language (extended by ADR-015: English added, numbers follow the language)
 **Decision.** All user-visible text is Romanian with correct diacritics (ș, ț with comma below — not ş/ţ). Code, identifiers, comments and commit messages are English. Number display uses the Romanian decimal comma in printed documents and the dot in input fields is accepted as well as the comma (normalise on input).
 **Consequences.** Put every UI string in `app/i18n/ro.js` so wording can be reviewed in one place.
 
