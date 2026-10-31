@@ -7,7 +7,7 @@ const custom = require('./custom');
 const notifications = require('./notifications');
 const tasks = require('./tasks');
 const access = require('./access');
-const { nowIso } = require('../lib/time');
+const { nowIso, isRealDate } = require('../lib/time');
 
 const TEAMS = tasks.TEAMS;
 const STATUSES = ['planned', 'held', 'cancelled'];
@@ -63,7 +63,7 @@ function validateMeeting(db, data) {
   v.teams = cleanTeams(data.teams);
   if (!v.teams.length) errors.teams = 'required';
   v.meeting_date = String(data.meeting_date || '').trim();
-  if (!RE_DATE.test(v.meeting_date) || Number.isNaN(Date.parse(v.meeting_date))) errors.meeting_date = 'invalid';
+  if (!isRealDate(v.meeting_date)) errors.meeting_date = 'invalid';
   validateWhen(errors, v, data);
   v.agenda = String(data.agenda || '').trim() || null;
   if (v.agenda && v.agenda.length > 4000) errors.agenda = 'too_long';
@@ -85,7 +85,7 @@ function validateSeries(db, data) {
   validateWhen(errors, v, data);
   for (const k of ['starts_on', 'ends_on']) {
     v[k] = String(data[k] || '').trim() || null;
-    if (v[k] && (!RE_DATE.test(v[k]) || Number.isNaN(Date.parse(v[k])))) errors[k] = 'invalid';
+    if (v[k] && !isRealDate(v[k])) errors[k] = 'invalid';
   }
   if (v.starts_on && v.ends_on && v.ends_on < v.starts_on && !errors.ends_on) errors.ends_on = 'before_start';
   v.people = [...new Set((data.people || []).map(Number).filter((n) => Number.isInteger(n) && n > 0))];

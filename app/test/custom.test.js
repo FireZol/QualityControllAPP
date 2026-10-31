@@ -337,3 +337,13 @@ test('domain: parse rules and the limit of fields per kind', () => {
   assert.equal(over.ok, false);
   assert.equal(over.errors.label, 'too_many');
 });
+
+test('impossible calendar days (30 February) are refused by every date field, not moved to March', async () => {
+  const day = '2026-02-30';
+  const t = await post(lead, '/mentenanta/nou', { title: 'Zi imposibilă', due_date: day }, '/mentenanta/nou');
+  assert.equal(t.status, 422);
+  assert.equal(app.db.value("SELECT count(*) FROM tasks WHERE title = 'Zi imposibilă'"), 0);
+  assert.equal((await post(lead, '/calitate/nou', { title: 'NC zi imposibilă', reported_at: day, [`cf_${ids.f.req}`]: String(ids.items[1]) }, '/calitate/nou')).status, 422);
+  assert.equal((await post(lead, '/sedinte/nou', { title: 'Ședință zi imposibilă', meeting_date: day, start_time: '10:00', duration_min: '30', teams: ['quality'] }, '/sedinte/nou')).status, 422);
+  assert.equal((await post(lead, '/mentenanta/nou', { title: 'Zi reală', due_date: '2028-02-29' }, '/mentenanta/nou')).status, 303, 'a real leap day is fine');
+});

@@ -5,7 +5,7 @@
 // deleted; every due date has one row in pm_runs (a task, or skipped on purpose with a reason).
 const audit = require('./audit');
 const tasks = require('./tasks');
-const { nowIso } = require('../lib/time');
+const { nowIso, isRealDate } = require('../lib/time');
 
 const UNITS = ['days', 'weeks', 'months'];
 const BASES = ['schedule', 'completion'];
@@ -53,7 +53,7 @@ function validate(db, data) {
   v.priority_id = data.priority_id ? Number(data.priority_id) : null;
   if (v.priority_id && !db.get('SELECT 1 FROM priorities WHERE id = ?', v.priority_id)) errors.priority_id = 'invalid';
   v.next_due = String(data.next_due || '').trim();
-  if (!RE_DATE.test(v.next_due) || Number.isNaN(Date.parse(v.next_due))) errors.next_due = 'invalid';
+  if (!isRealDate(v.next_due)) errors.next_due = 'invalid';
   else if (v.weekdays_only) v.next_due = nextWeekday(v.next_due);
   v.people = [...new Set((data.people || []).map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   if (v.people.some((id) => !db.get('SELECT 1 FROM people WHERE id = ?', id))) errors.people = 'invalid';

@@ -1,6 +1,7 @@
 'use strict';
 // Reference lists (“Date de bază” / Database): add / rename / deactivate, never delete (ADR-005).
 const audit = require('./audit');
+const { isRealDate } = require('../lib/time');
 
 const RE_ROTOR = /^\d+(\+\d+)*$/;
 const RE_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -129,7 +130,7 @@ function validate(db, def, form, existingId) {
     if (f.max && v.length > f.max) { errors[f.name] = 'too_long'; continue; }
     if (f.upper) v = v.toUpperCase();
     if (f.type === 'date' && !RE_DATE.test(v)) { errors[f.name] = 'invalid'; continue; }
-    if (f.type === 'date' && Number.isNaN(Date.parse(v))) { errors[f.name] = 'invalid'; continue; }
+    if (f.type === 'date' && !isRealDate(v)) { errors[f.name] = 'invalid'; continue; }
     if (f.type === 'rotor') {
       v = v.replace(/\s+/g, '');
       if (!RE_ROTOR.test(v)) { errors[f.name] = 'rotor_format'; continue; }

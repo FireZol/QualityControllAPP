@@ -6,14 +6,13 @@
 const audit = require('./audit');
 const calc = require('./calc');
 const i18n = require('../i18n');
-const { nowIso, displayDate } = require('../lib/time');
+const { nowIso, displayDate, isRealDate } = require('../lib/time');
 
 const KINDS = ['task', 'ncr', 'meeting'];
 const TYPES = ['text', 'longtext', 'number', 'date', 'yesno', 'list'];
 const TEAMS = ['maintenance', 'technical', 'quality'];
 const RE_DATE = /^\d{4}-\d{2}-\d{2}$/;
-/** A real calendar day: 2026-02-30 is refused (Date.parse alone accepts it and moves it to March). */
-const realDate = (s) => RE_DATE.test(s) && !Number.isNaN(Date.parse(s)) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+const realDate = isRealDate;
 const MAX_FIELDS_PER_KIND = 40;
 const MAX_ITEMS = 500;
 const lang = () => i18n.current();

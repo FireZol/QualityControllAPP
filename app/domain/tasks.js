@@ -8,7 +8,7 @@ const numbering = require('./numbering');
 const notifications = require('./notifications');
 const access = require('./access');
 const reg = require('../modules/registry');
-const { nowIso } = require('../lib/time');
+const { nowIso, isRealDate } = require('../lib/time');
 
 const TEAMS = ['maintenance', 'technical', 'quality'];
 const STATUSES = ['open', 'in_progress', 'waiting', 'done', 'closed', 'cancelled'];
@@ -52,7 +52,7 @@ function validate(db, data) {
   if (v.description && v.description.length > 4000) errors.description = 'too_long';
   if (v.area && v.area.length > 120) errors.area = 'too_long';
   if (v.priority_id && !db.get('SELECT 1 FROM priorities WHERE id = ?', v.priority_id)) errors.priority_id = 'invalid';
-  if (v.due_date && (!RE_DATE.test(v.due_date) || Number.isNaN(Date.parse(v.due_date)))) errors.due_date = 'invalid';
+  if (v.due_date && !isRealDate(v.due_date)) errors.due_date = 'invalid';
   if (v.machine_id && !db.get('SELECT 1 FROM machines WHERE id = ?', v.machine_id)) errors.machine_id = 'invalid';
   if (v.assignees.some((id) => !db.get('SELECT 1 FROM people WHERE id = ?', id))) errors.assignees = 'invalid';
   if (!v.priority_id) v.priority_id = (db.get("SELECT id FROM priorities WHERE active = 1 ORDER BY sort LIMIT 1 OFFSET 1") || db.get('SELECT id FROM priorities WHERE active = 1 ORDER BY sort LIMIT 1') || {}).id || null;

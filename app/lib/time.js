@@ -29,4 +29,9 @@ function displayDate(iso) {
   return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
 }
 
-module.exports = { isoLocal, nowIso, stamp, displayDateTime, displayDate };
+/** A real calendar day written YYYY-MM-DD. Date.parse alone accepts 2026-02-30 and moves it to March, so the day is read back. */
+function isRealDate(s) {
+  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s)) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+}
+
+module.exports = { isRealDate, isoLocal, nowIso, stamp, displayDateTime, displayDate };

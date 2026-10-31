@@ -10,7 +10,7 @@ const notifications = require('./notifications');
 const access = require('./access');
 const tasks = require('./tasks');
 const settings = require('./settings');
-const { nowIso } = require('../lib/time');
+const { nowIso, isRealDate } = require('../lib/time');
 
 const STATUSES = ['reported', 'evaluation', 'action', 'closed', 'cancelled'];
 const OPEN = ['reported', 'evaluation', 'action'];
@@ -47,10 +47,10 @@ function validate(db, data, partial) {
   const ref = (k, table, where) => { if (!has(k)) return; v[k] = data[k] ? Number(data[k]) : null; if (v[k] && !db.get(`SELECT 1 FROM ${table} WHERE id = ?${where || ''}`, v[k])) errors[k] = 'invalid'; };
   text('title', 200, true); text('description', 4000); text('product', 120); text('quantity', 80); text('external_ref', 60); text('cause', 4000); text('evaluation', 4000); text('containment', 4000); text('corrective_action', 4000); text('preventive_action', 4000); text('verification_note', 2000);
   ref('type_id', 'ncr_types'); ref('severity_id', 'priorities'); ref('machine_id', 'machines'); ref('disposition_id', 'ncr_dispositions'); ref('batch_id', 'batches'); ref('responsible_person_id', 'people');
-  if (has('action_due')) { v.action_due = String(data.action_due || '').trim() || null; if (v.action_due && (!RE_DATE.test(v.action_due) || Number.isNaN(Date.parse(v.action_due)))) errors.action_due = 'invalid'; }
+  if (has('action_due')) { v.action_due = String(data.action_due || '').trim() || null; if (v.action_due && !isRealDate(v.action_due)) errors.action_due = 'invalid'; }
   if (has('source_kind')) { v.source_kind = SOURCES.includes(data.source_kind) ? data.source_kind : 'manual'; }
   if (has('record_no')) { v.record_no = data.record_no ? Number(data.record_no) : null; if (v.record_no && (!Number.isInteger(v.record_no) || !db.get('SELECT 1 FROM measurements WHERE record_no = ?', v.record_no))) errors.record_no = 'invalid'; }
-  if (has('reported_at')) { v.reported_at = String(data.reported_at || '').trim() || today(); if (!RE_DATE.test(v.reported_at) || Number.isNaN(Date.parse(v.reported_at))) errors.reported_at = 'invalid'; }
+  if (has('reported_at')) { v.reported_at = String(data.reported_at || '').trim() || today(); if (!isRealDate(v.reported_at)) errors.reported_at = 'invalid'; }
   return { errors, v };
 }
 
