@@ -31,5 +31,13 @@ Sessions: random 256-bit token, stored only as a SHA-256 hash, idle limit (Setti
 6. **Database file:** `data\ctc.db` (+ `-wal`, `-shm`) should be readable only by administrators and the service account.
 7. **No per-address rate limit and no session limit per user** — fine for tens of users.
 
+## Going back to an older version
+
+Passwords are stored with scrypt N=65536 and upgraded silently the first time a user signs in on this version (ADR-022). Older programs cannot check such a password. Because of that, migration `016_password_strength_marker.sql` exists:
+
+- A program built from the audit commit onward refuses the database ("made by a newer version of the program") instead of starting and failing at sign-in.
+- A program older than that has no such guard. Start it on the backup taken just before the upgrade (log line "Backup înainte de migrare", file `ctc-<date>.db` in the backup folder). Anything entered after the upgrade is not in that backup.
+- The simplest rule: do not go back. Install the newer version instead.
+
 ## Reporting
 Security problems found in the pilot: send them with the page, the time and the user name to the address in Settings → Problem reports; do not post passwords.

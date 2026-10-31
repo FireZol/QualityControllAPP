@@ -275,7 +275,7 @@ const S = {
     save: 'Salvează', cancel: 'Renunță', add: 'Adaugă', edit: 'Editează', yes: 'da', no: 'nu', active: 'activ', inactive: 'inactiv',
     deactivate: 'Dezactivează', activate: 'Activează', search: 'Caută', filter: 'Filtrează', reset: 'Resetează', back: 'Înapoi',
     details: 'Detalii', actions: 'Acțiuni', name: 'Nume', date: 'Data', none: '—', total: 'Total', previous: 'Anterior', next: 'Următor',
-    pages: 'Paginare', page_of: 'Pagina {page} din {pages}', required: 'obligatoriu', all: 'Toate', continue: 'Continuă', close: 'Închide',
+    pages: 'Paginare', page_of: 'Pagina {page} din {pages}', required: 'obligatoriu', range_hint: 'Valori admise: {min}–{max}', form_not_saved_one: 'Nimic nu a fost salvat. Corectați câmpul marcat mai jos.', form_not_saved_many: 'Nimic nu a fost salvat. Corectați cele {n} câmpuri marcate mai jos.', all: 'Toate', continue: 'Continuă', close: 'Închide',
     status: 'Stare', open: 'Deschide', from: 'De la', to: 'Până la', user: 'Utilizator', time: 'Ora', notes: 'Observații',
   },
 

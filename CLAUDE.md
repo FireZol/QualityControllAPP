@@ -5,7 +5,7 @@ Quality-control measurement web app for the ROMCAB S.A. cable factory (Romania).
 Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, conductors). Ask him about domain questions; **do not guess limits or formulas**. Repository: `github.com/FireZol/QualityControllAPP` (branch `main`; GitHub reports the repo as moved to that spelling).
 
 ## State (2026-10-30)
-**Version 0.9.0-beta.3 — ready for the pilot** (install package built with `node tools/make-release.js`). 206 automated tests. Built so far:
+**Version 0.9.0-beta.3 — ready for the pilot** (install package built with `node tools/make-release.js`). 209 automated tests. Built so far:
 - **Core QC** (stages 1–3): accounts and roles (Personal / Inginer / Administrator), versioned data sheets with the two-person rule, measurements with live verdicts, corrections as new versions, register with filters, CSV / Excel export, printing in every browser, backups, audit log. Families: rigid conductor, extruded Al, wire class I–II, wire class V, flexible class 5.
 - **Optional modules** (off by default, Administrator switches them in Setări → Module, ADR-016): finished cable (tests catalogue, batches, drums, certificates, type reports) and analyses (trend, capability, control charts, nonconformity, consumption, home-page SPC alerts).
 - **Languages:** Romanian (master) and English, per user; Hungarian deferred (ADR-015).
@@ -23,7 +23,7 @@ Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, co
 
 ## Hard rules
 - **Zero npm dependencies.** Node.js LTS built-ins only (`node:http`, `node:sqlite`, `node:crypto`, `node:zlib`, `node:test`, …). No build step, bundler, TypeScript or framework. A test fails if a dependency or an external script link appears. Runs on Node ≥ 22.13; Node 24 LTS is recommended and tested.
-- **SQLite only** through `node:sqlite`, one file `data/ctc.db`, WAL, foreign keys on, **numbered migrations** (`app/db/migrations/NNN_*.sql`, an automatic backup precedes pending ones). The test migration in `app.test.js` must be renumbered whenever a real migration is added.
+- **SQLite only** through `node:sqlite`, one file `data/ctc.db`, WAL, foreign keys on, **numbered migrations** (`app/db/migrations/NNN_*.sql`, an automatic backup precedes pending ones); the latest is 016 (password-strength marker), so the test migration is 017. The test migration in `app.test.js` must be renumbered whenever a real migration is added.
 - **Two languages, one master.** Every UI text goes into `app/i18n/ro.js` (Romanian, correct diacritics ș ț with comma below) **and** `app/i18n/en/{a,b,c}.js` with the same keys and `{placeholders}`; `app/test/i18n.test.js` fails otherwise and fails on Romanian characters in the English files. Views use `T.section.key` (the language of the current request comes from AsyncLocalStorage, `app/i18n/index.js`). Code and comments in English. Stored data (sheet titles, machine names, test catalogue) stays as entered.
 - **Numbers follow the language** (Romanian decimal comma, English dot) through `calc.formatNumber` / `calc.dec`; typing accepts both; CSV follows the language too.
 - **Never delete or overwrite** measurements, revisions or referenced list entries — version, archive or deactivate (ADR-005). The only exception is the Administrator's one-time, backed-up, audited **Start production** reset (ADR-017).

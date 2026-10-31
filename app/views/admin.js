@@ -68,12 +68,12 @@ function settingsPage(ctx, d) {
   <h2>${T.settings.server}</h2>
   <p class="notice">${T.settings.restart_notice}</p>
   <div class="row">
-    ${textField({ label: T.settings.port, name: 'server.port', value: values['server.port'], errors, inputmode: 'numeric', cls: 'num', required: true })}
+    ${textField({ label: T.settings.port, name: 'server.port', value: values['server.port'], errors, inputmode: 'numeric', cls: 'num', required: true, hint: f(T.common.range_hint, { min: 1, max: 65535 }) })}
     ${textField({ label: T.settings.bind, name: 'server.bind', value: values['server.bind'], errors, hint: T.settings.bind_hint, required: true })}
     ${textField({ label: T.settings.public_name, name: 'server.public_name', value: values['server.public_name'], errors, hint: T.settings.public_name_hint })}
   </div>
   <h2>${T.settings.sessions}</h2>
-  <div class="row">${textField({ label: T.settings.idle_hours, name: 'session.idle_hours', value: values['session.idle_hours'], errors, inputmode: 'numeric', cls: 'num', required: true })}</div>
+  <div class="row">${textField({ label: T.settings.idle_hours, name: 'session.idle_hours', value: values['session.idle_hours'], errors, inputmode: 'numeric', cls: 'num', required: true, hint: f(T.common.range_hint, { min: 1, max: 168 }) })}</div>
   <h2>${T.settings.shifts}</h2>
   <div class="row">
     ${textField({ label: T.settings.day_start, name: 'shift.day_start', value: values['shift.day_start'], errors, cls: 'num', required: true, hint: 'HH:MM' })}
@@ -88,13 +88,13 @@ function settingsPage(ctx, d) {
   <h2>${T.settings.ncr_rules}</h2><p class="muted">${T.settings.ncr_rules_hint}</p>
   ${checkField({ label: T.settings.ncr_disposition, name: 'ncr.require_disposition', checked: values['ncr.require_disposition'] !== false })}${checkField({ label: T.settings.ncr_cause, name: 'ncr.require_cause', checked: values['ncr.require_cause'] === true })}
   ${checkField({ label: T.settings.ncr_corrective, name: 'ncr.require_corrective', checked: values['ncr.require_corrective'] === true })}${checkField({ label: T.settings.ncr_verification, name: 'ncr.require_verification', checked: values['ncr.require_verification'] === true })}
-  <div class="row">${textField({ label: T.settings.ncr_eval_days, name: 'ncr.eval_days', value: values['ncr.eval_days'] ?? 2, errors, cls: 'num', inputmode: 'numeric', hint: T.settings.ncr_eval_days_hint })}</div>
+  <div class="row">${textField({ label: T.settings.ncr_eval_days, name: 'ncr.eval_days', value: values['ncr.eval_days'] ?? 2, errors, cls: 'num', inputmode: 'numeric', hint: T.settings.ncr_eval_days_hint + ' ' + f(T.common.range_hint, { min: 1, max: 60 }) })}</div>
   <h2>${T.settings.numbering}</h2><p class="muted">${T.settings.numbering_hint}</p>
   <div class="row">${numbering.RULES.map((r) => textField({ label: T.settings['num_' + r], name: `numbering.${r}`, value: values[`numbering.${r}`], errors, hint: f(T.settings.num_example, { example: values.numbering_example ? values.numbering_example[r] : '' }), attrs: 'maxlength="60"' }))}</div>
   <div class="row">${Object.keys(numbering.TEAM_CODES).map((t) => textField({ label: f(T.settings.team_code, { team: T.teams[t] }), name: `team.code.${t}`, value: values[`team.code.${t}`], errors, cls: 'num', attrs: 'maxlength="6"' }))}</div>
   <p class="muted">${T.settings.cycle_hint}</p>
   <div class="row">
-    ${['day', 'off1', 'night', 'off2'].map((k) => textField({ label: T.settings['cycle_' + k], name: 'cycle.' + k, value: values['cycle.' + k], errors, inputmode: 'numeric', cls: 'num', required: true }))}
+    ${['day', 'off1', 'night', 'off2'].map((k) => textField({ label: T.settings['cycle_' + k], name: 'cycle.' + k, value: values['cycle.' + k], errors, inputmode: 'numeric', cls: 'num', required: true, hint: f(T.common.range_hint, { min: k === 'day' || k === 'night' ? 1 : 0, max: 30 }) }))}
   </div>
   <h2>${T.settings.feedback}</h2>
   <div class="row">${textField({ label: T.settings.feedback_email, name: 'feedback.email', value: values['feedback.email'], errors, hint: T.settings.feedback_hint, cls: 'grow' })}</div>
@@ -102,7 +102,7 @@ function settingsPage(ctx, d) {
   <div class="row">
     ${textField({ label: T.settings.backup_dir, name: 'backup.dir', value: values['backup.dir'], errors, hint: T.settings.backup_dir_hint, cls: 'grow' })}
     ${textField({ label: T.settings.backup_time, name: 'backup.time', value: values['backup.time'], errors, cls: 'num', required: true, hint: 'HH:MM' })}
-    ${textField({ label: T.settings.backup_keep, name: 'backup.keep', value: values['backup.keep'], errors, inputmode: 'numeric', cls: 'num', required: true })}
+    ${textField({ label: T.settings.backup_keep, name: 'backup.keep', value: values['backup.keep'], errors, inputmode: 'numeric', cls: 'num', required: true, hint: f(T.common.range_hint, { min: 1, max: 365 }) })}
   </div>
   ${checkField({ label: T.settings.backup_auto, name: 'backup.auto', checked: !!values['backup.auto'] })}
   <div class="actions"><button class="btn primary" type="submit">${T.common.save}</button></div>

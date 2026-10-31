@@ -55,6 +55,14 @@
     });
   })();
 
+  // a form that came back with marked fields: the summary at the top is read out, and the first marked field takes the cursor
+  (function () {
+    const box = document.querySelector('[data-form-summary]');
+    if (!box) return;
+    const first = document.querySelector('.has-error input, .has-error select, .has-error textarea');
+    if (first) { first.scrollIntoView({ block: 'center' }); first.focus({ preventScroll: true }); } else box.focus();
+  })();
+
   // a success notice fades after a few seconds; errors stay until the page changes
   document.querySelectorAll('.flash-ok').forEach(function (el) {
     setTimeout(function () { el.classList.add('fade'); }, 6000);

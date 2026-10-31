@@ -275,7 +275,7 @@ module.exports = {
     save: 'Save', cancel: 'Cancel', add: 'Add', edit: 'Edit', yes: 'yes', no: 'no', active: 'active', inactive: 'inactive',
     deactivate: 'Deactivate', activate: 'Activate', search: 'Search', filter: 'Filter', reset: 'Reset', back: 'Back',
     details: 'Details', actions: 'Actions', name: 'Name', date: 'Date', none: '—', total: 'Total', previous: 'Previous', next: 'Next',
-    pages: 'Pagination', page_of: 'Page {page} of {pages}', required: 'required', all: 'All', continue: 'Continue', close: 'Close',
+    pages: 'Pagination', page_of: 'Page {page} of {pages}', required: 'required', range_hint: 'Allowed: {min}–{max}', form_not_saved_one: 'Nothing was saved. Please correct the field marked below.', form_not_saved_many: 'Nothing was saved. Please correct the {n} fields marked below.', all: 'All', continue: 'Continue', close: 'Close',
     status: 'Status', open: 'Open', from: 'From', to: 'To', user: 'User', time: 'Time', notes: 'Notes',
   },
 

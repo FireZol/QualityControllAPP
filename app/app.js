@@ -106,7 +106,9 @@ function handle(app, req, res) {
 async function handleRequest(app, req, res, langStore) {
   const { db } = app;
   const url = new URL(req.url, 'http://localhost');
-  const method = req.method;
+  // HEAD (uptime monitors, proxies) is answered like GET; Node drops the body by itself
+  const isHead = req.method === 'HEAD';
+  const method = isHead ? 'GET' : req.method;
   const pathname = url.pathname;
 
   // ---- static files ----
@@ -125,7 +127,7 @@ async function handleRequest(app, req, res, langStore) {
     return send(res, r);
   }
 
-  if (method !== 'GET' && method !== 'POST') return send(res, { status: 405, headers: { Allow: 'GET, POST' }, body: '' });
+  if (method !== 'GET' && method !== 'POST') return send(res, { status: 405, headers: { Allow: 'GET, HEAD, POST' }, body: '' });
 
   const cookies = H.parseCookies(req.headers.cookie);
   const ctx = {
@@ -136,7 +138,7 @@ async function handleRequest(app, req, res, langStore) {
   // flash cookie (set by the previous redirect); the value is validated against the message table
   let clearFlash = false;
   if (cookies.ctc_flash) {
-    clearFlash = true;
+    clearFlash = !isHead; // a HEAD request must not use up the notice meant for the next page
     const [type, key] = cookies.ctc_flash.split(':');
     if (key && Object.prototype.hasOwnProperty.call(S.flash, key)) ctx.flash = { type: type === 'err' ? 'err' : 'ok', key };
   }
@@ -159,7 +161,7 @@ async function handleRequest(app, req, res, langStore) {
 
   const m = app.router.match(method, pathname);
   if (!m.route) {
-    if (m.pathMatched) return send(res, { status: 405, headers: { Allow: 'GET, POST' }, body: '' }, extra);
+    if (m.pathMatched) return send(res, { status: 405, headers: { Allow: 'GET, HEAD, POST' }, body: '' }, extra);
     return send(res, notFoundPage(ctx), extra);
   }
   const { route, params } = m;

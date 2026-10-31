@@ -477,3 +477,55 @@ test('"Start production" (the one deletion of measurements): exactly six tables 
     assert.deepEqual(db.all('PRAGMA foreign_key_check'), [], 'and the database is still consistent');
   } finally { await d.app.cleanup(); }
 });
+
+// ============================================================ 8. follow-ups from the live verification (2026-10-31)
+test('HEAD is answered like GET without a body, and does not use up a flash notice; other methods still say what is allowed', async () => {
+  const head = await rawRequest('HEAD', '/login');
+  assert.equal(head.status, 200);
+  assert.equal(head.text, '', 'no body on HEAD');
+  assert.ok(head.headers['content-security-policy'], 'the security headers are there');
+  const gone = await rawRequest('HEAD', '/nope');
+  assert.equal(gone.status, 404);
+  const anon = await rawRequest('HEAD', '/');
+  assert.equal(anon.status, 303, 'HEAD of a protected page asks to sign in, like GET');
+  const put = await rawRequest('PUT', '/login');
+  assert.equal(put.status, 405);
+  assert.match(put.headers.allow, /HEAD/);
+  const flashHead = await rawRequest('HEAD', '/login', { cookie: 'ctc_flash=ok:saved' });
+  assert.ok(![].concat(flashHead.headers['set-cookie'] || []).some((c) => /^ctc_flash=;/.test(c)), 'HEAD leaves the flash cookie for the next page');
+});
+
+test('a form that comes back with marked fields says at the top that nothing was saved and how many; ranges are shown beside the numbers', async () => {
+  const page = await admin.get('/admin/setari');
+  assert.ok(!page.text.includes('data-form-summary'), 'no banner on a clean form');
+  assert.match(page.text, /1–65535/);
+  const token = admin.csrfOf(page.text);
+  const params = new URLSearchParams({ _csrf: token, 'server.port': '0', 'server.bind': '127.0.0.1', 'server.public_name': '', 'session.idle_hours': '999', 'backup.time': '02:00', 'backup.keep': '10', 'shift.day_start': '06:00', 'shift.night_start': '18:00' });
+  const one = await admin.req('POST', '/admin/setari', params);
+  assert.equal(one.status, 422);
+  assert.match(one.text, /data-form-summary[^>]*>Nothing was saved\. Please correct the 2 fields marked below\./);
+  params.set('session.idle_hours', '12');
+  const two = await admin.req('POST', '/admin/setari', params);
+  assert.equal(two.status, 422);
+  assert.match(two.text, /Nothing was saved\. Please correct the field marked below\./);
+  assert.equal((await admin.req('POST', '/limba', { _csrf: token, lang: 'ro' })).status, 303);
+  const ro = await admin.req('POST', '/admin/setari', params);
+  assert.match(ro.text, /Nimic nu a fost salvat\. Corectați câmpul marcat mai jos\./);
+  await admin.req('POST', '/limba', { _csrf: token, lang: 'en' });
+});
+
+test('the password-strength marker migration exists, so a program that guards against newer databases refuses to open one that has stronger password hashes', () => {
+  const files = fs.readdirSync(path.join(ROOT, 'db', 'migrations'));
+  assert.ok(files.includes('016_password_strength_marker.sql'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctc-rollback-'));
+  try {
+    const db = new Db(path.join(dir, 'x.db'));
+    migrate(db, { dir: path.join(ROOT, 'db', 'migrations'), backupDir: dir });
+    assert.match(db.value("SELECT value FROM app_info WHERE key = 'password_hash'"), /N=65536/);
+    // an "older program" that knows migrations up to 15 only
+    const old = fs.mkdtempSync(path.join(dir, 'old-'));
+    for (const f of files.filter((n) => Number(n.slice(0, 3)) <= 15)) fs.copyFileSync(path.join(ROOT, 'db', 'migrations', f), path.join(old, f));
+    assert.throws(() => migrate(db, { dir: old, backupDir: dir }), /newer version of the program/);
+    db.close();
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

@@ -91,6 +91,13 @@ function flashBox(flash) {
   return html`<div class="flash flash-${flash.type === 'err' ? 'err' : 'ok'}" role="status">${msg}</div>`;
 }
 
+/** A page that comes back with marked fields says so at the top: nothing was saved, and how many fields need a look. */
+function formSummary(body) {
+  const n = (String(body).match(/class="field-error"/g) || []).length;
+  if (!n) return '';
+  return html`<div class="flash flash-err form-summary" role="alert" tabindex="-1" data-form-summary>${n === 1 ? T.common.form_not_saved_one : f(T.common.form_not_saved_many, { n })}</div>`;
+}
+
 /**
  * @param ctx   request context ({user, session, flash})
  * @param opts  {title, active, body, scripts:[...], wide}
@@ -129,7 +136,7 @@ ${user ? html`<aside class="side" id="side"><a class="brand" href="/">${T.app.na
 </header>
 <main class="${opts.wide ? 'wide' : ''}">
 ${flashBox(ctx.flash)}
-${opts.body}
+${formSummary(opts.body)}${opts.body}
 </main>
 ${footer(ctx)}
 </div>
