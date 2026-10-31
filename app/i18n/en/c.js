@@ -105,10 +105,20 @@ module.exports = {
   },
 
   custom: {
+    formula: 'Formula', formula_hint: 'Field names in [square brackets]; + - * / ^ and brackets; separate function arguments with ;',
+    formula_fields: 'Fields you can use', formula_functions: 'Functions', formula_examples: 'Examples with your fields', formula_no_fields: 'Make Number, Date or Yes / No fields for the same kind of record first; a formula uses them.',
+    ex_convert: 'Conversion (minutes to hours)', ex_multiply: 'Product', ex_days: 'Days between two dates', ex_if: 'Yes / no against a limit', ex_default: 'Default value when empty',
+    preview: 'Preview', preview_hint: 'Type sample values and see the result at once. Nothing is saved.', preview_result: 'Result', preview_fill: 'Fill in the sample values.', preview_empty: 'Empty result: a field it uses is not filled in.',
+    decimals: 'Decimals', decimals_hint: '0–6, the result is rounded', calc_auto: 'calculated automatically', calc_badge: 'calculated',
+    how_title: 'How to write a formula', how_1: 'Fields go in square brackets: [Downtime] / 60. Press a field in the list to insert it.',
+    how_2: 'Operators: + − * / ^ (power), brackets, comparisons < > <= >= = <>, and and, or, not (yes = 1, no = 0).', how_3: 'Functions: round(x; decimals), floor, ceil, abs, sqrt, pow(x; y), min, max, avg, sum, if(condition; then; else), empty(x), today(). Separate arguments with ;',
+    how_4: 'Dates count as days: [To] - [From] gives the number of days between them. Decimals may use a point or a comma.', how_5: 'An empty field is not zero: the result stays empty. Use if(empty([field]); 0; [field]) to treat a missing value as 0. min, max, avg and sum skip empty values.',
+    recalc_title: 'Recalculate', recalc_text: 'A changed formula reaches a record when that record is saved; existing results never change behind your back. To recalculate all {n} records now:', recalc_btn: 'Recalculate all', recalc_confirm: 'Recalculate the results of all records now?',
+    history_title: 'Versions of the formula', history_when: 'When', history_by: 'Who', history_current: 'current', result_unit: 'Result unit',
     title: 'Custom fields', section: 'Additional fields', tab_fields: 'Fields', tab_lists: 'Custom lists',
     intro: 'Add new fields to tasks, non-conformities and meetings without changing the program. The fields appear in the form, on the record page, in the filters and in the Excel / CSV exports. A field is never deleted: it is hidden, and the values already entered stay.',
     kind: { task: 'Tasks', ncr: 'Non-conformities', meeting: 'Meetings' },
-    type: { text: 'Short text', longtext: 'Long text', number: 'Number', date: 'Date', yesno: 'Yes / No', list: 'Choice from a list' },
+    type: { text: 'Short text', longtext: 'Long text', number: 'Number', calc: 'Calculated number (formula)', date: 'Date', yesno: 'Yes / No', list: 'Choice from a list' },
     applies_to: 'Applies to', team: 'Team (tasks only)', all_teams: 'All teams', type_label: 'Type', type_locked: 'The type cannot be changed after the field is made.',
     label_ro: 'Name (Romanian)', label_en: 'Name (English)', label_en_hint: 'Optional. If empty, the Romanian name is shown.',
     list_label: 'List (for "Choice from a list")', list_note: 'For "Choice from a list" make the list first, on the "Custom lists" tab. The unit is used for numbers only.',
@@ -145,6 +155,7 @@ module.exports = {
   audit: {
     title: 'Audit log', action: 'Action', entity: 'Object', details: 'Details',
     actions: {
+      custom_recalc: 'calculated field recalculated',
       custom_field_create: 'custom field created', custom_field_edit: 'custom field edited', custom_list_create: 'custom list created', custom_list_edit: 'custom list edited', custom_item_add: 'list items added', custom_item_edit: 'list item edited',
       login: 'login', login_failed: 'failed login', login_blocked: 'login blocked', logout: 'logout', password_change: 'password change', password_reset: 'password reset',
       user_create: 'user created', user_edit: 'user changed', measurement_add: 'measurement added', measurement_correct: 'measurement corrected',

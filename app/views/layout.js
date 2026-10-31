@@ -141,7 +141,7 @@ ${formSummary(opts.body)}${opts.body}
 ${footer(ctx)}
 </div>
 </div>
-${scripts.map((s) => html`<script src="${s}"></script>`)}
+${scripts.map((s) => html`<script src="${s}"></script>`)}${String(opts.body).includes('data-calcs=') && !scripts.includes('/static/formula.js') ? html`<script src="/static/formula.js"></script><script src="/static/custom-calc.js"></script>` : ''}
 </body>
 </html>`;
 }
@@ -169,8 +169,8 @@ function selectField({ label, name, value, options, errors, blank, required, att
     ${errText(errors, name)}</label>`;
 }
 
-function checkField({ label, name, checked, hint }) {
-  return html`<label class="check"><input type="checkbox" name="${name}" value="1"${checked ? raw(' checked') : ''}> <span>${label}</span>${hint ? html` <span class="hint">${hint}</span>` : ''}</label>`;
+function checkField({ label, name, checked, hint, attrs }) {
+  return html`<label class="check"><input type="checkbox" name="${name}" value="1"${checked ? raw(' checked') : ''}${attrs ? raw(' ' + attrs) : ''}> <span>${label}</span>${hint ? html` <span class="hint">${hint}</span>` : ''}</label>`;
 }
 
 function textArea({ label, name, value, errors, rows, required }) {

@@ -1,6 +1,6 @@
 'use strict';
 // Pieces of pages for custom fields: inputs in a form, rows in a detail page, columns in a list, controls in a filter bar.
-const { html, raw } = require('../lib/html');
+const { html, raw, jsonBlock } = require('../lib/html');
 const i18n = require('../i18n');
 const { T } = i18n;
 const lang = () => i18n.current();
@@ -17,6 +17,7 @@ function inputs(fields, values, errors, current) {
   const vals = values || {};
   const one = (f) => {
     const name = `cf_${f.id}`; const label = custom.fieldLabel(f); const v = vals[f.id];
+    if (custom.isCalc(f)) return html`<div class="field calc"><span class="lbl">${custom.nameOf(f)} <span class="tag" title="${T.custom.calc_auto}">ƒ</span></span><output class="calc-out" data-calc-out="${f.id}">${custom.display(f, v) || '—'}</output><span class="hint">${T.custom.calc_auto}</span></div>`;
     if (f.type === 'longtext') return textArea({ label, name, value: v, errors, rows: 3, required: !!f.required });
     if (f.type === 'date') return textField({ label, name, value: v, type: 'date', errors, required: !!f.required });
     if (f.type === 'number') return textField({ label, name, value: shownValue(f, v), errors, inputmode: 'decimal', cls: 'num', required: !!f.required });
@@ -28,14 +29,23 @@ function inputs(fields, values, errors, current) {
     }
     return textField({ label, name, value: v, errors, required: !!f.required, attrs: 'maxlength="200"' });
   };
-  return html`<fieldset class="custom-fields"><legend>${T.custom.section}</legend><div class="row">${fields.map(one)}</div></fieldset>`;
+  const calcs = fields.filter(custom.isCalc);
+  let cfg = '';
+  if (calcs.length) {
+    const universe = fields.universe || fields;
+    const types = Object.fromEntries(universe.map((x) => [x.id, x.type]));
+    const inForm = new Set(fields.filter((x) => !custom.isCalc(x)).map((x) => x.id));
+    const stored = Object.fromEntries(Object.entries({ ...(current || {}), ...vals }).filter(([id]) => !inForm.has(Number(id))));
+    cfg = JSON.stringify({ calcs: calcs.map((c) => ({ id: c.id, f: c.formula, d: c.decimals === null || c.decimals === undefined ? 2 : c.decimals, u: c.unit || '' })), types, stored });
+  }
+  return html`<fieldset class="custom-fields"${cfg ? html` data-calcs="${cfg}"` : ''}><legend>${T.custom.section}</legend><div class="row">${fields.map(one)}</div></fieldset>`;
 }
 
 /** Rows for a facts list (<dl class="facts">): every field that applies, "—" where nothing was entered. */
 function facts(fields, values) {
   if (!fields.length) return '';
   const vals = values || {};
-  return fields.map((f) => { const t = custom.display(f, vals[f.id]); return html`<div class="cf"><dt>${custom.fieldLabel(f)}</dt><dd>${f.type === 'longtext' && t ? html`<span class="pre">${t}</span>` : t || html`<span class="muted">—</span>`}</dd></div>`; });
+  return fields.map((f) => { const t = custom.display(f, vals[f.id]); return html`<div class="cf"><dt>${custom.fieldLabel(f)}${custom.isCalc(f) ? html` <span class="tag" title="${T.custom.calc_badge}">ƒ</span>` : ''}</dt><dd>${f.type === 'longtext' && t ? html`<span class="pre">${t}</span>` : t || html`<span class="muted">—</span>`}</dd></div>`; });
 }
 
 /** Column headers / cells for the fields marked "show in the list". */

@@ -119,6 +119,51 @@ async function main() {
   assert.match(await page.locator('main').innerText(), /defect cause/i);
   step('English names show in English');
 
+  // ---- calculated fields: the formula editor with a live preview, and a live result in the form
+  await page.click('form[action="/limba"] button:has-text("RO")'); await page.waitForLoadState();
+  await page.goto(base + '/admin/campuri');
+  const f2 = page.locator('form[action="/admin/campuri/nou"]');
+  await f2.locator('select[name=kind]').selectOption('task');
+  await f2.locator('select[name=type]').selectOption('number');
+  await f2.locator('input[name=label]').fill('Preț oră'); await f2.locator('input[name=unit]').fill('RON');
+  await Promise.all([page.waitForNavigation(), f2.locator('button[type=submit]').click()]);
+  await f2.locator('select[name=kind]').selectOption('task');
+  await f2.locator('select[name=type]').selectOption('calc');
+  assert.ok(await f2.locator('[data-formula-builder]').isVisible(), 'the formula editor shows for a calculated field');
+  assert.ok(!(await f2.locator('select[name=list_id]').isVisible()), 'the list picker is hidden');
+  await f2.locator('input[name=label]').fill('Cost oprire'); await f2.locator('input[name=label_en]').fill('Downtime cost');
+  await f2.locator('input[name=unit]').fill('RON');
+  // chips insert the field names; the preview works with sample values
+  await f2.locator('[data-chips="fields"] .chip:has-text("Timp oprire")').click();
+  await page.keyboard.type(' / 60 * ');
+  await f2.locator('[data-chips="fields"] .chip:has-text("Preț oră")').click();
+  assert.match(await f2.locator('textarea[name=formula]').inputValue(), /^\[Timp oprire\] \/ 60 \* \[Preț oră\]$/);
+  await f2.locator('.samples input').nth(0).fill('90'); await f2.locator('.samples input').nth(1).fill('40');
+  assert.match(await f2.locator('.calc-result').innerText(), /60,00 RON/);
+  await shot('custom-7-formula-editor');
+  await f2.locator('.samples input').nth(1).fill('');
+  assert.match(await f2.locator('.calc-result').innerText(), /gol/i);
+  await f2.locator('textarea[name=formula]').fill('[Timp oprire] /');
+  assert.ok(await f2.locator('.calc-result.bad').count(), 'a broken formula says so while typing');
+  await f2.locator('[data-chips="examples"] .chip').first().click();
+  assert.match(await f2.locator('textarea[name=formula]').inputValue(), /round\(/);
+  await f2.locator('textarea[name=formula]').fill('round([Timp oprire] / 60 * [Preț oră]; 2)');
+  await Promise.all([page.waitForNavigation(), f2.locator('button[type=submit]').click()]);
+  assert.equal(db.value("SELECT count(*) FROM custom_fields WHERE formula IS NOT NULL"), 1);
+  step('formula editor: chips, live preview, errors while typing, saved');
+
+  await page.goto(base + '/mentenanta/nou');
+  await page.fill('input[name=title]', 'Cost la oprire');
+  const nums = page.locator('input[inputmode=decimal]');
+  await nums.nth(0).fill('90'); await nums.nth(1).fill('40');
+  assert.match(await page.locator('[data-calc-out]').innerText(), /60,00 RON/);
+  await nums.nth(0).fill('150');
+  assert.match(await page.locator('[data-calc-out]').innerText(), /100,00 RON/);
+  await shot('custom-8-live-result');
+  await page.click('main form button.primary[type=submit]'); await page.waitForURL(/\/sarcini\/\d+$/);
+  assert.match(await page.locator('main').innerText(), /100,00 RON/);
+  step('the form shows the result live; the saved task holds it');
+
   await browser.close(); await app.cleanup();
   console.log('custom fields walk-through: all good');
 }

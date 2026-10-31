@@ -87,7 +87,7 @@ test('fields: validation, one of every type, order, hidden rather than deleted, 
     mtg: { kind: 'meeting', type: 'text', label: 'Subiect principal' },
   })) {
     const r = await mk({ ...base, ...f });
-    assert.equal(r.status, 303, `${key}: ${r.status}`);
+    assert.equal(r.status, 303, `${key}: ${r.status} ${[...r.text.matchAll(/field-error[^>]*>([^<]*)/g)].map((m) => m[1]).join(" / ")}`);
     made[key] = app.db.get('SELECT * FROM custom_fields WHERE label = ?', f.label);
   }
   ids.f = Object.fromEntries(Object.entries(made).map(([k, v]) => [k, v.id]));
@@ -110,7 +110,8 @@ test('fields: validation, one of every type, order, hidden rather than deleted, 
   const ov = (await admin.get('/admin/campuri')).text;
   for (const l of ['Cauză', 'Cantitate', 'Data oprire', 'Siguranță verificată', 'Comandă client', 'Observații lungi']) assert.ok(ov.includes(l), l);
   assert.match((await admin.get('/admin/campuri?kind=ncr')).text, /Cauză NC/);
-  assert.ok(!(await admin.get('/admin/campuri?kind=ncr')).text.includes('Data oprire'));
+  const ncrTable = /<tbody>([\s\S]*?)<\/tbody>/.exec((await admin.get('/admin/campuri?kind=ncr')).text)[1];
+  assert.ok(!ncrTable.includes('Data oprire') && ncrTable.includes('Cauză NC'), 'the table lists only fields of the chosen kind');
   assert.ok(app.db.all("SELECT action FROM audit_log WHERE action LIKE 'custom_%'").length >= 10, 'audited');
 });
 

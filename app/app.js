@@ -117,6 +117,7 @@ async function handleRequest(app, req, res, langStore) {
     const rel = pathname.slice('/static/'.length);
     let file = null;
     if (rel === 'calc.js') file = path.join(DOMAIN_DIR, 'calc.js');
+    else if (rel === 'formula.js') file = path.join(DOMAIN_DIR, 'formula.js');
     else {
       const full = H.safeJoin(PUBLIC_DIR, rel);
       if (full) file = full;

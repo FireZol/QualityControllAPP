@@ -773,3 +773,20 @@ html[data-theme] .facts .cf dd .pre { white-space: pre-wrap; }
 html[data-theme] tr.is-hidden td { opacity: 0.6; }
 html[data-theme] [hidden] { display: none !important; }
 html[data-theme] .cf-col { min-width: 7.5rem; overflow-wrap: break-word; word-break: normal; }
+
+/* calculated custom fields and the formula editor */
+html[data-theme] .formula-builder { display: grid; gap: 10px; margin: 6px 0 12px; }
+html[data-theme] .formula-builder textarea { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.95rem; width: 100%; }
+html[data-theme] .formula-builder .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+html[data-theme] .formula-builder .chips .lbl { font-size: 0.8rem; font-weight: 650; color: var(--muted); margin-right: 4px; }
+html[data-theme] .chip { min-height: 44px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--panel); color: var(--ink); cursor: pointer; font: inherit; font-size: 0.9rem; }
+html[data-theme] .chip:hover { border-color: var(--brand); }
+html[data-theme] .chip.fn { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+html[data-theme] .chip.example { border-style: dashed; }
+html[data-theme] .formula-builder .preview { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; }
+html[data-theme] .formula-builder .samples { display: flex; flex-wrap: wrap; gap: 10px; }
+html[data-theme] .calc-result { margin: 0; font-weight: 650; }
+html[data-theme] .calc-result.ok { color: var(--ok); }
+html[data-theme] .calc-result.bad { color: var(--bad); }
+html[data-theme] .formula-builder .how ul { margin: 6px 0 0; padding-left: 1.2rem; display: grid; gap: 4px; }
+html[data-theme] .field.calc .calc-out { display: block; min-height: 44px; line-height: 44px; padding: 0 12px; border: 1px dashed var(--line-strong); border-radius: 10px; font-weight: 650; }

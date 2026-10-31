@@ -5,11 +5,12 @@
 // Values live in custom_values (one row per record and field, '' = empty). The type of a field never changes after it is made.
 const audit = require('./audit');
 const calc = require('./calc');
+const formula = require('./formula');
 const i18n = require('../i18n');
 const { nowIso, displayDate, isRealDate } = require('../lib/time');
 
 const KINDS = ['task', 'ncr', 'meeting'];
-const TYPES = ['text', 'longtext', 'number', 'date', 'yesno', 'list'];
+const TYPES = ['text', 'longtext', 'number', 'date', 'yesno', 'list'];   // a calculated field is a 'number' that carries a formula
 const TEAMS = ['maintenance', 'technical', 'quality'];
 const RE_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const realDate = isRealDate;
@@ -17,6 +18,8 @@ const MAX_FIELDS_PER_KIND = 40;
 const MAX_ITEMS = 500;
 const lang = () => i18n.current();
 
+/** A calculated field: a number whose value comes from a formula (domain/formula.js). */
+const isCalc = (f) => f.formula !== null && f.formula !== undefined && f.formula !== '';
 const nameOf = (row) => (lang() === 'en' && row.label_en ? row.label_en : row.label);
 const listNameOf = (row) => (lang() === 'en' && row.name_en ? row.name_en : row.name);
 const fieldLabel = (f) => nameOf(f) + (f.type === 'number' && f.unit ? ` [${f.unit}]` : '');
@@ -35,6 +38,8 @@ function defs(db, kind, team, opts) {
   const all = opts && opts.all ? 1 : 0;
   const rows = db.all(`SELECT f.*, l.name AS list_name FROM custom_fields f LEFT JOIN custom_lists l ON l.id = f.list_id
     WHERE f.kind = ? AND (? = 1 OR f.active = 1) AND (? IS NULL OR f.team IS NULL OR f.team = ?) ORDER BY f.sort, f.id`, kind, all, team || null, team || null);
+  // a form that shows calculated fields needs the type of every field of the kind, hidden ones included
+  if (rows.some(isCalc)) rows.universe = db.all('SELECT id, type, formula FROM custom_fields WHERE kind = ?', kind);
   const listIds = [...new Set(rows.filter((r) => r.type === 'list').map((r) => r.list_id))];
   if (listIds.length) {
     const items = db.all(`SELECT * FROM custom_list_items WHERE list_id IN (${listIds.map(() => '?').join(',')}) ORDER BY sort, id`, ...listIds);
@@ -72,7 +77,7 @@ function valuesOfMany(db, kind, ids) {
 function display(f, raw) {
   const v = raw === undefined || raw === null ? '' : String(raw);
   if (v === '') return '';
-  if (f.type === 'number') return calc.dec(v) + (f.unit ? ` ${f.unit}` : '');
+  if (f.type === 'number') return calc.dec(isCalc(f) && f.decimals !== null && f.decimals !== undefined && Number.isFinite(Number(v)) ? Number(v).toFixed(f.decimals) : v) + (f.unit ? ` ${f.unit}` : '');
   if (f.type === 'date') return displayDate(v);
   if (f.type === 'yesno') return v === '1' ? i18n.T.common.yes : i18n.T.common.no;
   if (f.type === 'list') { const it = (f.items || []).find((i) => String(i.id) === v); return it ? (lang() === 'en' && it.label_en ? it.label_en : it.label) : ''; }
@@ -89,6 +94,7 @@ function display(f, raw) {
 function parse(fields, get, current) {
   const values = {}; const errors = {};
   for (const f of fields) {
+    if (isCalc(f)) continue;   // the result is worked out when the record is saved
     const key = `cf_${f.id}`;
     const raw = String(get(key) ?? '').trim();
     let v = raw;
@@ -121,7 +127,7 @@ function save(db, kind, recordId, fields, values) {
   const before = valuesOf(db, kind, recordId);
   const changes = [];
   for (const f of fields) {
-    if (!(f.id in values)) continue;
+    if (isCalc(f) || !(f.id in values)) continue;
     const now = values[f.id];
     const was = before[f.id] === undefined ? '' : before[f.id];
     if (now === was) continue;
@@ -129,7 +135,86 @@ function save(db, kind, recordId, fields, values) {
       ON CONFLICT(kind, record_id, field_id) DO UPDATE SET value = excluded.value`, kind, recordId, f.id, now);
     changes.push({ field_id: f.id, label: fieldLabel(f), from: display(f, was), to: display(f, now) });
   }
+  return changes.concat(applyCalc(db, kind, recordId, fields.filter(isCalc)));
+}
+
+// ---------------------------------------------------------------- calculated fields
+const parsedFormulas = new Map();
+function parsedOf(text) {
+  if (!parsedFormulas.has(text)) { if (parsedFormulas.size > 500) parsedFormulas.clear(); parsedFormulas.set(text, formula.parse(text)); }
+  return parsedFormulas.get(text);
+}
+
+/**
+ * The result of every calculated field in `calcFields` for one record, from the values it holds.
+ * @param all     every field of the kind (a formula may use a hidden field)
+ * @param values  {fieldId: stored text}
+ * @returns {fieldId: text} ('' = empty or not calculable: a missing input, a division by zero, ...)
+ */
+function computeCalc(all, calcFields, values) {
+  const byId = new Map(all.map((f) => [f.id, f]));
+  const today = formula.todayNumber(nowIso());
+  const done = new Map();
+  const out = {};
+  for (const f of calcFields.slice().sort((a, b) => a.id - b.id)) {
+    const p = parsedOf(f.formula);
+    let value = null;
+    if (p.ok) {
+      try {
+        value = formula.evaluate(p.ast, {
+          today,
+          get: (id) => { const g = byId.get(id); if (!g) return null; if (isCalc(g)) return done.has(id) ? done.get(id) : null; return formula.numberOf(g.type, values[id]); },
+        });
+      } catch (e) { if (!(e instanceof formula.FormulaError)) throw e; value = null; }
+    }
+    const text = formula.toText(value, f.decimals);
+    done.set(f.id, text === '' ? null : Number(text));
+    out[f.id] = text;
+  }
+  return out;
+}
+
+const allDefs = (db, kind) => db.all('SELECT * FROM custom_fields WHERE kind = ? ORDER BY id', kind);
+
+/** Work out and store the calculated fields of one record; @returns changes like save(). Call inside the record's transaction. */
+function applyCalc(db, kind, recordId, calcFields) {
+  if (!calcFields.length) return [];
+  const have = valuesOf(db, kind, recordId);
+  const result = computeCalc(allDefs(db, kind), calcFields, have);
+  const changes = [];
+  for (const f of calcFields) {
+    const now = result[f.id];
+    const was = have[f.id] === undefined ? '' : have[f.id];
+    if (now === was) continue;
+    db.run(`INSERT INTO custom_values(kind, record_id, field_id, value) VALUES (?,?,?,?)
+      ON CONFLICT(kind, record_id, field_id) DO UPDATE SET value = excluded.value`, kind, recordId, f.id, now);
+    changes.push({ field_id: f.id, label: fieldLabel(f), from: display(f, was), to: display(f, now), calculated: true });
+  }
   return changes;
+}
+
+/** Fields a formula may use: numbers, dates and yes/no of the same kind (tasks: no field of another team), without the field itself. */
+function formulaPool(db, kind, team, selfId) {
+  return db.all(`SELECT id, label, label_en, type, formula, unit FROM custom_fields WHERE kind = ? AND type IN ('number', 'date', 'yesno')
+    AND (team IS NULL OR (? IS NOT NULL AND team = ?)) AND (? IS NULL OR id <> ?) ORDER BY sort, id`, kind, team || null, team || null, selfId || null, selfId || null);
+}
+
+/** Every field a formula could use, of every kind (the builder in the browser narrows it to the kind and team being edited). */
+const allPool = (db) => db.all("SELECT id, kind, team, label, label_en, type, unit, active, (formula IS NOT NULL) AS calc FROM custom_fields WHERE type IN ('number', 'date', 'yesno') ORDER BY kind, sort, id");
+
+/** Check formula text as typed ("[Field] * 2") and turn it into the stored form. @returns {ok, text, refs} | {ok: false, code} */
+function checkFormula(db, kind, team, selfId, typed) {
+  const text = clean(typed, 600);
+  if (!text) return { ok: false, code: 'formula_empty' };
+  const pool = formulaPool(db, kind, team, selfId);
+  const r = formula.toStored(text, pool);
+  if (!r.ok) return { ok: false, code: r.code === 'unknown_field' ? 'formula_unknown_field' : r.code === 'ambiguous_field' ? 'formula_ambiguous_field' : 'formula_syntax', name: r.name };
+  const p = formula.parse(r.text);
+  if (!p.ok) return { ok: false, code: 'formula_' + p.code, pos: p.pos };
+  const used = formula.refs(p.ast);
+  if (selfId && used.some((id) => { const g = pool.find((x) => x.id === id); return g && g.formula && id > selfId; })) return { ok: false, code: 'formula_order' };
+  if (!used.length && !/today\s*\(/i.test(r.text)) return { ok: false, code: 'formula_no_field' };
+  return { ok: true, text: r.text, refs: used };
 }
 
 /** A one-line summary of what changed, for the history line. */
@@ -215,10 +300,12 @@ const clean = (s, max) => String(s === undefined || s === null ? '' : s).trim().
 
 function validateField(db, data, existing) {
   const errors = {};
+  const calcWanted = existing ? isCalc(existing) : data.type === 'calc';
   const v = {
     kind: existing ? existing.kind : data.kind, team: data.team ? String(data.team) : null, label: clean(data.label, 80), label_en: clean(data.label_en, 80) || null,
-    type: existing ? existing.type : data.type, list_id: data.list_id ? Number(data.list_id) : null, unit: clean(data.unit, 12) || null,
+    type: existing ? existing.type : (calcWanted ? 'number' : data.type), list_id: data.list_id ? Number(data.list_id) : null, unit: clean(data.unit, 12) || null,
     required: data.required ? 1 : 0, show_in_list: data.show_in_list ? 1 : 0, sort: Number.isInteger(Number(data.sort)) ? Math.min(Math.max(Number(data.sort), 0), 9999) : 0, active: data.active === undefined ? 1 : (data.active ? 1 : 0),
+    formula: null, decimals: null,
   };
   if (!KINDS.includes(v.kind)) errors.kind = 'invalid';
   if (!TYPES.includes(v.type)) errors.type = 'invalid';
@@ -229,9 +316,22 @@ function validateField(db, data, existing) {
     else if (existing && existing.list_id !== v.list_id && valueCount(db, existing.id) > 0) errors.list_id = 'list_in_use';
   } else v.list_id = null;
   if (v.type !== 'number') v.unit = null;
+  if (calcWanted) {
+    v.required = 0;   // a result is never typed, so it cannot be "required"
+    const d = Number(data.decimals === undefined || data.decimals === '' ? 2 : data.decimals);
+    v.decimals = Number.isInteger(d) && d >= 0 && d <= 6 ? d : 2;
+    if (!errors.kind) {
+      const c = checkFormula(db, v.kind, v.team, existing ? existing.id : null, data.formula);
+      if (!c.ok) errors.formula = c.code; else v.formula = c.text;
+    }
+  }
   if (!existing && !errors.kind && db.value('SELECT count(*) FROM custom_fields WHERE kind = ?', v.kind) >= MAX_FIELDS_PER_KIND) errors.label = 'too_many';
   if (existing && existing.kind === 'task' && existing.team !== v.team && valueCount(db, existing.id) > 0 && v.team) errors.team = 'team_in_use';
   return { errors, v };
+}
+
+function formulaVersion(db, user, fieldId, text, decimals) {
+  db.run('INSERT INTO custom_formula_history(field_id, formula, decimals, changed_at, changed_by) VALUES (?,?,?,?,?)', fieldId, text, decimals, nowIso(), user ? user.id : null);
 }
 
 function createField(db, user, data) {
@@ -239,9 +339,10 @@ function createField(db, user, data) {
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const sort = v.sort || (db.value('SELECT coalesce(max(sort), 0) FROM custom_fields WHERE kind = ?', v.kind) + 10);
-    const id = db.run(`INSERT INTO custom_fields(kind, team, label, label_en, type, list_id, unit, required, show_in_list, sort, active, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,1,?)`,
-      v.kind, v.team, v.label, v.label_en, v.type, v.list_id, v.unit, v.required, v.show_in_list, sort, nowIso()).id;
-    audit.log(db, user.id, 'custom_field_create', 'custom_fields', id, { kind: v.kind, label: v.label, type: v.type });
+    const id = db.run(`INSERT INTO custom_fields(kind, team, label, label_en, type, list_id, unit, required, show_in_list, sort, active, created_at, formula, decimals) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?,?)`,
+      v.kind, v.team, v.label, v.label_en, v.type, v.list_id, v.unit, v.required, v.show_in_list, sort, nowIso(), v.formula, v.decimals).id;
+    if (v.formula) formulaVersion(db, user, id, v.formula, v.decimals);
+    audit.log(db, user.id, 'custom_field_create', 'custom_fields', id, { kind: v.kind, label: v.label, type: v.formula ? 'calculated' : v.type, formula: v.formula || undefined });
     return { ok: true, id };
   });
 }
@@ -253,14 +354,40 @@ function updateField(db, user, id, data) {
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const changes = {};
-    for (const k of ['team', 'label', 'label_en', 'list_id', 'unit', 'required', 'show_in_list', 'sort', 'active']) if ((cur[k] ?? null) !== (v[k] ?? null)) changes[k] = { from: cur[k] ?? null, to: v[k] ?? null };
+    for (const k of ['team', 'label', 'label_en', 'list_id', 'unit', 'required', 'show_in_list', 'sort', 'active', 'formula', 'decimals']) if ((cur[k] ?? null) !== (v[k] ?? null)) changes[k] = { from: cur[k] ?? null, to: v[k] ?? null };
     if (Object.keys(changes).length) {
-      db.run('UPDATE custom_fields SET team=?, label=?, label_en=?, list_id=?, unit=?, required=?, show_in_list=?, sort=?, active=? WHERE id = ?', v.team, v.label, v.label_en, v.list_id, v.unit, v.required, v.show_in_list, v.sort, v.active, id);
+      db.run('UPDATE custom_fields SET team=?, label=?, label_en=?, list_id=?, unit=?, required=?, show_in_list=?, sort=?, active=?, formula=?, decimals=? WHERE id = ?', v.team, v.label, v.label_en, v.list_id, v.unit, v.required, v.show_in_list, v.sort, v.active, v.formula, v.decimals, id);
+      if (changes.formula || changes.decimals) formulaVersion(db, user, id, v.formula, v.decimals);
       audit.log(db, user.id, 'custom_field_edit', 'custom_fields', id, { label: v.label, changes });
     }
-    return { ok: true };
+    return { ok: true, formulaChanged: !!(changes.formula || changes.decimals) };
   });
 }
+
+/**
+ * Work out the results of every calculated field of the field's kind again, for all existing records (an explicit act of the administrator:
+ * a changed formula otherwise reaches a record only when that record is saved). The change is in the audit log with the number of records.
+ */
+function recalculate(db, user, fieldId) {
+  const f = field(db, fieldId);
+  if (!f || !isCalc(f)) return { ok: false, code: 'not_found' };
+  const rows = f.kind === 'task' ? db.all('SELECT id, team FROM tasks') : f.kind === 'ncr' ? db.all('SELECT id, NULL AS team FROM ncrs') : db.all('SELECT id, NULL AS team FROM meetings');
+  return db.tx(() => {
+    let changed = 0;
+    for (const r of rows) {
+      const calcs = defs(db, f.kind, r.team).filter(isCalc);
+      if (applyCalc(db, f.kind, r.id, calcs).length) changed++;
+    }
+    audit.log(db, user.id, 'custom_recalc', 'custom_fields', fieldId, { label: f.label, records: rows.length, changed });
+    return { ok: true, records: rows.length, changed };
+  });
+}
+
+/** The versions of a formula, newest first, with the person who saved each. */
+const formulaHistory = (db, fieldId) => db.all(`SELECT h.*, u.full_name AS by_name FROM custom_formula_history h LEFT JOIN users u ON u.id = h.changed_by WHERE h.field_id = ? ORDER BY h.id DESC`, fieldId);
+
+/** How many records of the field's kind exist (what a recalculation would visit). */
+const recordCount = (db, f) => (f.kind === 'task' ? db.value('SELECT count(*) FROM tasks') : f.kind === 'ncr' ? db.value('SELECT count(*) FROM ncrs') : db.value('SELECT count(*) FROM meetings'));
 
 /** Admin overview: every field with how many values it holds. */
 function adminFields(db, kind) {
@@ -330,6 +457,6 @@ function updateItem(db, user, listId, itemId, data) {
 }
 
 module.exports = {
-  KINDS, TYPES, TEAMS, nameOf, listNameOf, fieldLabel, lists, defs, shown, field, valueCount, valuesOf, valuesOfMany, display, parse, parseObject, save, changeSummary,
+  KINDS, TYPES, TEAMS, isCalc, formulaPool, allPool, checkFormula, computeCalc, applyCalc, recalculate, formulaHistory, recordCount, nameOf, listNameOf, fieldLabel, lists, defs, shown, field, valueCount, valuesOf, valuesOfMany, display, parse, parseObject, save, changeSummary,
   filters, keep, where, exportColumns, exportRows, createField, updateField, adminFields, createList, updateList, addItems, updateItem,
 };

@@ -372,6 +372,7 @@ const S = {
   verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ', neconform: 'Neconform' },
 
   errors: {
+    formula_empty: 'Scrieți o formulă.', formula_syntax: 'Formula nu poate fi citită. Verificați parantezele, semnul ; între argumentele funcțiilor și operatorii.', formula_unknown_field: 'Formula folosește un câmp care nu există. Numele câmpurilor se scriu între [paranteze drepte].', formula_ambiguous_field: 'Două câmpuri au același nume; redenumiți unul dintre ele.', formula_unknown_function: 'Funcție necunoscută. Câmpurile se scriu între [paranteze drepte], funcțiile cu paranteze rotunde, de exemplu round(x; 2).', formula_arg_count: 'O funcție are prea multe sau prea puține argumente.', formula_too_long: 'Formula este prea lungă (cel mult 500 de caractere).', formula_too_deep: 'Formula are prea multe paranteze una în alta.', formula_too_big: 'Formula este prea mare; împărțiți-o în două câmpuri calculate.', formula_order: 'Formula nu poate folosi un câmp calculat creat după ea (ar putea ajunge să se folosească pe sine).', formula_no_field: 'Formula trebuie să folosească cel puțin un câmp, în [paranteze drepte].', formula_div0: 'Împărțire la zero.', formula_domain: 'Operație imposibilă (de exemplu rădăcină pătrată dintr-un număr negativ).', formula_range: 'Rezultatul este prea mare.', formula_digits: 'Numărul de zecimale la round trebuie să fie între 0 și 9.',
     list_in_use: 'Lista este folosită de un câmp activ sau de valori deja introduse.', team_in_use: 'Câmpul are deja valori la sarcini; echipa nu se mai poate restrânge.', too_many: 'Sunt prea multe câmpuri pentru acest tip de înregistrare.',
     num_required: 'Modelul este obligatoriu.', num_too_long: 'Modelul este prea lung.', num_invalid: 'Modelul conține caractere sau marcaje nepermise.', num_seq_once: 'Modelul trebuie să conțină {seq} sau {seq:N} o singură dată.',
     required: 'Câmp obligatoriu.', invalid: 'Valoare nevalidă.', too_long: 'Textul este prea lung.', duplicate: 'Există deja o intrare cu această valoare.',
@@ -384,6 +385,7 @@ const S = {
   },
 
   flash: {
+    custom_recalculated: 'Rezultatele au fost recalculate.',
     custom_field_saved: 'Câmpul a fost salvat.', custom_list_saved: 'Lista a fost salvată.', custom_items_added: 'Elementele au fost adăugate.', custom_items_none: 'Nu s-a adăugat nimic: elementele există deja.',
     saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
     meeting_created: 'Ședința a fost creată.', meeting_saved: 'Ședința a fost salvată.', meeting_status_changed: 'Starea ședinței a fost schimbată.', meeting_decision_added: 'Decizia a fost adăugată.', meeting_attendance_saved: 'Prezența a fost salvată.', series_saved: 'Programarea a fost salvată.', task_bulk:'Sarcinile selectate au fost modificate.', task_bulk_partial: 'Unele sarcini au fost modificate, altele nu (de ex. au deja starea aleasă).', task_step_added: 'Pașii au fost adăugați.', ncr_created: 'Neconformitatea a fost raportată.', ncr_saved: 'Neconformitatea a fost salvată.', ncr_status_changed: 'Starea neconformității a fost schimbată.', ncr_comment_added: 'Comentariul a fost adăugat.', ncr_task_added: 'Sarcina a fost adăugată.', e_disposition_required: 'Alegeți mai întâi decizia asupra produsului (în Evaluare).', e_cause_required: 'Completați mai întâi cauza (în Evaluare).', e_corrective_required: 'Completați mai întâi acțiunea corectivă (în Evaluare).', e_verification_required: 'Verificați mai întâi eficacitatea acțiunii.', pm_saved: 'Planul a fost salvat.', pm_task_made: 'Sarcina a fost creată din plan.', pm_skipped: 'Data a fost sărită; planul a trecut la următoarea.', e_pm_exists: 'Pentru acest termen există deja o sarcină sau a fost sărit.', e_nothing_selected: 'Nu ați selectat nicio sarcină.', e_bulk_none: 'Nicio sarcină nu a putut fi modificată.', task_created: 'Sarcina a fost creată.', task_saved: 'Sarcina a fost salvată.', task_status_changed: 'Starea sarcinii a fost schimbată.', task_comment_added: 'Comentariul a fost adăugat.',
@@ -592,10 +594,20 @@ const S = {
   },
 
   custom: {
+    formula: 'Formula', formula_hint: 'Numele câmpurilor între [paranteze drepte]; + - * / ^ și paranteze; argumentele funcțiilor se despart cu ;',
+    formula_fields: 'Câmpuri de folosit', formula_functions: 'Funcții', formula_examples: 'Exemple cu câmpurile dumneavoastră', formula_no_fields: 'Creați întâi câmpuri de tip Număr, Dată sau Da / Nu pentru aceeași înregistrare; formula le folosește.',
+    ex_convert: 'Conversie (minute în ore)', ex_multiply: 'Produs', ex_days: 'Zile între două date', ex_if: 'Da / nu după o limită', ex_default: 'Valoare implicită dacă lipsește',
+    preview: 'Previzualizare', preview_hint: 'Introduceți valori de probă și vedeți rezultatul pe loc. Nimic nu se salvează.', preview_result: 'Rezultat', preview_fill: 'Completați valorile de probă.', preview_empty: 'Rezultat gol: un câmp folosit este necompletat.',
+    decimals: 'Zecimale', decimals_hint: '0–6, rezultatul se rotunjește', calc_auto: 'se calculează automat', calc_badge: 'calculat',
+    how_title: 'Cum se scrie o formulă', how_1: 'Câmpurile se scriu între paranteze drepte: [Timp oprire] / 60. Apăsați un câmp din listă ca să-l introduceți.',
+    how_2: 'Operatori: + − * / ^ (putere), paranteze, comparații < > <= >= = <>, și and, or, not (da = 1, nu = 0).', how_3: 'Funcții: round(x; zecimale), floor, ceil, abs, sqrt, pow(x; y), min, max, avg, sum, if(condiție; atunci; altfel), empty(x), today(). Argumentele se despart cu ;',
+    how_4: 'Datele se socotesc în zile: [Până la] - [De la] dă numărul de zile dintre ele. Zecimalele pot fi cu punct sau cu virgulă.', how_5: 'Un câmp necompletat nu înseamnă zero: rezultatul rămâne gol. Folosiți if(empty([câmp]); 0; [câmp]) ca să tratați lipsa ca 0. min, max, avg și sum sar peste valorile goale.',
+    recalc_title: 'Recalculare', recalc_text: 'O formulă schimbată se aplică unei înregistrări când aceasta este salvată; rezultatele existente nu se schimbă pe ascuns. Pentru a le recalcula acum la toate cele {n} înregistrări:', recalc_btn: 'Recalculează toate', recalc_confirm: 'Recalculați acum rezultatele tuturor înregistrărilor?',
+    history_title: 'Versiunile formulei', history_when: 'Când', history_by: 'Cine', history_current: 'curentă', result_unit: 'Unitate rezultat',
     title: 'Câmpuri proprii', section: 'Câmpuri suplimentare', tab_fields: 'Câmpuri', tab_lists: 'Liste proprii',
     intro: 'Adăugați câmpuri noi la sarcini, neconformități și ședințe, fără să schimbați programul. Câmpurile apar în formular, în pagina înregistrării, în filtre și în exporturile Excel / CSV. Un câmp nu se șterge: se ascunde, iar valorile deja introduse rămân.',
     kind: { task: 'Sarcini', ncr: 'Neconformități', meeting: 'Ședințe' },
-    type: { text: 'Text scurt', longtext: 'Text lung', number: 'Număr', date: 'Dată', yesno: 'Da / Nu', list: 'Alegere din listă' },
+    type: { text: 'Text scurt', longtext: 'Text lung', number: 'Număr', calc: 'Număr calculat (formulă)', date: 'Dată', yesno: 'Da / Nu', list: 'Alegere din listă' },
     applies_to: 'Se aplică la', team: 'Echipă (doar sarcini)', all_teams: 'Toate echipele', type_label: 'Tip', type_locked: 'Tipul nu se mai poate schimba după creare.',
     label_ro: 'Denumire (română)', label_en: 'Denumire (engleză)', label_en_hint: 'Opțional. Dacă lipsește, se arată denumirea românească.',
     list_label: 'Lista (pentru „Alegere din listă”)', list_note: 'Pentru „Alegere din listă” creați întâi lista, în fila „Liste proprii”. Unitatea se folosește doar la numere.',
@@ -632,6 +644,7 @@ const S = {
   audit: {
     title: 'Jurnal de audit', action: 'Acțiune', entity: 'Obiect', details: 'Detalii',
     actions: {
+      custom_recalc: 'câmp calculat recalculat',
       custom_field_create: 'câmp propriu creat', custom_field_edit: 'câmp propriu modificat', custom_list_create: 'listă proprie creată', custom_list_edit: 'listă proprie modificată', custom_item_add: 'elemente adăugate în listă', custom_item_edit: 'element de listă modificat',
       login: 'autentificare', login_failed: 'autentificare eșuată', login_blocked: 'autentificare blocată', logout: 'ieșire', password_change: 'schimbare parolă', password_reset: 'resetare parolă',
       user_create: 'utilizator creat', user_edit: 'utilizator modificat', measurement_add: 'măsurătoare adăugată', measurement_correct: 'măsurătoare corectată',

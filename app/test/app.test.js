@@ -724,12 +724,12 @@ test('24. seeding is idempotent and 25. a new migration backs up first, then app
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore);
   // restart 2: a pending 016 migration
   await app2.stop();
-  fs.writeFileSync(path.join(migDir, '018_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
+  fs.writeFileSync(path.join(migDir, '019_test_table.sql'), 'CREATE TABLE test_added (id INTEGER PRIMARY KEY, note TEXT);');
   const logs2 = [];
   app2 = await createApp(cfg, { listen: { port: 0, host: '127.0.0.1' }, log: (m) => logs2.push(m), noScheduler: true, migrationsDir: migDir });
   assert.match(logs2.join('\n'), /Backup înainte de migrare/);
   assert.equal(backup.listBackups(backup.backupDir(app2.db, cfg)).length, backupsBefore + 1);
-  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 18);
+  assert.equal(app2.db.value('SELECT max(version) FROM schema_migrations'), 19);
   assert.equal(app2.db.value("SELECT count(*) FROM sqlite_master WHERE name = 'test_added'"), 1);
   // the backup taken is the pre-migration state (no test_added table)
   const newest = backup.listBackups(backup.backupDir(app2.db, cfg))[0];

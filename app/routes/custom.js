@@ -14,7 +14,7 @@ module.exports = function register(app) {
   const lists = () => custom.lists(db);
   const fieldData = (ctx, withKindType) => ({
     ...(withKindType ? { kind: ctx.form.get('kind'), type: ctx.form.get('type') } : {}),
-    team: ctx.form.get('team'), label: ctx.form.get('label'), label_en: ctx.form.get('label_en'), list_id: ctx.form.get('list_id'), unit: ctx.form.get('unit'), sort: ctx.form.get('sort'),
+    team: ctx.form.get('team'), label: ctx.form.get('label'), label_en: ctx.form.get('label_en'), list_id: ctx.form.get('list_id'), unit: ctx.form.get('unit'), sort: ctx.form.get('sort'), formula: ctx.form.get('formula'), decimals: ctx.form.get('decimals'),
     required: ctx.form.bool('required'), show_in_list: ctx.form.bool('show_in_list'),
   });
   const kindOf = (ctx) => (custom.KINDS.includes(ctx.query.get('kind')) ? ctx.query.get('kind') : '');
@@ -22,13 +22,13 @@ module.exports = function register(app) {
   // ---- fields ----
   router.get('/admin/campuri', { roles: ADMIN }, (ctx) => {
     const kind = kindOf(ctx);
-    return page(views.fieldsPage(ctx, { rows: custom.adminFields(db, kind || null), kind, lists: lists() }));
+    return page(views.fieldsPage(ctx, { rows: custom.adminFields(db, kind || null), kind, lists: lists(), pool: custom.allPool(db) }));
   });
 
   router.post('/admin/campuri/nou', { roles: ADMIN }, (ctx) => {
     const data = fieldData(ctx, true);
     const r = custom.createField(db, ctx.user, data);
-    if (!r.ok) return page(views.fieldsPage(ctx, { rows: custom.adminFields(db, null), kind: '', lists: lists(), values: data, errors: r.errors }), 422);
+    if (!r.ok) return page(views.fieldsPage(ctx, { rows: custom.adminFields(db, null), kind: '', lists: lists(), values: data, errors: r.errors, pool: custom.allPool(db) }), 422);
     return redirect('/admin/campuri', { flash: { key: 'custom_field_saved' } });
   });
 
@@ -36,15 +36,24 @@ module.exports = function register(app) {
     const fld = custom.adminFields(db, null).find((x) => x.id === idOf(ctx.params.id));
     return fld || null;
   };
+  const editData = (fld, values, errors) => {
+    const calc = custom.isCalc(fld);
+    return { fld, lists: lists(), values, errors, pool: custom.allPool(db), calc, history: calc ? custom.formulaHistory(db, fld.id) : [], records: calc ? custom.recordCount(db, fld) : 0 };
+  };
+  router.post('/admin/campuri/:id/recalcula', { roles: ADMIN }, (ctx) => {
+    const fld = loadField(ctx); if (!fld) return notFound(ctx);
+    const r = custom.recalculate(db, ctx.user, fld.id);
+    return redirect(`/admin/campuri/${fld.id}/editeaza`, r.ok ? { flash: { key: 'custom_recalculated' } } : { flash: { type: 'err', key: 'e_invalid' } });
+  });
   router.get('/admin/campuri/:id/editeaza', { roles: ADMIN }, (ctx) => {
     const fld = loadField(ctx); if (!fld) return notFound(ctx);
-    return page(views.fieldEditPage(ctx, { fld, lists: lists() }));
+    return page(views.fieldEditPage(ctx, editData(fld)));
   });
   router.post('/admin/campuri/:id/editeaza', { roles: ADMIN }, (ctx) => {
     const fld = loadField(ctx); if (!fld) return notFound(ctx);
     const data = { ...fieldData(ctx, false), active: ctx.form.bool('active') };
     const r = custom.updateField(db, ctx.user, fld.id, data);
-    if (!r.ok) return page(views.fieldEditPage(ctx, { fld, lists: lists(), values: { ...fld, ...data }, errors: r.errors || {} }), 422);
+    if (!r.ok) return page(views.fieldEditPage(ctx, editData(fld, { ...fld, ...data }, r.errors || {})), 422);
     return redirect('/admin/campuri', { flash: { key: 'custom_field_saved' } });
   });
 
