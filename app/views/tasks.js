@@ -7,6 +7,7 @@ const { displayDate, displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, textArea } = require('./layout');
 const P = require('./print');
 const tasks = require('../domain/tasks');
+const cv = require('./custom');
 
 const prioName = (t) => (i18n.current() === 'en' && t.priority_name_en ? t.priority_name_en : t.priority_name) || '';
 const prioChip = (t, ranks) => (t.priority_id ? html`<span class="prio prio-${Math.min(3, ranks.get(t.priority_id) || 0)}">${prioName(t)}</span>` : '');
@@ -75,7 +76,8 @@ function boardPage(ctx, d) {
   const back = `${d.base}?${keep}`;
   d.back = back; d.team = team;
   const qs = new URLSearchParams({ ...d.keep, team });
-  const cols = can.update ? 9 : 8;
+  const cf = d.cf || { fields: [], filterFields: [], values: new Map() };
+  const cols = (can.update ? 9 : 8) + cv.columns(cf.fields).length;
   const row = (t) => html`<tr class="${t.overdue ? 'is-overdue' : ''}">
   ${can.update ? html`<td class="sel"><label class="selbox"><input type="checkbox" name="ids" value="${t.id}" form="bulk" aria-label="${t.no}"></label></td>` : ''}
   <td class="nowrap"><a href="/sarcini/${t.id}">${t.no}</a></td>
@@ -83,7 +85,7 @@ function boardPage(ctx, d) {
     ${t.check_total ? html` <span class="mini${t.check_done === t.check_total ? ' ok' : ''}" title="${T.tasks.checklist}">☑ ${t.check_done}/${t.check_total}</span>` : ''}${t.comments ? html` <span class="mini" title="${T.tasks.comments}">💬 ${t.comments}</span>` : ''}${where(t) ? html`<br><small class="muted">${where(t)}</small>` : ''}</td>
   <td>${prioChip(t, ranks)}</td><td>${statusChip(t.status)}</td>
   <td>${t.assignees.length ? t.assignees.map((a) => a.name).join(', ') : html`<span class="muted">${T.tasks.unassigned}</span>`}</td>
-  <td class="nowrap">${dueCell(t)}</td><td class="nowrap muted col-updated">${displayDate((t.updated_at || t.created_at).slice(0, 10))}</td>
+  ${cv.bodyCells(cf.fields, cf.values.get(t.id))}<td class="nowrap">${dueCell(t)}</td><td class="nowrap muted col-updated">${displayDate((t.updated_at || t.created_at).slice(0, 10))}</td>
   ${can.update ? html`<td class="nowrap">${NEXT[t.status] ? html`<form method="post" action="/sarcini/${t.id}/stare" class="inline">${csrf(ctx)}<input type="hidden" name="to" value="${NEXT[t.status]}"><input type="hidden" name="back" value="${back}"><button class="btn small primary" type="submit">${T.taskact[t.status === 'waiting' ? 'resume' : NEXT[t.status]]}</button></form>` : ''}</td>` : ''}
 </tr>`;
   const groups = sections(d);
@@ -104,6 +106,7 @@ ${tabs(d)}
     ${selectField({ label: T.tasks.sort, name: 'sort', value: fl.sort, options: tasks.SORT_KEYS.map((k) => [k, T.tasks['sort_' + k]]) })}
     ${selectField({ label: T.tasks.group, name: 'group', value: fl.group, options: ['status', 'person', 'priority'].map((k) => [k, T.tasks['group_' + k]]), blank: T.tasks.group_none })}
     <label class="check"><input type="checkbox" name="overdue" value="1"${fl.overdue ? raw(' checked') : ''}> <span>${T.tasks.only_overdue}</span></label>
+    ${cv.filterControls(cf.filterFields, ctx.query)}
     <button class="btn primary" type="submit">${T.common.filter}</button><a class="btn" href="${d.base}?view=${fl.view}">${T.common.reset}</a>
   </div>
 </form>
@@ -112,7 +115,7 @@ ${tabs(d)}
   <a class="btn small" href="/sarcini/tipar?${new URLSearchParams({ ...d.keep, team, group: 'person' })}">${T.tasks.print_by_person}</a>
   <a class="btn small" href="/sarcini/export?${qs}&format=csv">${T.tasks.export_csv}</a><a class="btn small" href="/sarcini/export?${qs}&format=xlsx">${T.tasks.export_xlsx}</a></p>
 ${can.update ? bulkBar(ctx, d) : ''}
-<div class="scroll"><table class="grid tasks"><thead><tr>${can.update ? html`<th class="sel"><label class="selbox"><input type="checkbox" id="sel-all" aria-label="${T.tasks.select_all}"></label></th>` : ''}<th>${T.tasks.no}</th><th>${T.tasks.task}</th><th>${T.tasks.priority}</th><th>${T.common.status}</th><th>${T.tasks.assigned}</th><th>${T.tasks.due}</th><th class="col-updated">${T.tasks.updated}</th>${can.update ? html`<th></th>` : ''}</tr></thead>
+<div class="scroll"><table class="grid tasks"><thead><tr>${can.update ? html`<th class="sel"><label class="selbox"><input type="checkbox" id="sel-all" aria-label="${T.tasks.select_all}"></label></th>` : ''}<th>${T.tasks.no}</th><th>${T.tasks.task}</th><th>${T.tasks.priority}</th><th>${T.common.status}</th><th>${T.tasks.assigned}</th>${cv.headCells(cf.fields)}<th>${T.tasks.due}</th><th class="col-updated">${T.tasks.updated}</th>${can.update ? html`<th></th>` : ''}</tr></thead>
 <tbody>${rows.length ? groups.map((g) => html`${g.title ? html`<tr class="group-row"><th colspan="${cols}">${g.title} <span class="count">${g.rows.length}</span></th></tr>` : ''}${g.rows.map(row)}`) : html`<tr><td colspan="${cols}" class="empty">${T.tasks.empty} ${can.create ? html`<a href="${d.newPath}">${T.tasks.new}</a>` : ''}</td></tr>`}</tbody></table></div>`,
   });
 }
@@ -141,6 +144,7 @@ function taskForm(ctx, d) {
     ${textField({ label: T.tasks.area, name: 'area', value: v.area, errors, hint: T.tasks.area_hint, attrs: 'maxlength="120"' })}
   </div>
   ${canAssign ? peopleChecks(lists.people, d.assignees || (task ? task.assignees.map((a) => a.id) : []), team) : ''}
+  ${cv.inputs(d.cfFields || [], d.cfv, errors, d.cfCurrent)}
   <div class="actions"><button class="btn primary big" type="submit">${T.common.save}</button><a class="btn" href="${task ? `/sarcini/${task.id}` : base}">${T.common.cancel}</a></div>
 </form>`,
   });
@@ -150,6 +154,7 @@ function historyLine(e) {
   if (e.kind === 'created') return T.tasks.ev_created;
   if (e.kind === 'status') return f(T.tasks.ev_status, { from: T.taskstatus[e.from_status] || '', to: T.taskstatus[e.to_status] || '' });
   if (e.kind === 'assign') return f(T.tasks.ev_assign, { added: (e.details && e.details.names_added) || '', removed: (e.details && e.details.names_removed) || '' });
+  if (e.kind === 'edit' && e.details && e.details.custom) return f(T.tasks.ev_custom, { fields: e.details.custom.map((c) => `${c.label}: ${c.from || '—'} → ${c.to || '—'}`).join('; ') });
   if (e.kind === 'edit' && e.details && e.details.checklist) return f(T.tasks.ev_check, { action: T.tasks['check_' + e.details.checklist.action] || '', item: e.details.checklist.item });
   if (e.kind === 'edit') return f(T.tasks.ev_edit, { fields: e.details ? Object.keys(e.details).map((k) => T.tasks.field[k] || k).join(', ') : '' });
   return T.tasks.ev_comment;
@@ -210,6 +215,7 @@ function taskPage(ctx, d) {
     <div><dt>${T.tasks.assigned}</dt><dd>${t.assignees.length ? t.assignees.map((a) => a.name).join(', ') : html`<span class="muted">${T.tasks.unassigned}</span>`}</dd></div>
     <div><dt>${T.tasks.due}</dt><dd>${dueCell(t)}</dd></div>
     <div><dt>${T.tasks.where}</dt><dd>${where(t) || '—'}</dd></div>
+    ${cv.facts((d.cf || {}).fields || [], (d.cf || {}).values)}
     <div><dt>${T.tasks.created}</dt><dd>${t.created_by_name} <span class="muted">${displayDateTime(t.created_at)}</span></dd></div>
     ${t.closed_at ? html`<div><dt>${T.tasks.closed}</dt><dd>${t.closed_by_name || ''} <span class="muted">${displayDateTime(t.closed_at)}</span></dd></div>` : ''}
     ${t.source_kind && t.source_kind !== 'manual' ? html`<div><dt>${T.tasks.source_label}</dt><dd>${T.tasks.source[t.source_kind] || t.source_kind}${d.sourceLink ? html` — <a href="${d.sourceLink.href}">${d.sourceLink.text}</a>` : ''}</dd></div>` : ''}

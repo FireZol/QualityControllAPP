@@ -7,6 +7,7 @@ module.exports = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Technological Quality Control' },
 
   nav: {
+    custom: 'Custom fields',
     label: 'Main navigation', chip_open: 'OPEN', chip_open_title: 'Tasks being worked on (open, in progress, waiting)', chip_critical: 'CRITICAL', chip_critical_title: 'Active tasks of the highest priority', menu: 'Menu', home: 'Home', new_measurement: 'New measurement', register: 'Register', batches: 'Batches', analyses: 'Analyses', specs: 'Data sheets',
     m_tasks: 'Tasks', m_preventive: 'Preventive', m_ncr: 'Non-conformities', m_top: 'Top non-conformities', m_meetings: 'Meetings', m_series: 'Schedules', modules: 'Modules', notifications: 'Notifications', notifications_n: 'Notifications ({n} unread)',
     admin: 'Administration', lists: 'Database', users: 'Users', settings: 'Settings', audit: 'Audit log', logout: 'Log out', password: 'Change password',
@@ -259,7 +260,7 @@ module.exports = {
     created: 'Created', closed: 'Closed', source_label: 'Source', source: { manual: 'manual', meeting: 'meeting', ncr: 'non-conformity', measurement: 'measurement', preventive: 'preventive' },
     change_status: 'Change the status', comment_optional: 'Comment (required to cancel and to reopen)', reason_hint: 'It is kept in the history.', save_assignees: 'Save the assignment',
     add_comment: 'Add a comment', comment: 'Comment', send: 'Send', history: 'History', system: 'system', ev_created: 'Task created.', ev_status: 'Status: {from} → {to}.',
-    ev_assign: 'Assignment changed. Added: {added} Removed: {removed}', ev_edit: 'Changed: {fields}.', ev_comment: 'Comment.',
+    ev_custom: 'Custom fields changed — {fields}', ev_assign: 'Assignment changed. Added: {added} Removed: {removed}', ev_edit: 'Changed: {fields}.', ev_comment: 'Comment.',
     field: { title: 'title', description: 'description', priority_id: 'priority', due_date: 'due date', machine_id: 'machine', area: 'area' },
     no_people: 'There are no people yet; add them under Database → People (teams).', work_list: 'Work list', done_col: 'Done',
   },

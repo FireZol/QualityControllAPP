@@ -3,6 +3,7 @@
 // Statuses: open -> in_progress -> waiting -> done -> closed, and cancelled. Anyone who may update a team's tasks may close them
 // (owner, 2026-10-30); the history keeps who and when. A cancelled or reopened task needs a reason.
 const audit = require('./audit');
+const custom = require('./custom');
 const numbering = require('./numbering');
 const notifications = require('./notifications');
 const access = require('./access');
@@ -75,11 +76,19 @@ function watchers(db, task, exceptUserId) {
   return ids.filter((id) => id && id !== exceptUserId);
 }
 
+/** Custom fields (domain/custom.js): data.custom = {values, errors} from custom.parse; its errors join the form's, its values are saved with the record. */
+function saveCustom(db, id, team, data, user) {
+  if (!data.custom) return [];
+  const changes = custom.save(db, 'task', id, custom.defs(db, 'task', team), data.custom.values);
+  return changes;
+}
+
 const params = (t) => ({ no: t.no, title: t.title });
 
 /** @returns {{ok: true, id, no} | {ok: false, errors}} */
 function create(db, user, data) {
   const { errors, v } = validate(db, data);
+  if (data.custom) Object.assign(errors, data.custom.errors);
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const no = numbering.next(db, 'task', { team: v.team });
@@ -87,6 +96,7 @@ function create(db, user, data) {
     const id = db.run(`INSERT INTO tasks(no, team, title, description, priority_id, status, due_date, machine_id, area, site, source_kind, source_id, created_by, created_at, updated_at)
       VALUES (?,?,?,?,?,'open',?,?,?,?,?,?,?,?,?)`, no, v.team, v.title, v.description, v.priority_id, v.due_date, v.machine_id, v.area, data.site || null, v.source_kind, v.source_id, user ? user.id : null, now, now).id;
     for (const pid of v.assignees) db.run('INSERT INTO task_assignees(task_id, person_id) VALUES (?,?)', id, pid);
+    saveCustom(db, id, v.team, data);
     event(db, id, user && user.id, 'created', { details: { assignees: v.assignees, source: v.source_kind } });
     audit.log(db, user ? user.id : null, 'task_create', 'tasks', id, { no, team: v.team, title: v.title });
     const link = `/sarcini/${id}`;
@@ -103,6 +113,7 @@ function update(db, user, id, data) {
   const task = get(db, id);
   if (!task) return { ok: false, code: 'not_found' };
   const { errors, v } = validate(db, { ...data, team: task.team });
+  if (data.custom) Object.assign(errors, data.custom.errors);
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const changes = {};
@@ -111,6 +122,12 @@ function update(db, user, id, data) {
       db.run('UPDATE tasks SET title=?, description=?, priority_id=?, due_date=?, machine_id=?, area=?, updated_at=? WHERE id = ?', v.title, v.description, v.priority_id, v.due_date, v.machine_id, v.area, nowIso(), id);
       event(db, id, user.id, 'edit', { details: changes });
       audit.log(db, user.id, 'task_edit', 'tasks', id, { no: task.no, changes });
+    }
+    const cc = saveCustom(db, id, task.team, data);
+    if (cc.length) {
+      db.run('UPDATE tasks SET updated_at = ? WHERE id = ?', nowIso(), id);
+      event(db, id, user.id, 'edit', { details: { custom: cc } });
+      audit.log(db, user.id, 'task_edit', 'tasks', id, { no: task.no, custom: cc });
     }
     if (data.assignees !== undefined) setAssignees(db, user, id, v.assignees);
     return { ok: true };
@@ -198,6 +215,7 @@ function list(db, f) {
   if (f.soon) { where.push(`t.due_date IS NOT NULL AND t.due_date >= ? AND t.due_date <= ? AND t.status IN ('open', 'in_progress', 'waiting', 'done')`); p.push(today(), addDays(today(), 7)); }
   if (f.created_by) { where.push('t.created_by = ?'); p.push(f.created_by); }
   if (f.source_kind) { where.push('t.source_kind = ?'); p.push(f.source_kind); }
+  if (f.custom && f.custom.length) custom.where(f.custom, 'task', where, p);
   if (f.q) { where.push("(t.title LIKE ? ESCAPE '\\' OR t.no LIKE ? ESCAPE '\\' OR t.description LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like); }
   const order = f.view === 'closed' ? 't.closed_at DESC, t.id DESC' : SORTS[f.sort] || SORTS.priority;
   const rows = db.all(`SELECT t.*, pr.name AS priority_name, pr.name_en AS priority_name_en, pr.sort AS priority_sort, m.name AS machine_name,

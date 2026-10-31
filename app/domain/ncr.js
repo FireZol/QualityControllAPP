@@ -4,6 +4,7 @@
 // Status: reported -> evaluation -> action -> closed, or cancelled. Closing needs a disposition (what was decided about the product);
 // cancelling and reopening need a reason. Everything is written to a history; nothing is deleted.
 const audit = require('./audit');
+const custom = require('./custom');
 const numbering = require('./numbering');
 const notifications = require('./notifications');
 const access = require('./access');
@@ -56,6 +57,7 @@ function validate(db, data, partial) {
 /** @returns {{ok, id, no} | {ok:false, errors}} */
 function create(db, user, data) {
   const { errors, v } = validate(db, data, false);
+  if (data.custom) Object.assign(errors, data.custom.errors);   // custom fields (domain/custom.js): parsed by the route
   if (Object.keys(errors).length) return { ok: false, errors };
   if (!v.severity_id) v.severity_id = (db.get('SELECT id FROM priorities WHERE active = 1 ORDER BY sort LIMIT 1 OFFSET 1') || db.get('SELECT id FROM priorities WHERE active = 1 ORDER BY sort LIMIT 1') || {}).id || null;
   return db.tx(() => {
@@ -64,6 +66,7 @@ function create(db, user, data) {
     const id = db.run(`INSERT INTO ncrs(no, title, description, status, type_id, severity_id, machine_id, product, quantity, source_kind, record_no, batch_id, external_ref, site, cause, evaluation, disposition_id, reported_by, reported_at, created_at, updated_at)
       VALUES (?,?,?,'reported',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, no, v.title, v.description, v.type_id, v.severity_id, v.machine_id, v.product, v.quantity, v.source_kind, v.record_no, v.batch_id, v.external_ref, data.site || null, v.cause, v.evaluation, v.disposition_id, user.id, v.reported_at, now, now).id;
     for (const k of ['containment', 'corrective_action', 'preventive_action', 'responsible_person_id', 'action_due']) if (v[k]) db.run(`UPDATE ncrs SET ${k} = ? WHERE id = ?`, v[k], id);
+    if (data.custom) custom.save(db, 'ncr', id, custom.defs(db, 'ncr'), data.custom.values);
     event(db, id, user.id, 'created', { details: { source: v.source_kind, record_no: v.record_no } });
     audit.log(db, user.id, 'ncr_create', 'ncrs', id, { no, title: v.title });
     notifications.notify(db, leadUsers(db).filter((u) => u !== user.id), 'ncr_new', { no, title: v.title, by: user.full_name }, `/calitate/neconformitati/${id}`);
@@ -76,6 +79,7 @@ function update(db, user, id, data) {
   const n = get(db, id);
   if (!n) return { ok: false, code: 'not_found' };
   const { errors, v } = validate(db, data, true);
+  if (data.custom) Object.assign(errors, data.custom.errors);
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const changes = {};
@@ -86,7 +90,13 @@ function update(db, user, id, data) {
       event(db, id, user.id, 'edit', { details: changes });
       audit.log(db, user.id, 'ncr_edit', 'ncrs', id, { no: n.no, changes });
     }
-    return { ok: true, changed: Object.keys(changes).length };
+    const cc = data.custom ? custom.save(db, 'ncr', id, custom.defs(db, 'ncr'), data.custom.values) : [];
+    if (cc.length) {
+      db.run('UPDATE ncrs SET updated_at = ? WHERE id = ?', nowIso(), id);
+      event(db, id, user.id, 'edit', { details: { custom: cc } });
+      audit.log(db, user.id, 'ncr_edit', 'ncrs', id, { no: n.no, custom: cc });
+    }
+    return { ok: true, changed: Object.keys(changes).length + cc.length };
   });
 }
 
@@ -207,6 +217,7 @@ function list(db, f) {
   if (f.mine) { where.push('n.reported_by = ?'); p.push(f.mine); }
   if (f.days) { where.push('n.reported_at >= ?'); p.push(tasks.addDays(today(), -Math.min(Math.max(Number(f.days) || 0, 0), 36500))); }
   if (f.eval_overdue) { where.push("n.status = 'reported' AND n.reported_at < ?"); p.push(tasks.addDays(today(), -rules(db).evalDays)); }
+  if (f.custom && f.custom.length) custom.where(f.custom, 'ncr', where, p);
   if (f.q) { where.push("(n.title LIKE ? ESCAPE '\\' OR n.no LIKE ? ESCAPE '\\' OR n.description LIKE ? ESCAPE '\\' OR n.product LIKE ? ESCAPE '\\' OR n.external_ref LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like, like, like); }
   const rows = db.all(`SELECT n.*, t.name AS type_name, t.name_en AS type_name_en, p.name AS severity_name, p.name_en AS severity_name_en, p.sort AS severity_sort, m.name AS machine_name, u.full_name AS reported_by_name,
       (SELECT count(*) FROM ncrs o WHERE o.id <> n.id AND o.status <> 'cancelled' AND o.type_id = n.type_id AND n.type_id IS NOT NULL AND ((n.machine_id IS NOT NULL AND o.machine_id = n.machine_id) OR (n.product IS NOT NULL AND n.product <> '' AND o.product = n.product)) AND o.reported_at BETWEEN date(n.reported_at, '-90 days') AND date(n.reported_at, '+90 days')) AS similar_n,

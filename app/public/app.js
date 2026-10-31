@@ -55,6 +55,24 @@
     });
   })();
 
+  // parts of a form that only matter for some choice: data-when="name=a,b" on an input (its label goes with it) or on a paragraph; they show while
+  // the form's control `name` has one of those values (without this script everything stays visible)
+  document.querySelectorAll('form').forEach(function (form) {
+    const parts = form.querySelectorAll('[data-when]');
+    if (!parts.length) return;
+    const update = function () {
+      parts.forEach(function (el) {
+        const spec = el.getAttribute('data-when').split('=');
+        const control = form.elements.namedItem(spec[0]);
+        const show = !!control && spec[1].split(',').indexOf(control.value) !== -1;
+        const target = el.closest('label') || el;
+        target.hidden = !show;
+      });
+    };
+    form.addEventListener('change', update);
+    update();
+  });
+
   // a form that came back with marked fields: the summary at the top is read out, and the first marked field takes the cursor
   (function () {
     const box = document.querySelector('[data-form-summary]');

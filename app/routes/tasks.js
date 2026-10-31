@@ -3,6 +3,7 @@ const { page, redirect, download } = require('../lib/http');
 const xp = require('../lib/export');
 const i18n = require('../i18n');
 const tasks = require('../domain/tasks');
+const custom = require('../domain/custom');
 const settings = require('../domain/settings');
 const views = require('../views/tasks');
 const preventive = require('../domain/preventive');
@@ -25,14 +26,20 @@ module.exports = function register(app) {
   const rights = (ctx, team) => ({ view: tasks.canView(db, ctx.user, team, ctx.modules), create: tasks.canCreate(db, ctx.user, team, ctx.modules), update: tasks.canUpdate(db, ctx.user, team, ctx.modules), comment: tasks.canCreate(db, ctx.user, team, ctx.modules) });
   const forbidden = (ctx) => page(errorPage(ctx, 'forbidden'), 403);
 
+  const cfFields = (team) => custom.defs(db, 'task', team);
+  const cfShown = (team) => custom.shown(db, 'task', team);
+  const cfParse = (ctx, fields, current) => custom.parse(fields, (k) => ctx.form.get(k), current);
+  /** Custom columns of a board: filter controls (active fields), columns (active or still holding values), the values of the rows. */
+  const cfBoard = (team, rows) => ({ filterFields: cfFields(team), fields: cfShown(team), values: custom.valuesOfMany(db, 'task', rows.map((r) => r.id)) });
+
   /** Board filters from a query string (the same ones the printable list takes). */
-  function filtersOf(q) {
+  function filtersOf(q, team) {
     const int = (k) => (/^\d+$/.test(q.get(k) || '') ? Number(q.get(k)) : null);
     const flag = (k) => q.get(k) === '1';
     return { sort: tasks.SORT_KEYS.includes(q.get('sort')) ? q.get('sort') : 'priority', group: ['status', 'person', 'priority'].includes(q.get('group')) ? q.get('group') : '', mine: flag('mine'), unassigned: flag('unassigned'), soon: flag('soon'), by_me: flag('by_me'),
-      view: ['active', 'closed', 'all'].includes(q.get('view')) ? q.get('view') : 'active', q: (q.get('q') || '').trim().slice(0, 60), person: int('person'), priority: int('priority'), machine: int('machine'), overdue: q.get('overdue') === '1', status: tasks.ACTIVE.includes(q.get('status')) ? q.get('status') : '', source_kind: q.get('source') || '' };
+      view: ['active', 'closed', 'all'].includes(q.get('view')) ? q.get('view') : 'active', q: (q.get('q') || '').trim().slice(0, 60), person: int('person'), priority: int('priority'), machine: int('machine'), overdue: q.get('overdue') === '1', status: tasks.ACTIVE.includes(q.get('status')) ? q.get('status') : '', source_kind: q.get('source') || '', custom: custom.filters(cfFields(team), q) };
   }
-  const keepOf = (fl) => Object.fromEntries(Object.entries({ view: fl.view, q: fl.q, person: fl.person, priority: fl.priority, machine: fl.machine, overdue: fl.overdue ? '1' : '', status: fl.status, sort: fl.sort === 'priority' ? '' : fl.sort, group: fl.group, mine: fl.mine ? '1' : '', unassigned: fl.unassigned ? '1' : '', soon: fl.soon ? '1' : '', by_me: fl.by_me ? '1' : '' }).filter(([, v]) => v !== '' && v !== null && v !== undefined));
+  const keepOf = (fl) => Object.fromEntries(Object.entries({ view: fl.view, q: fl.q, person: fl.person, priority: fl.priority, machine: fl.machine, overdue: fl.overdue ? '1' : '', status: fl.status, sort: fl.sort === 'priority' ? '' : fl.sort, group: fl.group, mine: fl.mine ? '1' : '', unassigned: fl.unassigned ? '1' : '', soon: fl.soon ? '1' : '', by_me: fl.by_me ? '1' : '', ...custom.keep(fl.custom || []) }).filter(([, v]) => v !== '' && v !== null && v !== undefined));
 
   /** The people record(s) of the logged-in user: "mine" means assigned to them (-1 matches nothing when the user is not in the people list). */
   const myPeople = (ctx) => db.all('SELECT id FROM people WHERE user_id = ? AND active = 1', ctx.user.id).map((r) => r.id);
@@ -45,24 +52,27 @@ module.exports = function register(app) {
       const rt = rights(ctx, team);
       if (!rt.view) return forbidden(ctx);
       if (team === 'maintenance') preventive.ensure(db);
-      const fl = filtersOf(ctx.query);
+      const fl = filtersOf(ctx.query, team);
       const l = lists();
-      return page(views.boardPage(ctx, { team, base, newPath: `${base}/nou`, rows: tasks.list(db, queryOf(ctx, fl, team)), f: fl, hasPerson: myPeople(ctx).length > 0, keep: keepOf(fl), lists: l, ranks: ranks(l), counts: tasks.counts(db, team), can: rt }));
+      const rows = tasks.list(db, queryOf(ctx, fl, team));
+      return page(views.boardPage(ctx, { team, base, newPath: `${base}/nou`, rows, cf: cfBoard(team, rows), f: fl, hasPerson: myPeople(ctx).length > 0, keep: keepOf(fl), lists: l, ranks: ranks(l), counts: tasks.counts(db, team), can: rt }));
     });
 
     router.get(`${base}/nou`, {}, (ctx) => {
       if (!rights(ctx, team).create) return forbidden(ctx);
       const copy = idOf(ctx.query.get('copy'));
       const values = (copy && tasks.copyValues(db, copy, team)) || { priority_id: null };
-      return page(views.taskForm(ctx, { team, base, lists: lists(), values, canAssign: rights(ctx, team).update, copy: values.title ? copy : 0 }));
+      const cfv = copy && values.title ? custom.valuesOf(db, 'task', copy) : {};
+      return page(views.taskForm(ctx, { team, base, lists: lists(), values, canAssign: rights(ctx, team).update, copy: values.title ? copy : 0, cfFields: cfFields(team), cfv }));
     });
 
     router.post(`${base}/nou`, {}, (ctx) => {
       const rt = rights(ctx, team);
       if (!rt.create) return forbidden(ctx);
       const data = { team, title: ctx.form.get('title'), description: ctx.form.get('description'), priority_id: ctx.form.get('priority_id'), due_date: ctx.form.get('due_date'), machine_id: ctx.form.get('machine_id'), area: ctx.form.get('area'), assignees: rt.update ? ctx.form.all('assignees') : [] };
-      const r = tasks.create(db, ctx.user, data);
-      if (!r.ok) return page(views.taskForm(ctx, { team, base, lists: lists(), values: data, errors: r.errors, canAssign: rt.update, assignees: data.assignees.map(Number) }), 422);
+      const fields = cfFields(team); const cf = cfParse(ctx, fields);
+      const r = tasks.create(db, ctx.user, { ...data, custom: cf });
+      if (!r.ok) return page(views.taskForm(ctx, { team, base, lists: lists(), values: data, errors: r.errors, canAssign: rt.update, assignees: data.assignees.map(Number), cfFields: fields, cfv: cf.values }), 422);
       const from = idOf(ctx.form.get('copy'));
       if (from && tasks.copyValues(db, from, team)) tasks.copyChecklist(db, ctx.user, from, r.id);
       return redirect(`/sarcini/${r.id}`, { flash: { key: 'task_created' } });
@@ -76,7 +86,7 @@ module.exports = function register(app) {
     if (!team || !ctx.modules[team]) return page(errorPage(ctx, 'not_found'), 404);
     ctx.module = team;
     if (!rights(ctx, team).view) return forbidden(ctx);
-    const fl = filtersOf(ctx.query);
+    const fl = filtersOf(ctx.query, team);
     const rows = tasks.list(db, queryOf(ctx, fl, team, { limit: 1000 }));
     const group = ctx.query.get('group') === 'person';
     const groups = [];
@@ -98,12 +108,14 @@ module.exports = function register(app) {
     if (!team || !ctx.modules[team]) return page(errorPage(ctx, 'not_found'), 404);
     ctx.module = team;
     if (!rights(ctx, team).view) return forbidden(ctx);
-    const rows = tasks.list(db, queryOf(ctx, filtersOf(ctx.query), team, { limit: 2000 })).map((t) => ({
+    const found = tasks.list(db, queryOf(ctx, filtersOf(ctx.query, team), team, { limit: 2000 }));
+    const cfs = cfShown(team);
+    const rows = custom.exportRows(db, 'task', cfs, found.map((t) => t.id), found.map((t) => ({
       no: t.no, title: t.title, status: T.taskstatus[t.status], priority: views.prioName(t), assigned: t.assignees.map((a) => a.name).join(', '), where: [t.machine_name, t.area].filter(Boolean).join(' · '),
       due: t.due_date, created: t.created_at.slice(0, 10), updated: (t.updated_at || '').slice(0, 10), closed: t.closed_at ? t.closed_at.slice(0, 10) : '', steps: t.check_total ? `${t.check_done}/${t.check_total}` : '',
-    }));
+    })));
     const columns = [['no', 'no'], ['title', 'task'], ['status', 'status_col'], ['priority', 'priority'], ['assigned', 'assigned'], ['where', 'where'], ['due', 'due'], ['created', 'created'], ['updated', 'updated'], ['closed', 'closed'], ['steps', 'checklist']]
-      .map(([key, t]) => ({ key, header: T.tasks[t] || T.common.status, type: 'text' }));
+      .map(([key, t]) => ({ key, header: T.tasks[t] || T.common.status, type: 'text' })).concat(custom.exportColumns(cfs));
     const name = `${team}-tasks-${tasks.today()}`;
     if (ctx.query.get('format') === 'xlsx') return download(xp.toXlsx([{ name: T.modules[team].name.slice(0, 30), columns, rows }]), `${name}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     return download(xp.toCsv(columns, rows, xp.csvStyle(i18n.current())), `${name}.csv`, 'text/csv; charset=utf-8');
@@ -136,7 +148,7 @@ module.exports = function register(app) {
   function showTask(ctx, t, rt, err, status) {
     const l = lists();
     const src = t.source_kind === 'meeting' && t.source_id ? { href: `/sedinte/${t.source_id}`, text: T.tasks.source.meeting } : t.source_kind === 'ncr' && t.source_id ? { href: `/calitate/neconformitati/${t.source_id}`, text: T.tasks.source.ncr } : null;
-    return page(views.taskPage(ctx, { t, can: rt, ranks: ranks(l), base: tasks.teamPath(t.team), lists: l, err, sourceLink: src }), status || 200);
+    return page(views.taskPage(ctx, { t, can: rt, ranks: ranks(l), base: tasks.teamPath(t.team), lists: l, err, sourceLink: src, cf: { fields: cfShown(t.team), values: custom.valuesOf(db, 'task', t.id) } }), status || 200);
   }
 
   router.get('/sarcini/:id', {}, (ctx) => { const x = loadTask(ctx); return x.fail || showTask(ctx, x.t, x.rt); });
@@ -202,15 +214,16 @@ module.exports = function register(app) {
   router.get('/sarcini/:id/editeaza', {}, (ctx) => {
     const x = loadTask(ctx); if (x.fail) return x.fail;
     if (!x.rt.update) return forbidden(ctx);
-    return page(views.taskForm(ctx, { team: x.t.team, base: tasks.teamPath(x.t.team), task: x.t, lists: lists(), canAssign: true }));
+    return page(views.taskForm(ctx, { team: x.t.team, base: tasks.teamPath(x.t.team), task: x.t, lists: lists(), canAssign: true, cfFields: cfFields(x.t.team), cfv: custom.valuesOf(db, 'task', x.t.id), cfCurrent: custom.valuesOf(db, 'task', x.t.id) }));
   });
 
   router.post('/sarcini/:id/editeaza', {}, (ctx) => {
     const x = loadTask(ctx); if (x.fail) return x.fail;
     if (!x.rt.update) return forbidden(ctx);
     const data = { title: ctx.form.get('title'), description: ctx.form.get('description'), priority_id: ctx.form.get('priority_id'), due_date: ctx.form.get('due_date'), machine_id: ctx.form.get('machine_id'), area: ctx.form.get('area'), assignees: ctx.form.all('assignees') };
-    const r = tasks.update(db, ctx.user, x.t.id, data);
-    if (!r.ok) return page(views.taskForm(ctx, { team: x.t.team, base: tasks.teamPath(x.t.team), task: x.t, lists: lists(), values: data, errors: r.errors || {}, canAssign: true, assignees: data.assignees.map(Number) }), 422);
+    const fields = cfFields(x.t.team); const current = custom.valuesOf(db, 'task', x.t.id); const cf = cfParse(ctx, fields, current);
+    const r = tasks.update(db, ctx.user, x.t.id, { ...data, custom: cf });
+    if (!r.ok) return page(views.taskForm(ctx, { team: x.t.team, base: tasks.teamPath(x.t.team), task: x.t, lists: lists(), values: data, errors: r.errors || {}, canAssign: true, assignees: data.assignees.map(Number), cfFields: fields, cfv: cf.values, cfCurrent: current }), 422);
     return redirect(`/sarcini/${x.t.id}`, { flash: { key: 'task_saved' } });
   });
 };

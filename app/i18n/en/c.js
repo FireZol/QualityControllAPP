@@ -104,6 +104,24 @@ module.exports = {
     one_time_title: 'One-time password', one_time_for: 'One-time password for {name} ({username}):', one_time_hint: 'It is shown only once. Give it to the user; at first login they will be asked to change it.',
   },
 
+  custom: {
+    title: 'Custom fields', section: 'Additional fields', tab_fields: 'Fields', tab_lists: 'Custom lists',
+    intro: 'Add new fields to tasks, non-conformities and meetings without changing the program. The fields appear in the form, on the record page, in the filters and in the Excel / CSV exports. A field is never deleted: it is hidden, and the values already entered stay.',
+    kind: { task: 'Tasks', ncr: 'Non-conformities', meeting: 'Meetings' },
+    type: { text: 'Short text', longtext: 'Long text', number: 'Number', date: 'Date', yesno: 'Yes / No', list: 'Choice from a list' },
+    applies_to: 'Applies to', team: 'Team (tasks only)', all_teams: 'All teams', type_label: 'Type', type_locked: 'The type cannot be changed after the field is made.',
+    label_ro: 'Name (Romanian)', label_en: 'Name (English)', label_en_hint: 'Optional. If empty, the Romanian name is shown.',
+    list_label: 'List (for "Choice from a list")', list_note: 'For "Choice from a list" make the list first, on the "Custom lists" tab. The unit is used for numbers only.',
+    unit: 'Unit', unit_hint: 'For example kg, m, pcs', order: 'Order', order_hint: 'Empty = at the end', name: 'Name', used: 'Values', hidden: 'hidden',
+    required: 'Required', required_hint: 'The record cannot be saved without this field.', show_in_list: 'Column in the table', show_in_list_hint: 'Shown as a column in the list / register on screen.',
+    active: 'Active', active_hint: 'Untick to hide it from forms and filters; values already entered stay visible and in the export.',
+    add_field: 'Add field', edit_field: 'Edit field', edit_used: 'The field holds {n} values. Renaming keeps them; the type cannot be changed.', no_fields: 'There are no custom fields yet.',
+    lists_intro: 'A custom list is a pick-list that fields use (for example "Defect causes" or "Suppliers"). Items are added and hidden, never deleted.',
+    items: 'Items', used_by: 'Used by', open_list: 'Open', no_lists: 'There are no custom lists yet.', add_list: 'Add list', no_items: 'The list has no items.',
+    add_items: 'Add items', items_text: 'Items (one per line)', items_hint: 'One item per line. Optionally "Romanian | English". Items that already exist are skipped.', add_items_btn: 'Add the items',
+    list_active_hint: 'A list used by an active field cannot be hidden.', from: 'from', to: 'to',
+  },
+
   settings: {
     team_modules: 'Team modules', team_modules_hint: 'Who may update tasks, the default level of users without their own setting, and the numbering.', technical_open: 'In Technical everybody may update tasks', default_level: 'Default level — {module}',
     numbering: 'Numbering', numbering_hint: 'Patterns with {yyyy} {yy} {mm} {seq:N} (counter with N digits, exactly once) and {team} (the team code); the counter restarts at 1 when the year or month in the pattern changes.',
@@ -127,6 +145,7 @@ module.exports = {
   audit: {
     title: 'Audit log', action: 'Action', entity: 'Object', details: 'Details',
     actions: {
+      custom_field_create: 'custom field created', custom_field_edit: 'custom field edited', custom_list_create: 'custom list created', custom_list_edit: 'custom list edited', custom_item_add: 'list items added', custom_item_edit: 'list item edited',
       login: 'login', login_failed: 'failed login', login_blocked: 'login blocked', logout: 'logout', password_change: 'password change', password_reset: 'password reset',
       user_create: 'user created', user_edit: 'user changed', measurement_add: 'measurement added', measurement_correct: 'measurement corrected',
       revision_new: 'new revision', revision_header: 'revision header', revision_submit: 'revision submitted', revision_verify: 'revision verified', revision_reject: 'revision rejected',

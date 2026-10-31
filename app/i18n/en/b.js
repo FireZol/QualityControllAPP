@@ -3,6 +3,7 @@
 
 module.exports = {
   errors: {
+    list_in_use: 'The list is used by an active field or by values already entered.', team_in_use: 'The field already has values on tasks; its team cannot be narrowed any more.', too_many: 'There are too many fields for this kind of record.',
     num_required: 'The pattern is required.', num_too_long: 'The pattern is too long.', num_invalid: 'The pattern has characters or markers that are not allowed.', num_seq_once: 'The pattern must contain {seq} or {seq:N} exactly once.',
     required: 'Required field.', invalid: 'Invalid value.', too_long: 'The text is too long.', duplicate: 'An entry with this value already exists.',
     rotor_format: 'Expected format: numbers separated by +, for example 1+6+12+18.', capacity: 'The machine does not have enough layers for this construction.',
@@ -14,6 +15,7 @@ module.exports = {
   },
 
   flash: {
+    custom_field_saved: 'The field was saved.', custom_list_saved: 'The list was saved.', custom_items_added: 'The items were added.', custom_items_none: 'Nothing was added: the items already exist.',
     saved: 'The changes were saved.', added: 'The entry was added.', toggled: 'The status was changed.', password_changed: 'The password was changed.',
     meeting_created: 'The meeting was created.', meeting_saved: 'The meeting was saved.', meeting_status_changed: 'The meeting status was changed.', meeting_decision_added: 'The decision was added.', meeting_attendance_saved: 'Attendance was saved.', series_saved: 'The schedule was saved.', task_bulk:'The selected tasks were changed.', task_bulk_partial: 'Some tasks were changed, others were not (for example they already had that status).', task_step_added: 'The steps were added.', ncr_created: 'The non-conformity was reported.', ncr_saved: 'The non-conformity was saved.', ncr_status_changed: 'The non-conformity status was changed.', ncr_comment_added: 'The comment was added.', ncr_task_added: 'The task was added.', e_disposition_required: 'Choose the decision on the product first (under Evaluation).', e_cause_required: 'Fill in the cause first (under Evaluation).', e_corrective_required: 'Fill in the corrective action first (under Evaluation).', e_verification_required: 'Verify the effectiveness of the action first.', pm_saved: 'The plan was saved.', pm_task_made: 'The task was made from the plan.', pm_skipped: 'The date was skipped; the plan moved to the next one.', e_pm_exists: 'This due date already has a task or was skipped.', e_nothing_selected: 'No task is selected.', e_bulk_none: 'No task could be changed.', task_created: 'The task was created.', task_saved: 'The task was saved.', task_status_changed: 'The task status was changed.', task_comment_added: 'The comment was added.',
     measurement_saved: 'The measurement was saved.',

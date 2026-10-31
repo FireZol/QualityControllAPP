@@ -3,6 +3,7 @@
 // one-off meetings, invitees with attendance, agenda, minutes, and decisions that become tasks. Nothing is deleted: a meeting is
 // cancelled (with a reason), a series is deactivated. Invitees with a login are told when and who (in-app notifications).
 const audit = require('./audit');
+const custom = require('./custom');
 const notifications = require('./notifications');
 const tasks = require('./tasks');
 const access = require('./access');
@@ -214,12 +215,14 @@ const get = (db, id) => db.get('SELECT * FROM meetings WHERE id = ?', id);
 
 function createMeeting(db, user, data) {
   const { errors, v } = validateMeeting(db, data);
+  if (data.custom) Object.assign(errors, data.custom.errors);   // custom fields (domain/custom.js): parsed by the route
   if (Object.keys(errors).length) return { ok: false, errors };
   return db.tx(() => {
     const now = nowIso();
     const id = db.run('INSERT INTO meetings(title, teams, meeting_date, start_time, duration_min, location, agenda, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
       v.title, v.teams.join(','), v.meeting_date, v.start_time, v.duration_min, v.location, v.agenda, user.id, now, now).id;
     for (const p of v.attendees) db.run('INSERT INTO meeting_attendees(meeting_id, person_id) VALUES (?,?)', id, p);
+    if (data.custom) custom.save(db, 'meeting', id, custom.defs(db, 'meeting'), data.custom.values);
     audit.log(db, user.id, 'meeting_create', 'meetings', id, { title: v.title, date: v.meeting_date });
     tell(db, get(db, id), 'meeting_invited', user.id, { by: user.full_name });
     return { ok: true, id };
@@ -231,6 +234,7 @@ function updateMeeting(db, user, id, data) {
   const m = get(db, id);
   if (!m) return { ok: false, code: 'not_found' };
   const { errors, v } = validateMeeting(db, data);
+  if (data.custom) Object.assign(errors, data.custom.errors);
   if (Object.keys(errors).length) return { ok: false, errors };
   db.tx(() => {
     const before = attendeeIds(db, id);
@@ -241,7 +245,8 @@ function updateMeeting(db, user, id, data) {
       for (const p of before) if (!keep.has(p)) db.run('DELETE FROM meeting_attendees WHERE meeting_id = ? AND person_id = ?', id, p);
       for (const p of v.attendees) db.run('INSERT OR IGNORE INTO meeting_attendees(meeting_id, person_id) VALUES (?,?)', id, p);
     }
-    audit.log(db, user.id, 'meeting_edit', 'meetings', id, { title: v.title });
+    const cc = data.custom ? custom.save(db, 'meeting', id, custom.defs(db, 'meeting'), data.custom.values) : [];
+    audit.log(db, user.id, 'meeting_edit', 'meetings', id, cc.length ? { title: v.title, custom: cc } : { title: v.title });
     const moved = m.meeting_date !== v.meeting_date || m.start_time !== v.start_time || (m.location || null) !== v.location;
     if (m.status === 'planned' && moved) tell(db, get(db, id), 'meeting_updated', user.id, { by: user.full_name });
     if (data.attendees !== undefined && m.status === 'planned') {
@@ -341,6 +346,7 @@ function list(db, f) {
   else if (f.view !== 'all') { where.push("meeting_date >= ? AND status = 'planned'"); p.push(t); }
   if (f.team && TEAMS.includes(f.team)) { where.push("(',' || teams || ',') LIKE ?"); p.push(`%,${f.team},%`); }
   if (f.persons && f.persons.length) { where.push(`id IN (SELECT meeting_id FROM meeting_attendees WHERE person_id IN (${f.persons.map(() => '?').join(',')}))`); p.push(...f.persons); }
+  if (f.custom && f.custom.length) custom.where(f.custom, 'meeting', where, p);
   if (f.q) { where.push("(title LIKE ? ESCAPE '\\' OR agenda LIKE ? ESCAPE '\\' OR minutes LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like); }
   const order = f.view === 'past' ? 'meeting_date DESC, start_time DESC' : 'meeting_date, start_time, id';
   const rows = db.all(`SELECT m.*, (SELECT count(*) FROM meeting_attendees a WHERE a.meeting_id = m.id) AS invited, (SELECT count(*) FROM meeting_attendees a WHERE a.meeting_id = m.id AND a.present = 1) AS present_n,

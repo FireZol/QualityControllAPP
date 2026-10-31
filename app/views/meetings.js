@@ -4,6 +4,8 @@ const { T, f } = require('../i18n');
 const { displayDate, displayDateTime } = require('../lib/time');
 const { layout, csrf, textField, selectField, textArea } = require('./layout');
 const P = require('./print');
+const cv = require('./custom');
+const customDomain = require('../domain/custom');
 const meetings = require('../domain/meetings');
 const tasks = require('../domain/tasks');
 
@@ -35,6 +37,7 @@ function tabs(d) {
 
 function listPage(ctx, d) {
   const { rows, f: fl, can } = d;
+  const cf = d.cf || { fields: [], filterFields: [], values: new Map() };
   const keep = { ...d.keep };
   const chip = (key, val, label) => {
     const on = fl[key] === val || (val === '1' && fl[key] === true);
@@ -57,11 +60,14 @@ function listPage(ctx, d) {
 </nav>
 <div class="quick" aria-label="${T.tasks.quick}">${meetings.TEAMS.map((t) => chip('team', t, T.modules[t].name))}${d.hasPerson ? chip('mine', '1', T.meetings.mine) : ''}</div>
 ${tabs(d)}
-${rows.length ? html`<div class="scroll"><table class="grid meetings"><thead><tr><th>${T.meetings.time}</th><th>${T.meetings.name}</th><th>${T.meetings.teams}</th><th>${T.meetings.where}</th><th>${T.meetings.people}</th><th>${T.common.status}</th></tr></thead>
-<tbody>${groups.map((g) => html`<tr class="group-row"><th colspan="6">${dayHeading(g.date)} <span class="count">${g.rows.length}</span></th></tr>${g.rows.map((m) => html`<tr class="${m.status === 'cancelled' ? 'is-cancelled' : ''}"><td class="nowrap">${timeRange(m)}</td>
+${cf.filterFields.length ? html`<form method="get" action="${d.base}" class="card filters">${Object.entries(d.keep).filter(([k]) => !/^cf\d/.test(k)).map(([k, v]) => html`<input type="hidden" name="${k}" value="${v}">`)}
+  <div class="row">${cv.filterControls(cf.filterFields, ctx.query)}<button class="btn primary" type="submit">${T.common.filter}</button><a class="btn" href="${d.base}?${new URLSearchParams(Object.fromEntries(Object.entries(d.keep).filter(([k]) => !/^cf\d/.test(k))))}">${T.common.reset}</a></div></form>` : ''}
+<p class="toolbar-line"><span class="muted">${rows.length}</span> <a class="btn small" href="${d.base}/export?${new URLSearchParams({ ...d.keep, format: 'csv' })}">${T.tasks.export_csv}</a><a class="btn small" href="${d.base}/export?${new URLSearchParams({ ...d.keep, format: 'xlsx' })}">${T.tasks.export_xlsx}</a></p>
+${rows.length ? html`<div class="scroll"><table class="grid meetings"><thead><tr><th>${T.meetings.time}</th><th>${T.meetings.name}</th><th>${T.meetings.teams}</th><th>${T.meetings.where}</th><th>${T.meetings.people}</th>${cv.headCells(cf.fields)}<th>${T.common.status}</th></tr></thead>
+<tbody>${groups.map((g) => html`<tr class="group-row"><th colspan="${6 + cv.columns(cf.fields).length}">${dayHeading(g.date)} <span class="count">${g.rows.length}</span></th></tr>${g.rows.map((m) => html`<tr class="${m.status === 'cancelled' ? 'is-cancelled' : ''}"><td class="nowrap">${timeRange(m)}</td>
   <td><a href="/sedinte/${m.id}"><strong>${m.title}</strong></a>${m.series_id ? html` <span class="mini" title="${T.meetings.recurring}">↻</span>` : ''}${m.decisions ? html` <span class="mini">✔ ${m.decisions}</span>` : ''}</td>
   <td>${teamChips(m)}</td><td>${m.location || html`<span class="muted">—</span>`}</td>
-  <td>${m.status === 'held' ? `${m.present_n}/${m.invited}` : m.invited}</td><td>${statusTag(m.status)}</td></tr>`)}`)}</tbody></table></div>`
+  <td>${m.status === 'held' ? `${m.present_n}/${m.invited}` : m.invited}</td>${cv.bodyCells(cf.fields, cf.values.get(m.id))}<td>${statusTag(m.status)}</td></tr>`)}`)}</tbody></table></div>`
     : html`<div class="card empty"><p>${T.meetings.empty}</p>${can.create ? html`<a class="btn primary" href="/sedinte/nou">${T.meetings.new}</a>` : ''}</div>`}`,
   });
 }
@@ -94,6 +100,7 @@ function meetingForm(ctx, d) {
   ${teamPick(teams, errors)}
   ${textArea({ label: T.meetings.agenda, name: 'agenda', value: v.agenda, errors, rows: 4 })}
   ${peoplePick(people, d.attendees, 'attendees', T.meetings.invited)}
+  ${cv.inputs(d.cfFields || [], d.cfv, errors, d.cfCurrent)}
   <div class="actions"><button class="btn primary big" type="submit">${T.common.save}</button><a class="btn" href="${m ? `/sedinte/${m.id}` : '/sedinte'}">${T.common.cancel}</a></div>
 </form>`,
   });
@@ -112,6 +119,7 @@ function meetingPage(ctx, d) {
     <div><dt>${T.common.date}</dt><dd>${dayName(m.meeting_date)} ${displayDate(m.meeting_date)}</dd></div>
     <div><dt>${T.meetings.time}</dt><dd>${timeRange(m)}</dd></div>
     <div><dt>${T.meetings.where}</dt><dd>${m.location || '—'}</dd></div>
+    ${cv.facts((d.cf || {}).fields || [], (d.cf || {}).values)}
     ${m.status === 'cancelled' ? html`<div><dt>${T.meetings.cancel_reason}</dt><dd>${m.cancel_reason}</dd></div>` : ''}
   </dl></section>
 ${err ? html`<p class="field-error" role="alert">${err}</p>` : ''}
@@ -150,7 +158,8 @@ function minutesPage(ctx, d) {
   const content = html`<table class="sheet kv"><tbody>
     <tr><th>${T.common.date}</th><td>${dayName(m.meeting_date)} ${displayDate(m.meeting_date)}</td><th>${T.meetings.time}</th><td>${timeRange(m)}</td></tr>
     <tr><th>${T.meetings.teams}</th><td>${m.teamList.map((t) => T.modules[t].name).join(', ')}</td><th>${T.meetings.where}</th><td>${m.location || ''}</td></tr>
-    ${m.status === 'cancelled' ? html`<tr><th>${T.meetings.cancel_reason}</th><td colspan="3">${m.cancel_reason}</td></tr>` : ''}</tbody></table>
+    ${m.status === 'cancelled' ? html`<tr><th>${T.meetings.cancel_reason}</th><td colspan="3">${m.cancel_reason}</td></tr>` : ''}
+    ${((d.cf || {}).fields || []).map((fd) => html`<tr><th>${customDomain.fieldLabel(fd)}</th><td colspan="3">${customDomain.display(fd, ((d.cf || {}).values || {})[fd.id])}</td></tr>`)}</tbody></table>
   <h3>${T.meetings.invited}</h3>
   <table class="sheet"><thead><tr><th>${T.meetings.person}</th><th>${T.meetings.team}</th><th>${T.meetings.present}</th></tr></thead><tbody>${m.attendees.map((a) => html`<tr><td>${a.name}</td><td>${T.teams[a.team]}</td><td class="box">${a.present ? '☑' : '☐'}</td></tr>`)}</tbody></table>
   <h3>${T.meetings.agenda}</h3><div class="notes-box">${m.agenda || ''}</div>

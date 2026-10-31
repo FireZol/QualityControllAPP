@@ -764,3 +764,12 @@ html[data-theme] table.tasks th, html[data-theme] table.tasks td { padding: 10px
 html[data-theme] table.tasks td:first-child, html[data-theme] table.tasks th:first-child { padding-left: 12px; }
 @media (max-width: 1499px) { html[data-theme] table.tasks .col-updated { display: none; } }
 html[data-theme] table.tasks td.nowrap a { font-size: 0.88rem; }
+
+/* custom fields (domain/custom.js) */
+html[data-theme] .custom-fields { margin: 14px 0 0; }
+html[data-theme] .field.range .range-in { display: flex; align-items: center; gap: 6px; }
+html[data-theme] .field.range .range-in input { width: 7.5rem; min-width: 0; }
+html[data-theme] .facts .cf dd .pre { white-space: pre-wrap; }
+html[data-theme] tr.is-hidden td { opacity: 0.6; }
+html[data-theme] [hidden] { display: none !important; }
+html[data-theme] .cf-col { min-width: 7.5rem; overflow-wrap: break-word; word-break: normal; }

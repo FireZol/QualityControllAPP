@@ -37,7 +37,7 @@ async function main() {
   const screens = [
     ['home', '/'], ['new measurement', `/masuratori/nou?family=${fam}&machine=${machine}&construction=${cons.id}&level=funie`], ['register', '/masuratori'], ['record', `/masuratori/${record}`],
     ['data sheets', '/fise'], ['revision', `/fise/${doc}/revizii/${rv}`], ['paper check', `/fise/${doc}/revizii/${rv}/verificare/${rows[0]}`], ['row editor', `/fise/${doc}/revizii/${rv}/constructii/${rows[0]}`],
-    ['database', '/liste'], ['users', '/admin/utilizatori'], ['settings', '/admin/setari'],
+    ['database', '/liste'], ['users', '/admin/utilizatori'], ['settings', '/admin/setari'], ['custom fields', '/admin/campuri'], ['custom lists', '/admin/campuri/liste'],
   ];
   const browser = await pw.chromium.launch();
   let total = 0;

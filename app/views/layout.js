@@ -12,7 +12,7 @@ const tasksDomain = require('../domain/tasks');
  * The left navigation (owner, 2026-10-30, after the HomeCloud look): Home on top, then one section per module the user may open;
  * the section of the module being used is open, the others fold. Administration is its own section.
  */
-const ICONS = { home: '📊', new: '➕', register: '☰', batches: '📦', analyses: '📈', specs: '📄', lists: '🗂️', tasks: '✅', preventive: '🗓️', ncr: '⚠️', top: '🔝', list: '👥', series: '🔁', users: '👤', settings: '⚙️', audit: '📜' };
+const ICONS = { home: '📊', new: '➕', register: '☰', batches: '📦', analyses: '📈', specs: '📄', lists: '🗂️', tasks: '✅', preventive: '🗓️', ncr: '⚠️', top: '🔝', list: '👥', series: '🔁', users: '👤', settings: '⚙️', audit: '📜', custom: '🧩' };
 
 function sidebar(ctx, active) {
   const { user, modules } = ctx;
@@ -31,7 +31,7 @@ function sidebar(ctx, active) {
 
   const others = reg.MODULES.filter((m) => !m.core && modules && modules[m.id] && reg.rank(ctx.level(m.id)) >= 1)
     .map((m) => section(m.id, T.modules[m.id].name, m.menu.filter((x) => reg.rank(ctx.level(m.id)) >= reg.rank(x.minLevel || 'view')).map((x) => [x.key, x.href, T.nav['m_' + x.name]])));
-  const admin = user.role === 'administrator' ? section('qc', T.nav.admin, [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['audit', '/admin/jurnal', T.nav.audit]], ['users', 'settings', 'audit'].includes(active)) : '';
+  const admin = user.role === 'administrator' ? section('qc', T.nav.admin, [['users', '/admin/utilizatori', T.nav.users], ['settings', '/admin/setari', T.nav.settings], ['custom', '/admin/campuri', T.nav.custom], ['audit', '/admin/jurnal', T.nav.audit]], ['users', 'settings', 'custom', 'audit'].includes(active)) : '';
   return html`<nav class="side-nav" aria-label="${T.nav.label}">
     <a href="/" class="side-home${cur === 'qc' && active === 'home' ? ' active' : ''}"${cur === 'qc' && active === 'home' ? raw(' aria-current="page"') : ''}><span class="ico" aria-hidden="true">${ICONS.home}</span><span class="lab">${T.nav.home}</span></a>
     ${section('qc', T.modules.qc.name, qc)}${others}${admin}</nav>`;

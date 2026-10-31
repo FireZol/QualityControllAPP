@@ -8,6 +8,7 @@ const P = require('./print');
 const ncr = require('../domain/ncr');
 const tasks = require('../domain/tasks');
 const { prioName } = require('./tasks');
+const cv = require('./custom');
 
 const en = () => i18n.current() === 'en';
 const nm = (name, name_en) => (en() && name_en ? name_en : name) || '';
@@ -18,7 +19,8 @@ const href = (id) => `${BASE}/neconformitati/${id}`;
 
 function listPage(ctx, d) {
   const { rows, f: fl, can, counts, lists, ranks } = d;
-  const keep = Object.fromEntries(Object.entries({ view: fl.view, evalo: fl.eval_overdue ? '1' : '', status: fl.status, type: fl.type, severity: fl.severity, machine: fl.machine, q: fl.q, mine: fl.mine ? '1' : '', days: fl.days || '', sort: fl.sort === 'new' ? '' : fl.sort }).filter(([, v]) => v));
+  const cf = d.cf || { fields: [], filterFields: [], values: new Map() };
+  const keep = Object.fromEntries(Object.entries({ ...require('../domain/custom').keep(fl.custom || []), view: fl.view, evalo: fl.eval_overdue ? '1' : '', status: fl.status, type: fl.type, severity: fl.severity, machine: fl.machine, q: fl.q, mine: fl.mine ? '1' : '', days: fl.days || '', sort: fl.sort === 'new' ? '' : fl.sort }).filter(([, v]) => v));
   const link = (extra, drop) => { const q = { ...keep, ...extra }; for (const k of drop || []) delete q[k]; return `${BASE}?${new URLSearchParams(q)}`; };
   const tile = (cls, label, n, status) => { const on = fl.status === status; return html`<a class="tile ${cls}${on ? ' on' : ''}" href="${on ? link({}, ['status']) : link({ status, view: 'open' })}"><strong>${n}</strong><span>${label}</span></a>`; };
   const chip = (key, on, label, val) => html`<a class="qchip${on ? ' on' : ''}" href="${on ? link({}, [key]) : link({ [key]: val })}">${label}</a>`;
@@ -35,14 +37,15 @@ function listPage(ctx, d) {
   ${selectField({ label: T.ncr.severity, name: 'severity', value: fl.severity, options: lists.priorities.map((x) => [x.id, prioName({ priority_name: x.name, priority_name_en: x.name_en })]), blank: T.common.all })}
   ${selectField({ label: T.measure.machine, name: 'machine', value: fl.machine, options: lists.machines.map((m) => [m.id, m.name]), blank: T.common.all })}
   ${selectField({ label: T.tasks.sort, name: 'sort', value: fl.sort, options: ncr.SORT_KEYS.map((k) => [k, T.ncr['sort_' + k]]) })}
+  ${cv.filterControls(cf.filterFields, ctx.query)}
   <button class="btn primary" type="submit">${T.common.filter}</button><a class="btn" href="${BASE}?view=${fl.view}">${T.common.reset}</a></div></form>
 <p class="toolbar-line"><span class="muted">${f(T.ncr.count, { n: rows.length })}</span><a class="btn small" href="${BASE}/export?${new URLSearchParams({ ...keep, format: 'csv' })}">${T.tasks.export_csv}</a><a class="btn small" href="${BASE}/export?${new URLSearchParams({ ...keep, format: 'xlsx' })}">${T.tasks.export_xlsx}</a></p>
-<div class="scroll"><table class="grid"><thead><tr><th>${T.ncr.no}</th><th>${T.ncr.what}</th><th>${T.ncr.type}</th><th>${T.ncr.severity}</th><th>${T.ncr.where}</th><th>${T.common.status}</th><th>${T.ncr.reported}</th><th>${T.ncr.tasks}</th></tr></thead>
+<div class="scroll"><table class="grid"><thead><tr><th>${T.ncr.no}</th><th>${T.ncr.what}</th><th>${T.ncr.type}</th><th>${T.ncr.severity}</th><th>${T.ncr.where}</th><th>${T.common.status}</th><th>${T.ncr.reported}</th>${cv.headCells(cf.fields)}<th>${T.ncr.tasks}</th></tr></thead>
 <tbody>${rows.length ? rows.map((n) => html`<tr><td class="nowrap"><a href="${href(n.id)}">${n.no}</a></td><td class="task-title"><a href="${href(n.id)}"><strong>${n.title}</strong></a>${n.external_ref ? html` <span class="mini" title="${T.ncr.external_ref}">${n.external_ref}</span>` : ''}${n.similar_n ? html` <span class="tag ns-recurring" title="${T.ncr.similar_hint}">↻ ${n.similar_n}</span>` : ''}${n.eval_overdue ? html` <span class="tag ns-overdue">${T.ncr.eval_overdue}</span>` : ''}</td>
   <td>${n.type_name ? nm(n.type_name, n.type_name_en) : html`<span class="muted">—</span>`}</td><td>${sevChip(n, ranks)}</td><td>${[n.machine_name, n.product].filter(Boolean).join(' · ') || html`<span class="muted">—</span>`}</td><td>${statusTag(n.status)}</td>
   <td class="nowrap">${displayDate(n.reported_at)}<br><small class="muted">${f(T.ncr.age_days, { n: n.age_days })}</small></td>
-  <td class="nowrap">${n.tasks_total ? html`<span class="mini${n.tasks_open ? '' : ' ok'}">☑ ${n.tasks_total - n.tasks_open}/${n.tasks_total}</span>` : html`<span class="muted">—</span>`}</td></tr>`)
-    : html`<tr><td colspan="8" class="empty">${T.ncr.empty} ${can.report ? html`<a href="${BASE}/nou">${T.ncr.new}</a>` : ''}</td></tr>`}</tbody></table></div>`,
+  ${cv.bodyCells(cf.fields, cf.values.get(n.id))}<td class="nowrap">${n.tasks_total ? html`<span class="mini${n.tasks_open ? '' : ' ok'}">☑ ${n.tasks_total - n.tasks_open}/${n.tasks_total}</span>` : html`<span class="muted">—</span>`}</td></tr>`)
+    : html`<tr><td colspan="${8 + cv.columns(cf.fields).length}" class="empty">${T.ncr.empty} ${can.report ? html`<a href="${BASE}/nou">${T.ncr.new}</a>` : ''}</td></tr>`}</tbody></table></div>`,
   });
 }
 
@@ -65,6 +68,7 @@ function ncrForm(ctx, d) {
     ${textField({ label: T.ncr.quantity, name: 'quantity', value: v.quantity, errors, attrs: 'maxlength="80"', hint: T.ncr.quantity_hint })}
     ${textField({ label: T.ncr.found_on, name: 'reported_at', value: v.reported_at || d.today, type: 'date', errors })}
   </div>
+  ${cv.inputs(d.cfFields || [], d.cfv, errors, d.cfCurrent)}
   ${n ? html`<div class="row">${textField({ label: T.ncr.external_ref, name: 'external_ref', value: v.external_ref, errors, attrs: 'maxlength="60"', hint: T.ncr.external_ref_hint })}</div>` : ''}
   <div class="actions"><button class="btn primary big" type="submit">${T.common.save}</button><a class="btn" href="${n ? href(n.id) : BASE}">${T.common.cancel}</a></div>
 </form>`,
@@ -75,6 +79,7 @@ function historyLine(e) {
   if (e.kind === 'created') return T.ncr.ev_created;
   if (e.kind === 'status') return f(T.ncr.ev_status, { from: T.ncr.status[e.from_status] || '', to: T.ncr.status[e.to_status] || '' }) + (e.details && e.details.auto ? ` ${T.ncr.ev_auto}` : '');
   if (e.kind === 'task') return f(T.ncr.ev_task, { no: (e.details && e.details.no) || '', team: e.details && T.modules[e.details.team] ? T.modules[e.details.team].name : '' });
+  if (e.kind === 'edit' && e.details && e.details.custom) return f(T.tasks.ev_custom, { fields: e.details.custom.map((c) => `${c.label}: ${c.from || '—'} → ${c.to || '—'}`).join('; ') });
   if (e.kind === 'edit' && e.details && e.details.verified) return e.details.verified.to ? T.ncr.ev_verified : T.ncr.ev_unverified;
   if (e.kind === 'edit') return f(T.ncr.ev_edit, { fields: e.details ? Object.keys(e.details).map((k) => T.ncr.field[k] || k).join(', ') : '' });
   return T.ncr.ev_comment;
@@ -93,7 +98,8 @@ function ncrPage(ctx, d) {
 <section class="card"><div class="facts-line">${statusTag(n.status)} ${sevChip(n, ranks)}${n.eval_overdue ? html` <span class="tag ns-overdue">${T.ncr.eval_overdue}</span>` : ''}${n.similar.length ? html` <a class="tag-link" href="#similar"><span class="tag ns-recurring">↻ ${f(T.ncr.recurring, { n: n.similar.length })}</span></a>` : ''}${n.action_overdue ? html` <span class="tag ns-overdue">${T.ncr.action_overdue}</span>` : ''} ${n.external_ref ? html`<span class="mini">${T.ncr.external_ref}: ${n.external_ref}</span>` : ''}</div>
   <dl class="facts"><div><dt>${T.ncr.type}</dt><dd>${n.type_name ? nm(n.type_name, n.type_name_en) : '—'}</dd></div><div><dt>${T.measure.machine}</dt><dd>${n.machine_name || '—'}</dd></div><div><dt>${T.ncr.product}</dt><dd>${n.product || '—'}</dd></div>
     <div><dt>${T.ncr.quantity}</dt><dd>${n.quantity || '—'}</dd></div><div><dt>${T.ncr.reported}</dt><dd>${displayDate(n.reported_at)} · ${n.reported_by_name} <small class="muted">${f(T.ncr.age_days, { n: n.age_days })}</small></dd></div><div><dt>${T.tasks.source_label}</dt><dd>${source}</dd></div>
-    ${n.closed_at ? html`<div><dt>${T.tasks.closed}</dt><dd>${displayDateTime(n.closed_at)} · ${n.closed_by_name || ''}</dd></div>` : ''}</dl>
+    ${n.closed_at ? html`<div><dt>${T.tasks.closed}</dt><dd>${displayDateTime(n.closed_at)} · ${n.closed_by_name || ''}</dd></div>` : ''}
+    ${cv.facts((d.cf || {}).fields || [], (d.cf || {}).values)}</dl>
   ${n.description ? html`<p class="task-desc">${n.description}</p>` : ''}</section>
 ${err ? html`<p class="field-error" role="alert">${err}</p>` : ''}
 ${can.lead ? html`<section class="card"><h2>${T.tasks.change_status}</h2><form method="post" action="${href(n.id)}/stare" class="status-form">${csrf(ctx)}
@@ -154,7 +160,8 @@ function printPage(ctx, d) {
     <tr><th>${T.ncr.type}</th><td>${n.type_name ? nm(n.type_name, n.type_name_en) : ''}</td><th>${T.ncr.severity}</th><td>${nm(n.severity_name, n.severity_name_en)}</td></tr>
     <tr><th>${T.measure.machine}</th><td>${n.machine_name || ''}</td><th>${T.ncr.product}</th><td>${n.product || ''}</td></tr>
     <tr><th>${T.ncr.quantity}</th><td>${n.quantity || ''}</td><th>${T.ncr.reported}</th><td>${displayDate(n.reported_at)} · ${n.reported_by_name}</td></tr>
-    ${n.description ? html`<tr><th>${T.tasks.description}</th><td colspan="3">${n.description}</td></tr>` : ''}</tbody></table>
+    ${n.description ? html`<tr><th>${T.tasks.description}</th><td colspan="3">${n.description}</td></tr>` : ''}
+    ${((d.cf || {}).fields || []).map((cfd) => html`<tr><th>${require('../domain/custom').fieldLabel(cfd)}</th><td colspan="3">${require('../domain/custom').display(cfd, ((d.cf || {}).values || {})[cfd.id])}</td></tr>`)}</tbody></table>
   <h3>${T.ncr.evaluation}</h3><table class="sheet kv"><tbody><tr><th>${T.ncr.containment}</th><td>${n.containment || ''}</td></tr><tr><th>${T.ncr.cause}</th><td>${n.cause || ''}</td></tr><tr><th>${T.ncr.evaluation_text}</th><td>${n.evaluation || ''}</td></tr><tr><th>${T.ncr.disposition}</th><td>${n.disposition_name ? nm(n.disposition_name, n.disposition_name_en) : ''}</td></tr><tr><th>${T.ncr.corrective}</th><td>${n.corrective_action || ''}</td></tr><tr><th>${T.ncr.preventive}</th><td>${n.preventive_action || ''}</td></tr><tr><th>${T.ncr.responsible}</th><td>${n.responsible_name || ''} ${n.action_due ? `· ${displayDate(n.action_due)}` : ''}</td></tr><tr><th>${T.ncr.verification}</th><td>${n.verified_at ? `${displayDate(n.verified_at)} · ${n.verified_by_name || ''} ${n.verification_note || ''}` : ''}</td></tr></tbody></table>
   <h3>${T.ncr.tasks}</h3><table class="sheet"><thead><tr><th>${T.tasks.no}</th><th>${T.tasks.task}</th><th>${T.ncr.task_team}</th><th>${T.tasks.assigned}</th><th>${T.tasks.due}</th><th>${T.common.status}</th></tr></thead>
   <tbody>${n.tasks.length ? n.tasks.map((t) => html`<tr><td class="nowrap">${t.no}</td><td>${t.title}</td><td>${T.modules[t.team].name}</td><td>${t.assignees.join(', ')}</td><td class="nowrap">${t.due_date ? displayDate(t.due_date) : ''}</td><td>${T.taskstatus[t.status]}</td></tr>`) : html`<tr><td colspan="6" class="blank">&nbsp;</td></tr>`}</tbody></table>`;

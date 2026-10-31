@@ -6,6 +6,7 @@ const S = {
   app: { name: 'ROMCAB CTC', long: 'ROMCAB CTC — Controlul calității tehnologice' },
 
   nav: {
+    custom: 'Câmpuri proprii',
     label: 'Navigare principală', chip_open: 'DESCHISE', chip_open_title: 'Sarcini în lucru (deschise, în lucru, în așteptare)', chip_critical: 'CRITICE', chip_critical_title: 'Sarcini active cu prioritatea cea mai mare', menu: 'Meniu', home: 'Acasă', new_measurement: 'Măsurătoare nouă', register: 'Registru', batches: 'Loturi', analyses: 'Analize', specs: 'Fișe tehnice',
     m_tasks: 'Sarcini', m_preventive: 'Preventiv', m_ncr: 'Neconformități', m_top: 'Top neconformități', m_meetings: 'Ședințe', m_series: 'Programări', modules: 'Module', notifications: 'Notificări', notifications_n: 'Notificări ({n} necitite)',
     admin: 'Administrare', lists: 'Date de bază', users: 'Utilizatori', settings: 'Setări', audit: 'Jurnal', logout: 'Ieșire', password: 'Schimbă parola',
@@ -259,7 +260,7 @@ const S = {
     created: 'Creată', closed: 'Închisă', source_label: 'Sursă', source: { manual: 'manuală', meeting: 'ședință', ncr: 'neconformitate', measurement: 'măsurătoare', preventive: 'preventiv' },
     change_status: 'Schimbă starea', comment_optional: 'Comentariu (obligatoriu la anulare și la redeschidere)', reason_hint: 'Se păstrează în istoric.', save_assignees: 'Salvează atribuirea',
     add_comment: 'Adaugă un comentariu', comment: 'Comentariu', send: 'Trimite', history: 'Istoric', system: 'sistem', ev_created: 'Sarcină creată.', ev_status: 'Starea: {from} → {to}.',
-    ev_assign: 'Atribuire modificată. Adăugat: {added} Eliminat: {removed}', ev_edit: 'Modificat: {fields}.', ev_comment: 'Comentariu.',
+    ev_custom: 'Câmpuri proprii modificate — {fields}', ev_assign: 'Atribuire modificată. Adăugat: {added} Eliminat: {removed}', ev_edit: 'Modificat: {fields}.', ev_comment: 'Comentariu.',
     field: { title: 'titlu', description: 'descriere', priority_id: 'prioritate', due_date: 'termen', machine_id: 'utilaj', area: 'zonă' },
     no_people: 'Nu există persoane; adăugați-le în Date de bază → Persoane (echipe).', work_list: 'Listă de lucru', done_col: 'Executat',
   },
@@ -371,6 +372,7 @@ const S = {
   verdict: { ok: 'În limite', sub: 'Sub minim', peste: 'Peste maxim', nedeterminat: 'Nedeterminat', info: 'Informativ', neconform: 'Neconform' },
 
   errors: {
+    list_in_use: 'Lista este folosită de un câmp activ sau de valori deja introduse.', team_in_use: 'Câmpul are deja valori la sarcini; echipa nu se mai poate restrânge.', too_many: 'Sunt prea multe câmpuri pentru acest tip de înregistrare.',
     num_required: 'Modelul este obligatoriu.', num_too_long: 'Modelul este prea lung.', num_invalid: 'Modelul conține caractere sau marcaje nepermise.', num_seq_once: 'Modelul trebuie să conțină {seq} sau {seq:N} o singură dată.',
     required: 'Câmp obligatoriu.', invalid: 'Valoare nevalidă.', too_long: 'Textul este prea lung.', duplicate: 'Există deja o intrare cu această valoare.',
     rotor_format: 'Format așteptat: numere separate prin +, de exemplu 1+6+12+18.', capacity: 'Utilajul nu are suficiente straturi pentru această construcție.',
@@ -382,6 +384,7 @@ const S = {
   },
 
   flash: {
+    custom_field_saved: 'Câmpul a fost salvat.', custom_list_saved: 'Lista a fost salvată.', custom_items_added: 'Elementele au fost adăugate.', custom_items_none: 'Nu s-a adăugat nimic: elementele există deja.',
     saved: 'Modificările au fost salvate.', added: 'Intrarea a fost adăugată.', toggled: 'Starea a fost schimbată.', password_changed: 'Parola a fost schimbată.',
     meeting_created: 'Ședința a fost creată.', meeting_saved: 'Ședința a fost salvată.', meeting_status_changed: 'Starea ședinței a fost schimbată.', meeting_decision_added: 'Decizia a fost adăugată.', meeting_attendance_saved: 'Prezența a fost salvată.', series_saved: 'Programarea a fost salvată.', task_bulk:'Sarcinile selectate au fost modificate.', task_bulk_partial: 'Unele sarcini au fost modificate, altele nu (de ex. au deja starea aleasă).', task_step_added: 'Pașii au fost adăugați.', ncr_created: 'Neconformitatea a fost raportată.', ncr_saved: 'Neconformitatea a fost salvată.', ncr_status_changed: 'Starea neconformității a fost schimbată.', ncr_comment_added: 'Comentariul a fost adăugat.', ncr_task_added: 'Sarcina a fost adăugată.', e_disposition_required: 'Alegeți mai întâi decizia asupra produsului (în Evaluare).', e_cause_required: 'Completați mai întâi cauza (în Evaluare).', e_corrective_required: 'Completați mai întâi acțiunea corectivă (în Evaluare).', e_verification_required: 'Verificați mai întâi eficacitatea acțiunii.', pm_saved: 'Planul a fost salvat.', pm_task_made: 'Sarcina a fost creată din plan.', pm_skipped: 'Data a fost sărită; planul a trecut la următoarea.', e_pm_exists: 'Pentru acest termen există deja o sarcină sau a fost sărit.', e_nothing_selected: 'Nu ați selectat nicio sarcină.', e_bulk_none: 'Nicio sarcină nu a putut fi modificată.', task_created: 'Sarcina a fost creată.', task_saved: 'Sarcina a fost salvată.', task_status_changed: 'Starea sarcinii a fost schimbată.', task_comment_added: 'Comentariul a fost adăugat.',
     measurement_saved: 'Măsurătoarea a fost salvată.',
@@ -588,6 +591,24 @@ const S = {
     one_time_title: 'Parolă unică', one_time_for: 'Parola unică pentru {name} ({username}):', one_time_hint: 'Se afișează o singură dată. Comunicați-o utilizatorului; la prima autentificare i se va cere să o schimbe.',
   },
 
+  custom: {
+    title: 'Câmpuri proprii', section: 'Câmpuri suplimentare', tab_fields: 'Câmpuri', tab_lists: 'Liste proprii',
+    intro: 'Adăugați câmpuri noi la sarcini, neconformități și ședințe, fără să schimbați programul. Câmpurile apar în formular, în pagina înregistrării, în filtre și în exporturile Excel / CSV. Un câmp nu se șterge: se ascunde, iar valorile deja introduse rămân.',
+    kind: { task: 'Sarcini', ncr: 'Neconformități', meeting: 'Ședințe' },
+    type: { text: 'Text scurt', longtext: 'Text lung', number: 'Număr', date: 'Dată', yesno: 'Da / Nu', list: 'Alegere din listă' },
+    applies_to: 'Se aplică la', team: 'Echipă (doar sarcini)', all_teams: 'Toate echipele', type_label: 'Tip', type_locked: 'Tipul nu se mai poate schimba după creare.',
+    label_ro: 'Denumire (română)', label_en: 'Denumire (engleză)', label_en_hint: 'Opțional. Dacă lipsește, se arată denumirea românească.',
+    list_label: 'Lista (pentru „Alegere din listă”)', list_note: 'Pentru „Alegere din listă” creați întâi lista, în fila „Liste proprii”. Unitatea se folosește doar la numere.',
+    unit: 'Unitate', unit_hint: 'De ex. kg, m, buc', order: 'Ordine', order_hint: 'Gol = la sfârșit', name: 'Denumire', used: 'Valori', hidden: 'ascuns',
+    required: 'Obligatoriu', required_hint: 'Înregistrarea nu se salvează fără acest câmp.', show_in_list: 'Coloană în tabel', show_in_list_hint: 'Apare ca o coloană în lista / registrul de pe ecran.',
+    active: 'Activ', active_hint: 'Debifați pentru a-l ascunde din formulare și filtre; valorile deja introduse rămân vizibile și în export.',
+    add_field: 'Adaugă câmp', edit_field: 'Modificare câmp', edit_used: 'Câmpul are {n} valori introduse. Redenumirea le păstrează; tipul nu se poate schimba.', no_fields: 'Încă nu există câmpuri proprii.',
+    lists_intro: 'O listă proprie este o listă de alegere pe care o folosesc câmpurile (de exemplu „Cauze de defect” sau „Furnizori”). Elementele se adaugă și se ascund, nu se șterg.',
+    items: 'Elemente', used_by: 'Folosită de', open_list: 'Deschide', no_lists: 'Încă nu există liste proprii.', add_list: 'Adaugă listă', no_items: 'Lista nu are elemente.',
+    add_items: 'Adaugă elemente', items_text: 'Elemente (câte unul pe rând)', items_hint: 'Un element pe rând. Opțional, „română | engleză”. Elementele care există deja sunt sărite.', add_items_btn: 'Adaugă elementele',
+    list_active_hint: 'O listă folosită de un câmp activ nu poate fi ascunsă.', from: 'de la', to: 'până la',
+  },
+
   settings: {
     team_modules: 'Modulele echipelor', team_modules_hint: 'Cine poate actualiza sarcinile, nivelul implicit al utilizatorilor fără setare proprie și numerotarea.', technical_open: 'În Tehnic oricine poate actualiza sarcinile', default_level: 'Nivel implicit — {module}',
     numbering: 'Numerotare', numbering_hint: 'Modele cu {yyyy} {yy} {mm} {seq:N} (contor cu N cifre, o singură dată) și {team} (codul echipei); contorul pornește de la 1 când se schimbă anul sau luna din model.',
@@ -611,6 +632,7 @@ const S = {
   audit: {
     title: 'Jurnal de audit', action: 'Acțiune', entity: 'Obiect', details: 'Detalii',
     actions: {
+      custom_field_create: 'câmp propriu creat', custom_field_edit: 'câmp propriu modificat', custom_list_create: 'listă proprie creată', custom_list_edit: 'listă proprie modificată', custom_item_add: 'elemente adăugate în listă', custom_item_edit: 'element de listă modificat',
       login: 'autentificare', login_failed: 'autentificare eșuată', login_blocked: 'autentificare blocată', logout: 'ieșire', password_change: 'schimbare parolă', password_reset: 'resetare parolă',
       user_create: 'utilizator creat', user_edit: 'utilizator modificat', measurement_add: 'măsurătoare adăugată', measurement_correct: 'măsurătoare corectată',
       revision_new: 'revizie nouă', revision_header: 'antet revizie', revision_submit: 'revizie trimisă', revision_verify: 'revizie verificată', revision_reject: 'revizie respinsă',
