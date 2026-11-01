@@ -1,7 +1,7 @@
 'use strict';
 // Demo data (development tool): fills a THROWAWAY app with a few weeks of believable factory life, so the screens can be used and looked at
 // the way the factory will use them: measurements (some out of limit), people and users, tasks in every state, held and planned meetings with
-// decisions, non-conformities from reported to verified, preventive plans. Never run this against real data: it makes its own temporary
+// decisions, non-conformities from reported to verified, preventive plans, custom fields with a pick-list and calculated costs. Never run this against real data: it makes its own temporary
 // installation, and `--save <file.db>` writes a copy of that database for a local trial (open it with a copy of the app and its config).
 //   node tools/demo-data.js [--save demo.db] [--shots <dir>]        needs Playwright (npm root -g) only for --shots
 const fs = require('node:fs');
@@ -13,6 +13,7 @@ const meetings = require('../app/domain/meetings');
 const ncr = require('../app/domain/ncr');
 const pm = require('../app/domain/preventive');
 const access = require('../app/domain/access');
+const custom = require('../app/domain/custom');
 
 const arg = (k) => { const i = process.argv.indexOf(k); return i >= 0 ? process.argv[i + 1] : null; };
 // a small deterministic generator, so every run makes the same factory
@@ -59,6 +60,28 @@ async function seedAll() {
   const recs = db.all('SELECT id FROM measurements ORDER BY id');
   recs.forEach((r, i) => { const d = day(-Math.floor((i / recs.length) * 21)); db.run("UPDATE measurements SET shift_date = ?, created_at = ? || substr(created_at, 11) WHERE id = ?", d, d, r.id); });
 
+  // ---- custom fields, a custom list and a calculated field (ADR-023, ADR-024), made the way an administrator makes them
+  const A = { id: db.get("SELECT id FROM users WHERE username = 'admin'").id };
+  const causes = custom.createList(db, A, { name: 'Cauze defect', name_en: 'Defect causes' }).id;
+  custom.addItems(db, A, causes, 'Uzură | Wear\nReglaj greșit | Wrong setting\nMaterie primă | Raw material\nGreșeală operator | Operator error\nDefect electric | Electrical fault\nLipsă lubrifiere | No lubrication');
+  const causeItems = db.all('SELECT id FROM custom_list_items WHERE list_id = ? ORDER BY sort', causes).map((r) => String(r.id));
+  const mkField = (d) => { const r = custom.createField(db, A, d); if (!r.ok) throw new Error(`custom field ${d.label}: ${JSON.stringify(r.errors)}`); return r.id; };
+  const CF = {
+    downtime: mkField({ kind: 'task', team: 'maintenance', type: 'number', label: 'Timp oprire', label_en: 'Downtime', unit: 'min', show_in_list: 1 }),
+    rate: mkField({ kind: 'task', team: 'maintenance', type: 'number', label: 'Preț oră', label_en: 'Hourly rate', unit: 'RON' }),
+    taskCause: mkField({ kind: 'task', team: 'maintenance', type: 'list', label: 'Cauză defect', label_en: 'Defect cause', list_id: causes, show_in_list: 1 }),
+    part: mkField({ kind: 'task', team: 'maintenance', type: 'text', label: 'Piesă schimbată', label_en: 'Part replaced' }),
+    ncrCause: mkField({ kind: 'ncr', type: 'list', label: 'Cauză defect', label_en: 'Defect cause', list_id: causes, show_in_list: 1 }),
+    scrap: mkField({ kind: 'ncr', type: 'number', label: 'Cantitate rebut', label_en: 'Scrap quantity', unit: 'kg' }),
+    price: mkField({ kind: 'ncr', type: 'number', label: 'Preț material', label_en: 'Material price', unit: 'RON/kg' }),
+    complaint: mkField({ kind: 'ncr', type: 'yesno', label: 'Reclamație client', label_en: 'Customer complaint' }),
+    realMin: mkField({ kind: 'meeting', type: 'number', label: 'Durată reală', label_en: 'Actual duration', unit: 'min', show_in_list: 1 }),
+  };
+  CF.cost = mkField({ kind: 'task', team: 'maintenance', type: 'calc', label: 'Cost oprire', label_en: 'Downtime cost', unit: 'RON', decimals: 2, show_in_list: 1, formula: 'round([Timp oprire] / 60 * [Preț oră]; 2)' });
+  CF.scrapCost = mkField({ kind: 'ncr', type: 'calc', label: 'Cost rebut', label_en: 'Scrap cost', unit: 'RON', decimals: 2, show_in_list: 1, formula: 'round([Cantitate rebut] * [Preț material]; 2)' });
+  // values go through the same checks as a typed form (custom.parse), and are saved with the record (custom.save)
+  const cf = (kind, team, vals) => { const r = custom.parseObject(custom.defs(db, kind, team), Object.fromEntries(Object.entries(vals).map(([k, v]) => [`cf_${CF[k]}`, v]))); if (Object.keys(r.errors).length) throw new Error(`custom values: ${JSON.stringify(r.errors)}`); return r; };
+
   // ---- tasks in every state, backdated, with checklists and comments
   const prios = db.all('SELECT id FROM priorities WHERE active = 1 ORDER BY sort').map((r) => r.id);
   const U = { id: mLead.id, full_name: 'Ștefan Marin' };
@@ -71,7 +94,10 @@ async function seedAll() {
   const made = [];
   for (const team of ['maintenance', 'technical', 'quality']) {
     for (const t of titles[team]) {
-      const r = tasks.create(db, U, { team, title: t, description: rnd() < 0.5 ? 'Observat în tura de noapte; de verificat înainte de pornire.' : '', priority_id: pick(prios), due_date: rnd() < 0.75 ? day(Math.round(between(-6, 14))) : '', machine_id: rnd() < 0.5 ? pick(machines).id : '', assignees: rnd() < 0.8 ? [pick(people(team))] : [] });
+      const extra = team !== 'maintenance' ? undefined : cf('task', team, rnd() < 0.75
+        ? { downtime: String(5 * Math.round(between(3, 48))), rate: pick(['85', '120', '150']), taskCause: pick(causeItems), part: rnd() < 0.4 ? pick(['Rulment 6205', 'Curea transmisie', 'Senzor PT100', 'Garnitură pompă']) : '' }
+        : { taskCause: rnd() < 0.5 ? pick(causeItems) : '' });   // some only half filled in, like real life (no rate: no cost)
+      const r = tasks.create(db, U, { team, title: t, description: rnd() < 0.5 ? 'Observat în tura de noapte; de verificat înainte de pornire.' : '', priority_id: pick(prios), due_date: rnd() < 0.75 ? day(Math.round(between(-6, 14))) : '', machine_id: rnd() < 0.5 ? pick(machines).id : '', assignees: rnd() < 0.8 ? [pick(people(team))] : [], custom: extra });
       const st = pick(statuses);
       if (st === 'in_progress' || st === 'waiting') tasks.changeStatus(db, U, r.id, st, null);
       if (st === 'done' || st === 'closed') { tasks.changeStatus(db, U, r.id, 'done', null); if (st === 'closed') tasks.changeStatus(db, U, r.id, 'closed', null); }
@@ -87,7 +113,7 @@ async function seedAll() {
   meetings.ensure(db, today, 14);
   for (let back = 1; back <= 8; back++) {
     const d = day(-back); if ([0, 6].includes(new Date(`${d}T00:00:00Z`).getUTCDay())) continue;
-    const mid = meetings.createMeeting(db, { id: engA.id, full_name: 'Ana Pop' }, { title: 'Ședință zilnică Tehnic și Mentenanță', meeting_date: d, start_time: '08:30', duration_min: 30, location: 'Biroul tehnic', teams: ['maintenance', 'technical'], agenda: 'Starea utilajelor, planul zilei', attendees: [...people('maintenance'), ...people('technical')] }).id;
+    const mid = meetings.createMeeting(db, { id: engA.id, full_name: 'Ana Pop' }, { title: 'Ședință zilnică Tehnic și Mentenanță', meeting_date: d, start_time: '08:30', duration_min: 30, location: 'Biroul tehnic', teams: ['maintenance', 'technical'], agenda: 'Starea utilajelor, planul zilei', attendees: [...people('maintenance'), ...people('technical')], custom: cf('meeting', null, { realMin: String(5 * Math.round(between(4, 9))) }) }).id;
     const att = meetings.detail(db, mid).attendees.filter(() => rnd() < 0.85).map((a) => a.id);
     meetings.setAttendance(db, { id: engA.id }, mid, att, []);
     meetings.saveNotes(db, { id: engA.id }, mid, { minutes: 'Utilajele au funcționat normal. S-a discutat zgomotul de la LITARE 2 și piesele comandate.' });
@@ -103,7 +129,8 @@ async function seedAll() {
   const NC = [];
   for (let i = 0; i < 24; i++) {
     const m = pick(machines); const c = pick(cons);
-    const r = ncr.create(db, { id: reporter.id, full_name: 'Cătălin Dobre' }, { title: pick(ncrTitles), description: 'Constatat la controlul în tură. Colaci separați până la decizie.', type_id: pick(types.slice(0, 5)), machine_id: m.id, product: c.label, quantity: `${1 + Math.floor(rnd() * 6)} colaci`, severity_id: pick(prios), reported_at: day(-Math.floor(between(0, 60))) });
+    const r = ncr.create(db, { id: reporter.id, full_name: 'Cătălin Dobre' }, { title: pick(ncrTitles), description: 'Constatat la controlul în tură. Colaci separați până la decizie.', type_id: pick(types.slice(0, 5)), machine_id: m.id, product: c.label, quantity: `${1 + Math.floor(rnd() * 6)} colaci`, severity_id: pick(prios), reported_at: day(-Math.floor(between(0, 60))),
+      custom: cf('ncr', null, { ncrCause: rnd() < 0.8 ? pick(causeItems) : '', scrap: rnd() < 0.7 ? fmt(between(5, 400), 1) : '', price: pick(['41,50', '38,20', '12,80']), complaint: rnd() < 0.15 ? '1' : '0' }) });
     NC.push(r.id);
     const st = pick(['reported', 'reported', 'evaluation', 'action', 'action', 'closed', 'closed', 'closed', 'cancelled']);
     if (st !== 'reported') {
@@ -133,7 +160,7 @@ async function seedAll() {
   pm.ensure(db);
   // some notifications are already read, like after a few days of use
   db.run("UPDATE notifications SET read_at = created_at WHERE id % 3 = 0");
-  return { app, admin, db, counts: { measurements: recs.length, tasks: made.length, ncrs: NC.length, plans: planIds.length } };
+  return { app, admin, db, counts: { measurements: recs.length, tasks: made.length, ncrs: NC.length, plans: planIds.length, customFields: Object.keys(CF).length, customValues: db.value("SELECT count(*) FROM custom_values WHERE value <> ''") } };
 }
 const row = (db, id) => db.get('SELECT * FROM ncrs WHERE id = ?', id);
 
