@@ -159,7 +159,7 @@ function minutesPage(ctx, d) {
     <tr><th>${T.common.date}</th><td>${dayName(m.meeting_date)} ${displayDate(m.meeting_date)}</td><th>${T.meetings.time}</th><td>${timeRange(m)}</td></tr>
     <tr><th>${T.meetings.teams}</th><td>${m.teamList.map((t) => T.modules[t].name).join(', ')}</td><th>${T.meetings.where}</th><td>${m.location || ''}</td></tr>
     ${m.status === 'cancelled' ? html`<tr><th>${T.meetings.cancel_reason}</th><td colspan="3">${m.cancel_reason}</td></tr>` : ''}
-    ${((d.cf || {}).fields || []).map((fd) => html`<tr><th>${customDomain.fieldLabel(fd)}</th><td colspan="3">${customDomain.display(fd, ((d.cf || {}).values || {})[fd.id])}</td></tr>`)}</tbody></table>
+    ${cv.printRows((d.cf || {}).fields, (d.cf || {}).values)}</tbody></table>
   <h3>${T.meetings.invited}</h3>
   <table class="sheet"><thead><tr><th>${T.meetings.person}</th><th>${T.meetings.team}</th><th>${T.meetings.present}</th></tr></thead><tbody>${m.attendees.map((a) => html`<tr><td>${a.name}</td><td>${T.teams[a.team]}</td><td class="box">${a.present ? '☑' : '☐'}</td></tr>`)}</tbody></table>
   <h3>${T.meetings.agenda}</h3><div class="notes-box">${m.agenda || ''}</div>

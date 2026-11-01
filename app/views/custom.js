@@ -48,6 +48,9 @@ function facts(fields, values) {
   return fields.map((f) => { const t = custom.display(f, vals[f.id]); return html`<div class="cf"><dt>${custom.fieldLabel(f)}${custom.isCalc(f) ? html` <span class="tag" title="${T.custom.calc_badge}">ƒ</span>` : ''}</dt><dd>${f.type === 'longtext' && t ? html`<span class="pre">${t}</span>` : t || html`<span class="muted">—</span>`}</dd></div>`; });
 }
 
+/** Rows for a printed sheet (<table class="sheet kv">, four columns): every field that applies, empty where nothing was entered. */
+const printRows = (fields, values) => (fields || []).map((fd) => html`<tr><th>${custom.fieldLabel(fd)}</th><td colspan="3">${custom.display(fd, (values || {})[fd.id])}</td></tr>`);
+
 /** Column headers / cells for the fields marked "show in the list". */
 const columns = (fields) => fields.filter((f) => f.show_in_list);
 const headCells = (fields) => columns(fields).map((f) => html`<th class="cf-col">${custom.fieldLabel(f)}</th>`);
@@ -68,4 +71,4 @@ function filterControls(fields, query) {
   });
 }
 
-module.exports = { inputs, facts, headCells, bodyCells, columns, filterControls };
+module.exports = { inputs, facts, printRows, headCells, bodyCells, columns, filterControls };

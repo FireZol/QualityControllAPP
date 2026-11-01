@@ -192,7 +192,8 @@ function workOrderPage(ctx, d) {
     <tr><th>${T.tasks.task}</th><td colspan="3"><strong>${t.title}</strong></td></tr>
     <tr><th>${T.tasks.where}</th><td>${where(t)}</td><th>${T.tasks.due}</th><td>${t.due_date ? displayDate(t.due_date) : ''}</td></tr>
     <tr><th>${T.tasks.assigned}</th><td colspan="3">${t.assignees.map((a) => a.name).join(', ')}</td></tr>
-    ${t.description ? html`<tr><th>${T.tasks.description}</th><td colspan="3">${t.description}</td></tr>` : ''}</tbody></table>
+    ${t.description ? html`<tr><th>${T.tasks.description}</th><td colspan="3">${t.description}</td></tr>` : ''}
+    ${cv.printRows((d.cf || {}).fields, (d.cf || {}).values)}</tbody></table>
   <h3>${T.tasks.checklist}</h3>
   <table class="sheet"><tbody>${t.checklist.length ? t.checklist.map((c) => html`<tr><td class="box">☐</td><td>${c.text}</td></tr>`) : [1, 2, 3, 4, 5].map(() => html`<tr><td class="box">☐</td><td class="blank">&nbsp;</td></tr>`)}</tbody></table>
   <h3>${T.common.notes}</h3><div class="notes-box"></div>`;

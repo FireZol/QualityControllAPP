@@ -179,6 +179,11 @@ test('a task takes custom values: the form shows the fields, input is checked by
   // the filter controls are in the page and the links keep the filter
   const filtered = (await lead.get(`/mentenanta?view=all&cf${F.shift}=${ids.items[0]}`)).text;
   assert.match(filtered, new RegExp(`name="cf${F.shift}"`));
+  // the single-task work order on paper lists the fields too, escaped
+  const order = (await lead.get(`/sarcini/${ids.task}/tipar`)).text;
+  assert.match(order, /<th>Cantitate \[kg\]<\/th><td colspan="3">12,5 kg<\/td>/);
+  assert.match(order, /CMD-77 &lt;b&gt;x&lt;\/b&gt;/);
+  assert.ok(!(await lead.get(`/sarcini/${ids.task}/tipar`)).text.includes('<b>x</b>'));
   assert.match(filtered, new RegExp(`cf${F.shift}=${ids.items[0]}[^"]*format=csv|format=csv[^"]*cf${F.shift}=${ids.items[0]}`), 'export keeps the filter');
 });
 

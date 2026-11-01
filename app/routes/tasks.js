@@ -201,7 +201,7 @@ module.exports = function register(app) {
   // one task as a work order on paper: facts, steps with boxes, room for notes and a signature
   router.get('/sarcini/:id/tipar', {}, (ctx) => {
     const x = loadTask(ctx); if (x.fail) return x.fail;
-    return page(views.workOrderPage(ctx, { t: x.t, company: settings.get(db, 'company.name'), by: ctx.user.full_name, now: nowIso() }));
+    return page(views.workOrderPage(ctx, { t: x.t, cf: { fields: cfShown(x.t.team), values: custom.valuesOf(db, 'task', x.t.id) }, company: settings.get(db, 'company.name'), by: ctx.user.full_name, now: nowIso() }));
   });
 
   router.post('/sarcini/:id/atribuie', {}, (ctx) => {
