@@ -4,7 +4,7 @@ Quality-control measurement web app for the ROMCAB S.A. cable factory (Romania).
 
 Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, conductors). Ask him about domain questions; **do not guess limits or formulas**. Repository: `github.com/FireZol/QualityControllAPP` (branch `main`; GitHub reports the repo as moved to that spelling).
 
-## State (2026-10-30)
+## State (2026-11-01)
 **Version 0.10.0-beta.1 — team modules, custom fields and formulas (release notes: `docs/NOUTATI.md`; upgrade checked with `node tools/upgrade-rehearsal.js c92b95d`)** (install package built with `node tools/make-release.js`). 237 automated tests. Built so far:
 - **Core QC** (stages 1–3): accounts and roles (Personal / Inginer / Administrator), versioned data sheets with the two-person rule, measurements with live verdicts, corrections as new versions, register with filters, CSV / Excel export, printing in every browser, backups, audit log. Families: rigid conductor, extruded Al, wire class I–II, wire class V, flexible class 5.
 - **Optional modules** (off by default, Administrator switches them in Setări → Module, ADR-016): finished cable (tests catalogue, batches, drums, certificates, type reports) and analyses (trend, capability, control charts, nonconformity, consumption, home-page SPC alerts).
@@ -12,7 +12,19 @@ Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, co
 - **Pilot kit:** first-setup checklist on the home page, `?` tips per screen, go-live reset, report-a-problem link, release package, security notes, load check, restore drill, factory-PC test checklist.
 - **UI:** one-row menu, live verdict banners, compact register, paper-original check of every sheet row, row editor with save-and-next, larger-text mode (`A+`, default on touch screens), every control ≥ 44 px (audited).
 - **Parked by the owner (do not build without asking):** global "Search everything" box; the "standard limits" second tier (ADR-020); Hungarian; non-conformity records, gauge import, drift prediction; screens still open in `docs/INTREBARI.md` (items 20–31).
-- **Next:** the ERP-style module platform — foundation and Tasks are built, Meetings / Non-conformities / Preventive are next (see "Modular direction").
+- **Team modules built:** Tasks, Meetings, Preventive, Non-conformities, custom fields / lists (ADR-023) and calculated fields (ADR-024). **Next:** finish the pre-release list below, then build the package.
+
+## Where we stopped (handoff 2026-11-01: work moves from the cloud to the owner's PC, `E:\MyApps\QulityControl App`)
+The owner approved this pre-release list ("do 1 to 8 in that order"); after it, build the package. Commit and push after each step.
+1. ✅ Upgrade rehearsal against the shipped 0.9.0-beta.3 (`node tools/upgrade-rehearsal.js c92b95d`): all good. The only ⚠️ is that 0.9.x has no newer-database guard, so going back = the pre-upgrade backup (documented in `README-INSTALARE.md` §6).
+2. ✅ Help tips (`help.custom`, extra-field lines on tasks / ncr / meetings, Settings tip about modules being off after an upgrade).
+3. ✅ Release notes `docs/NOUTATI.md` (in the package), update + rollback steps in `README-INSTALARE.md`, guide sections 5–7 in `docs/GHID-CONFIGURARE.md`.
+4. ✅ Version 0.10.0-beta.1 (`package.json`).
+5. ⏳ **Load check with module data** (started, nothing written yet): extend `tools/load-check.js` to also insert ~5 000 tasks, 2 000 non-conformities, 1 000 meetings (required columns: tasks `no, team, title, created_by, created_at, updated_at`; ncrs `no, title, reported_by, reported_at, created_at, updated_at`; meetings `title, teams, meeting_date, start_time, created_at, updated_at`) plus ~5 custom fields per kind (a list, a number, a date, a calculated one) with values in `custom_values`; time the boards / register / meetings list with and without custom filters, the exports, a task page and form, `/admin/campuri`, and "Recalculate all" (POST `/admin/campuri/:id/recalcula`). Limits: 500 ms interactive, 3 s heavy. If filters are slow, look at `custom.where` (EXISTS per field; index `idx_custom_values_field(field_id, value)`).
+6. Demo data with custom fields: `tools/demo-data.js` (`seedAll`) should create a believable set (e.g. task "Timp oprire" [min], "Preț oră" [RON], calculated "Cost oprire" = `round([Timp oprire] / 60 * [Preț oră]; 2)`, a list "Cauze defect" used by tasks and non-conformities) and fill values on its records through `custom.save`.
+7. Work-order print (`/sarcini/:id/tipar`, `workOrderPage` in `app/views/tasks.js`) should list the task's custom fields (like the non-conformity and meeting prints do: `custom.shown` + `custom.display`).
+8. Small gaps: the non-conformity search box (`q` in `ncr.list`) should also search custom text values; meeting series could carry default custom values for the meetings they make (if done: a column or table for series defaults + `meetings.ensure` calling `custom.save`).
+Then: `npm test`, `node tools/custom-walkthrough.js <dir>`, `node tools/contrast-audit.js`, `node tools/touch-audit.js`, `node tools/upgrade-rehearsal.js c92b95d`, and `node tools/make-release.js` (check the `.sha256`). Waiting on the owner: `docs/INTREBARI.md` item 36 (rules / meeting times to confirm), a new item 37 for custom fields and formulas (who may write formulas; may old results be recalculated), and a sample of the old Excel non-conformity register for the import.
 
 ## Read before any work
 1. `docs/DECISIONS.md` — locked decisions (ADR-001…021). Do not contradict them; propose a new ADR if one must change.
@@ -47,6 +59,9 @@ npm test                                  # = node --test "app/test/*.test.js"  
 node tools/walkthrough.js <dir>           # Playwright browser walk-through with screenshots (dev only, Playwright from `npm root -g`)
 node tools/touch-audit.js [dir]           # controls under 44 px on the main screens (dev only)
 node tools/load-check.js [N]              # N measurements (default 50 000) and page timings
+node tools/upgrade-rehearsal.js <ref>     # previous release makes a database, this code upgrades it (run before every release)
+node tools/custom-walkthrough.js <dir>    # custom fields, lists and the formula editor in a real browser
+node tools/demo-data.js [--save f.db]     # believable factory data for looking at the screens
 node tools/export-texts.js [file.xlsx]    # wording review sheet, Romanian and English side by side
 node tools/make-release.js [--with-node <node-win-x64.zip>]   # dist/ROMCAB-CTC-<version>.zip (+ .sha256)
 ```
