@@ -53,9 +53,24 @@ Pachetul de instalare este `ROMCAB-CTC-<versiune>.zip` (verificati suma `.sha256
 
 ## 6. Actualizare
 
-1. Opriți serviciul: `schtasks /end /tn ROMCAB-CTC`.
-2. Înlocuiți folderul `app\` cu cel nou. **Nu atingeți** `data\`, `backups\` și `config.json`.
-3. Porniți serviciul. La pornire, structura bazei de date se actualizează automat, după un backup automat.
+Citiți întâi `docs/NOUTATI.md` (ce s-a schimbat și ce trebuie făcut după).
+
+1. În aplicație: **Setări → Backup acum**.
+2. Opriți serviciul: `schtasks /end /tn ROMCAB-CTC`.
+3. Înlocuiți folderele `app\`, `seed\` și `docs\` și fișierele de pe primul nivel cu cele noi. **Nu atingeți** `data\`, `backups\`, `node\` și `config.json`.
+4. Porniți serviciul: `schtasks /run /tn ROMCAB-CTC`. La pornire se face un backup automat (`ctc-<data>.db` în folderul de backup), apoi structura bazei de date se actualizează. Jurnalul serviciului arată „Backup înainte de migrare: …” și „Migrări aplicate: …”.
+5. Verificați: pagina de start se deschide, o măsurătoare veche se deschide, utilizatorii se autentifică cu parolele lor.
+
+### Revenire la versiunea anterioară
+
+O bază de date actualizată **nu se folosește cu o versiune mai veche**. Versiunile noi refuză să pornească pe o bază mai nouă decât ele. Versiunea 0.9.x nu are această verificare: ar porni, dar nu ar putea autentifica pe nimeni, pentru că de la 0.10 parolele sunt păstrate mai sigur. Pentru a reveni:
+
+1. Opriți serviciul.
+2. Mutați `data\ctc.db` (și fișierele `ctc.db-wal`, `ctc.db-shm`, dacă există) într-un folder separat. Nu le ștergeți.
+3. Copiați în `data\` backup-ul făcut **chiar înainte** de actualizare (cel din linia „Backup înainte de migrare” a jurnalului) și redenumiți-l `ctc.db`.
+4. Puneți la loc folderul `app\` al versiunii vechi și porniți serviciul.
+
+Ce s-a introdus după actualizare nu există în acel backup. Notați-l înainte sau, mai simplu, rămâneți pe versiunea nouă și cereți o corectură.
 
 ## 7. Cerințe
 

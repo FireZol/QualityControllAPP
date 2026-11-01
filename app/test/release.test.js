@@ -17,7 +17,7 @@ test('the release package: app, seed, scripts (CRLF) and guides; no tests, data,
     const buf = fs.readFileSync(path.join(out, name));
     const files = unzip(buf);
     const names = Object.keys(files);
-    for (const must of ['app/server.js', 'app/db/migrations/001_initial.sql', 'seed/fise_tehnice_initiale.json', 'seed/iec60228_2023.json', 'start.bat', 'run-server.bat', 'instalare-serviciu.ps1', 'config.example.json', 'README-INSTALARE.md', 'docs/GHID-CONFIGURARE.md', 'node/CITESTE.txt', 'VERSION.txt']) {
+    for (const must of ['app/server.js', 'app/db/migrations/001_initial.sql', 'seed/fise_tehnice_initiale.json', 'seed/iec60228_2023.json', 'start.bat', 'run-server.bat', 'instalare-serviciu.ps1', 'config.example.json', 'README-INSTALARE.md', 'docs/GHID-CONFIGURARE.md', 'docs/NOUTATI.md', 'node/CITESTE.txt', 'VERSION.txt']) {
       assert.ok(names.includes(`ROMCAB-CTC/${must}`), `${must} is in the package`);
     }
     assert.ok(!names.some((n) => /\/app\/test\/|\.py$|config\.json$|\.db(-wal|-shm)?$|node\.exe$/.test(n)), 'no tests, scripts for development, data or config');

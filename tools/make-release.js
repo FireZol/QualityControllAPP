@@ -27,7 +27,7 @@ walk('app', (rel, dir) => !(dir && rel === path.join('app', 'test')));
 walk('seed', (rel, dir) => dir || /\.(json|md)$/i.test(rel));
 for (const f of ['start.bat', 'run-server.bat', 'instalare-serviciu.bat', 'instalare-serviciu.ps1', 'dezinstalare-serviciu.bat']) add(f, crlf(fs.readFileSync(path.join(root, f), 'utf8')));
 for (const f of ['config.example.json', 'package.json', 'README-INSTALARE.md']) add(f, fs.readFileSync(path.join(root, f)));
-for (const f of ['GHID-CONFIGURARE.md', 'TEST-PE-CALCULATOR.md', 'ADAPTARE.md', 'INTREBARI.md', 'SECURITY.md']) add(path.join('docs', f), fs.readFileSync(path.join(root, 'docs', f)));
+for (const f of ['NOUTATI.md', 'GHID-CONFIGURARE.md', 'TEST-PE-CALCULATOR.md', 'ADAPTARE.md', 'INTREBARI.md', 'SECURITY.md']) add(path.join('docs', f), fs.readFileSync(path.join(root, 'docs', f)));
 const nodeZipArg = process.argv.indexOf('--with-node') >= 0 ? process.argv[process.argv.indexOf('--with-node') + 1] : null;
 let nodeVersion = null;
 if (nodeZipArg) {

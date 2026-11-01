@@ -23,5 +23,32 @@ Tip: start with the one family you will measure first (for example the rigid alu
 ## 4. A first backup
 **Setări / Settings → Backup acum / Back up now**. Set the backup folder first if it should be on another machine (see `docs/TEST-PE-CALCULATOR.md`, "Backup to a network folder").
 
+## 5. Team modules (Maintenance, Technical, Quality, Meetings)
+They are off until you switch them on: **Setări → Module / Settings → Modules**. In the same page, under the team modules:
+- set the **default level** per module (none / view / enter / lead);
+- set the **numbering** (for example `MT-{yyyy}-{seq:4}`) and the team codes;
+- choose whether anyone may update Technical tasks;
+- set the **non-conformity closing rules** (what must be filled in before closing) and the evaluation deadline.
+
+Per person: **Utilizatori / Users** → open a user → **Acces la module / Module access**. Then:
+- **Date de bază → Persoane (echipe) / Database → People (teams):** the people who get tasks, each with a team. A person can be linked to a login so that "Mine" works.
+- **Ședințe → Programări / Meetings → Schedules:** check the repeating meetings (the times are the owner's defaults; change them freely).
+- **Mentenanță → Preventiv / Maintenance → Preventive:** make the first plans with the **Zilnic / Daily** (working days, made the day before), **Săptămânal / Weekly** or **Lunar / Monthly** presets.
+
+## 6. Custom fields and lists
+**Administrare → Câmpuri proprii / Administration → Custom fields.**
+- **Make a list first** on the **Liste proprii / Custom lists** tab, if a field should be a choice from a list. Write one item per line, optionally `Romanian | English`.
+- **Add the field:** what it applies to (tasks, of all teams or one; non-conformities; meetings), its type, its name in Romanian and English, and whether it is required and shown as a table column.
+- **Fields are never deleted.** Untick **Activ / Active** to hide one. Its values stay on the records and in the exports.
+- **The type of a field cannot change after it is made.** A list used by an active field cannot be hidden.
+
+## 7. Calculated fields (formulas)
+Choose the type **Număr calculat (formulă) / Calculated number (formula)**.
+- **Writing it:** press the field and function chips to build the formula, for example `round([Timp oprire] / 60 * [Preț oră]; 2)`, or start from one of the examples made from your own fields. Field names go in square brackets, and function arguments are separated by `;`. **Cum se scrie o formulă / How to write a formula** under the editor lists everything.
+- **Trying it:** type sample values in the preview. The result, or the reason it cannot be worked out, shows at once.
+- **Empty is not zero:** an empty input gives an empty result. Use `if(empty([field]); 0; [field])` where a missing value should count as 0. Dates count as days, so `[End] - [Start]` is the number of days between them.
+- **Changing a formula** applies to each record when it is saved. **Recalculează toate / Recalculate all** on the field's page applies it to every record at once and is written to the audit log. Every version of a formula is kept on that page.
+- **Order:** a formula may use other calculated fields made *before* it.
+
 ## Reviewing the wording
 `docs/revizie-texte.xlsx` lists every screen text in Romanian and English side by side. Colleagues fill the *corrected* columns and the *Comment* column and send the file back; keys must not change and `{placeholders}` must stay as they are. Regenerate the file with `node tools/export-texts.js`.
