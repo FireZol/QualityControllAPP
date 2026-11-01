@@ -5,7 +5,7 @@ Quality-control measurement web app for the ROMCAB S.A. cable factory (Romania).
 Owner: Zoltan Biro — process/quality engineer, domain expert (EN/IEC 60228, conductors). Ask him about domain questions; **do not guess limits or formulas**. Repository: `github.com/FireZol/QualityControllAPP` (branch `main`; GitHub reports the repo as moved to that spelling).
 
 ## State (2026-10-30)
-**Version 0.9.0-beta.3 — ready for the pilot** (install package built with `node tools/make-release.js`). 237 automated tests. Built so far:
+**Version 0.10.0-beta.1 — team modules, custom fields and formulas (release notes: `docs/NOUTATI.md`; upgrade checked with `node tools/upgrade-rehearsal.js c92b95d`)** (install package built with `node tools/make-release.js`). 237 automated tests. Built so far:
 - **Core QC** (stages 1–3): accounts and roles (Personal / Inginer / Administrator), versioned data sheets with the two-person rule, measurements with live verdicts, corrections as new versions, register with filters, CSV / Excel export, printing in every browser, backups, audit log. Families: rigid conductor, extruded Al, wire class I–II, wire class V, flexible class 5.
 - **Optional modules** (off by default, Administrator switches them in Setări → Module, ADR-016): finished cable (tests catalogue, batches, drums, certificates, type reports) and analyses (trend, capability, control charts, nonconformity, consumption, home-page SPC alerts).
 - **Languages:** Romanian (master) and English, per user; Hungarian deferred (ADR-015).
