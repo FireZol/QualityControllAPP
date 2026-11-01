@@ -90,7 +90,36 @@ function validateSeries(db, data) {
   if (v.starts_on && v.ends_on && v.ends_on < v.starts_on && !errors.ends_on) errors.ends_on = 'before_start';
   v.people = [...new Set((data.people || []).map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   if (v.people.some((id) => !db.get('SELECT 1 FROM people WHERE id = ?', id))) errors.people = 'invalid';
+  if (data.custom) Object.assign(errors, data.custom.errors);   // default custom values: parsed by the route with seriesFields()
   return { errors, v };
+}
+
+// ---------- default custom values of a series (the meetings it makes start with them) ----------
+
+/** The meeting fields a series may give a default to: no calculated ones (worked out per meeting), none required (a default may stay empty). */
+const seriesFields = (db) => custom.defs(db, 'meeting').filter((f) => !custom.isCalc(f)).map((f) => ({ ...f, required: 0 }));
+/** {fieldId: value} of a series ('' = no default). */
+function seriesDefaults(db, seriesId) {
+  const out = {};
+  for (const r of db.all('SELECT field_id, value FROM meeting_series_custom WHERE series_id = ?', seriesId)) out[r.field_id] = r.value;
+  return out;
+}
+/** Store the defaults (only what changed); @returns {fieldId: [from, to]} of the changes. Call inside the series' transaction. */
+function saveSeriesDefaults(db, seriesId, values) {
+  const before = seriesDefaults(db, seriesId); const changed = {};
+  for (const [fid, now] of Object.entries(values || {})) {
+    const was = before[fid] === undefined ? '' : before[fid];
+    if (now === was) continue;
+    db.run(`INSERT INTO meeting_series_custom(series_id, field_id, value) VALUES (?,?,?)
+      ON CONFLICT(series_id, field_id) DO UPDATE SET value = excluded.value`, seriesId, Number(fid), now);
+    changed[fid] = [was, now];
+  }
+  return changed;
+}
+/** Give a meeting the defaults of its series (a newly made meeting: every non-empty default). */
+function applySeriesDefaults(db, meetingId, defaults) {
+  const values = Object.fromEntries(Object.entries(defaults).filter(([, v]) => v !== ''));
+  if (Object.keys(values).length) custom.save(db, 'meeting', meetingId, custom.defs(db, 'meeting'), values);
 }
 
 // ---------- notifications ----------
@@ -121,7 +150,8 @@ function createSeries(db, user, data) {
     const id = db.run('INSERT INTO meeting_series(title, teams, days, interval_weeks, start_time, duration_min, location, starts_on, ends_on, active, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?,1,?,?)',
       v.title, v.teams.join(','), v.days.join(','), v.interval_weeks, v.start_time, v.duration_min, v.location, v.starts_on, v.ends_on, user.id, nowIso()).id;
     for (const p of v.people) db.run('INSERT INTO meeting_series_people(series_id, person_id) VALUES (?,?)', id, p);
-    audit.log(db, user.id, 'meeting_series_save', 'meeting_series', id, { title: v.title, created: true });
+    const cc = data.custom ? saveSeriesDefaults(db, id, data.custom.values) : {};
+    audit.log(db, user.id, 'meeting_series_save', 'meeting_series', id, { title: v.title, created: true, defaults: Object.keys(cc).length ? cc : undefined });
     invalidate();
     notifications.notify(db, usersOf(db, seriesInvitees(db, { id, teams: v.teams.join(',') })).filter((u) => u !== user.id), 'meeting_series', { title: v.title, time: v.start_time, days: v.days.join(','), every: v.interval_weeks }, '/sedinte');
     return { ok: true, id };
@@ -144,7 +174,17 @@ function updateSeries(db, user, id, data) {
     // people newly invited to the series are added to the coming meetings (nobody is taken off: guests may have been added by hand)
     const invitees = seriesInvitees(db, { id, teams: v.teams.join(',') });
     for (const m of db.all("SELECT id FROM meetings WHERE series_id = ? AND status = 'planned' AND meeting_date >= ?", id, today())) for (const p of invitees) db.run('INSERT OR IGNORE INTO meeting_attendees(meeting_id, person_id) VALUES (?,?)', m.id, p);
-    audit.log(db, user.id, 'meeting_series_save', 'meeting_series', id, { title: v.title });
+    // a changed default reaches the coming meetings too, but only where the meeting still holds the old default (a value typed by hand stays)
+    const cc = data.custom ? saveSeriesDefaults(db, id, data.custom.values) : {};
+    if (Object.keys(cc).length) {
+      const fields = custom.defs(db, 'meeting');
+      for (const m of db.all("SELECT id FROM meetings WHERE series_id = ? AND status = 'planned' AND meeting_date >= ?", id, today())) {
+        const have = custom.valuesOf(db, 'meeting', m.id); const values = {};
+        for (const [fid, [was, now]] of Object.entries(cc)) if ((have[fid] === undefined ? '' : have[fid]) === was) values[fid] = now;
+        if (Object.keys(values).length) custom.save(db, 'meeting', m.id, fields, values);
+      }
+    }
+    audit.log(db, user.id, 'meeting_series_save', 'meeting_series', id, { title: v.title, defaults: Object.keys(cc).length ? cc : undefined });
     invalidate();
     if (s.start_time !== v.start_time || s.days !== v.days.join(',') || s.interval_weeks !== v.interval_weeks) {
       notifications.notify(db, usersOf(db, seriesInvitees(db, { id, teams: v.teams.join(',') })).filter((u) => u !== user.id), 'meeting_series', { title: v.title, time: v.start_time, days: v.days.join(','), every: v.interval_weeks }, '/sedinte');
@@ -186,6 +226,7 @@ function ensure(db, from, days) {
         const id = db.run('INSERT INTO meetings(series_id, slot_date, title, teams, meeting_date, start_time, duration_min, location, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
           s.id, d, s.title, s.teams, d, s.start_time, s.duration_min, s.location, s.created_by, now, now).id;
         for (const p of seriesInvitees(db, s)) db.run('INSERT OR IGNORE INTO meeting_attendees(meeting_id, person_id) VALUES (?,?)', id, p);
+        applySeriesDefaults(db, id, seriesDefaults(db, s.id));
         made++;
       });
     }
@@ -374,5 +415,5 @@ function next(db, limit) {
 module.exports = {
   TEAMS, STATUSES, HORIZON_DAYS, today, nowTime, isoWeekday, occursOn, teamsOf, daysOf, cleanTeams,
   canView, canCreate, canLead, createMeeting, updateMeeting, saveNotes, setAttendance, setStatus, addDecision, detail, get, list, counts, next,
-  createSeries, updateSeries, setSeriesActive, seriesList, seriesGet, seriesInvitees, ensure, remindToday, resetReminders, invalidate,
+  createSeries, updateSeries, setSeriesActive, seriesList, seriesGet, seriesInvitees, seriesFields, seriesDefaults, ensure, remindToday, resetReminders, invalidate,
 };

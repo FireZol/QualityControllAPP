@@ -218,7 +218,11 @@ function list(db, f) {
   if (f.days) { where.push('n.reported_at >= ?'); p.push(tasks.addDays(today(), -Math.min(Math.max(Number(f.days) || 0, 0), 36500))); }
   if (f.eval_overdue) { where.push("n.status = 'reported' AND n.reported_at < ?"); p.push(tasks.addDays(today(), -rules(db).evalDays)); }
   if (f.custom && f.custom.length) custom.where(f.custom, 'ncr', where, p);
-  if (f.q) { where.push("(n.title LIKE ? ESCAPE '\\' OR n.no LIKE ? ESCAPE '\\' OR n.description LIKE ? ESCAPE '\\' OR n.product LIKE ? ESCAPE '\\' OR n.external_ref LIKE ? ESCAPE '\\')"); const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like, like, like); }
+  if (f.q) {   // the search box also looks in custom text fields (hidden ones too: their values are still shown on the record)
+    where.push(`(n.title LIKE ? ESCAPE '\\' OR n.no LIKE ? ESCAPE '\\' OR n.description LIKE ? ESCAPE '\\' OR n.product LIKE ? ESCAPE '\\' OR n.external_ref LIKE ? ESCAPE '\\'
+      OR EXISTS (SELECT 1 FROM custom_values cv JOIN custom_fields cf ON cf.id = cv.field_id WHERE cv.kind = 'ncr' AND cv.record_id = n.id AND cf.type IN ('text', 'longtext') AND cv.value LIKE ? ESCAPE '\\'))`);
+    const like = '%' + f.q.replace(/[%_\\]/g, (c) => '\\' + c) + '%'; p.push(like, like, like, like, like, like);
+  }
   const rows = db.all(`SELECT n.*, t.name AS type_name, t.name_en AS type_name_en, p.name AS severity_name, p.name_en AS severity_name_en, p.sort AS severity_sort, m.name AS machine_name, u.full_name AS reported_by_name,
       (SELECT count(*) FROM ncrs o WHERE o.id <> n.id AND o.status <> 'cancelled' AND o.type_id = n.type_id AND n.type_id IS NOT NULL AND ((n.machine_id IS NOT NULL AND o.machine_id = n.machine_id) OR (n.product IS NOT NULL AND n.product <> '' AND o.product = n.product)) AND o.reported_at BETWEEN date(n.reported_at, '-90 days') AND date(n.reported_at, '+90 days')) AS similar_n,
       (SELECT count(*) FROM tasks k WHERE k.source_kind = 'ncr' AND k.source_id = n.id) AS tasks_total,

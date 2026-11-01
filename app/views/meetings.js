@@ -208,6 +208,7 @@ function seriesForm(ctx, d) {
   </div>
   <div class="row">${textField({ label: T.meetings.from, name: 'starts_on', value: v.starts_on, type: 'date', errors })}${textField({ label: T.meetings.until, name: 'ends_on', value: v.ends_on, type: 'date', errors })}</div>
   ${peoplePick(people, d.people_sel || (s ? s.people : []), 'people', T.meetings.series_people)}<p class="muted">${T.meetings.series_people_hint}</p>
+  ${cv.inputs(d.cfFields || [], d.cfv, errors, d.cfCurrent, { legend: T.meetings.series_defaults, hint: T.meetings.series_defaults_hint })}
   <div class="actions"><button class="btn primary big" type="submit">${T.common.save}</button><a class="btn" href="/sedinte/serii">${T.common.cancel}</a></div>
 </form>`,
   });

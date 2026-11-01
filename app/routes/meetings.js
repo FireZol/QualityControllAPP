@@ -85,28 +85,32 @@ module.exports = function register(app) {
   });
   router.get('/sedinte/serii/nou', {}, (ctx) => {
     if (!rights(ctx).lead) return forbidden(ctx);
-    return page(views.seriesForm(ctx, { values: { days: [1, 2, 3, 4, 5], teams: [] }, people: people() }));
+    return page(views.seriesForm(ctx, { values: { days: [1, 2, 3, 4, 5], teams: [] }, people: people(), cfFields: meetings.seriesFields(db) }));
   });
   router.post('/sedinte/serii/nou', {}, (ctx) => {
     if (!rights(ctx).lead) return forbidden(ctx);
+    const fields = meetings.seriesFields(db); const cf = cfParse(ctx, fields, {});
     const data = seriesData(ctx);
-    const r = meetings.createSeries(db, ctx.user, data);
-    if (!r.ok) return page(views.seriesForm(ctx, { values: data, errors: r.errors, people: people(), people_sel: data.people.map(Number) }), 422);
+    const r = meetings.createSeries(db, ctx.user, { ...data, custom: cf });
+    if (!r.ok) return page(views.seriesForm(ctx, { values: data, errors: r.errors, people: people(), people_sel: data.people.map(Number), cfFields: fields, cfv: cf.values }), 422);
     meetings.ensure(db);
     return redirect('/sedinte/serii', { flash: { key: 'series_saved' } });
   });
   router.get('/sedinte/serii/:id/editeaza', {}, (ctx) => {
     if (!rights(ctx).lead) return forbidden(ctx);
     const s = meetings.seriesGet(db, idOf(ctx.params.id));
-    return s ? page(views.seriesForm(ctx, { s, people: people() })) : notFound(ctx);
+    if (!s) return notFound(ctx);
+    const cur = meetings.seriesDefaults(db, s.id);
+    return page(views.seriesForm(ctx, { s, people: people(), cfFields: meetings.seriesFields(db), cfv: cur, cfCurrent: cur }));
   });
   router.post('/sedinte/serii/:id/editeaza', {}, (ctx) => {
     if (!rights(ctx).lead) return forbidden(ctx);
     const s = meetings.seriesGet(db, idOf(ctx.params.id));
     if (!s) return notFound(ctx);
+    const fields = meetings.seriesFields(db); const cur = meetings.seriesDefaults(db, s.id); const cf = cfParse(ctx, fields, cur);
     const data = seriesData(ctx);
-    const r = meetings.updateSeries(db, ctx.user, s.id, data);
-    if (!r.ok) return page(views.seriesForm(ctx, { s, values: data, errors: r.errors || {}, people: people(), people_sel: data.people.map(Number) }), 422);
+    const r = meetings.updateSeries(db, ctx.user, s.id, { ...data, custom: cf });
+    if (!r.ok) return page(views.seriesForm(ctx, { s, values: data, errors: r.errors || {}, people: people(), people_sel: data.people.map(Number), cfFields: fields, cfv: cf.values, cfCurrent: cur }), 422);
     return redirect('/sedinte/serii', { flash: { key: 'series_saved' } });
   });
   router.post('/sedinte/serii/:id/activ', {}, (ctx) => {

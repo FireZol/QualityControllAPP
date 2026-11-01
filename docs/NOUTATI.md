@@ -23,7 +23,7 @@ The first version with the team modules. Everything measured, every data sheet a
   - **The non-conformity register** with evaluation, closing rules set in Settings, recurring cases and a Top for the quality meeting.
 - **Notifications** (the bell) for assignments, status changes, meetings and non-conformities.
 - **A new look:** a menu on the left, a Light / Dark / PC default theme, a home page with "Needs your attention", and large touch targets everywhere.
-- **Custom fields and lists:** an Administrator adds fields to tasks, non-conformities and meetings without a new version of the program. They can be text, a number with a unit, a date, yes / no, or a choice from your own list. They appear in the form, on the record, as table columns, in the filters and in the exports. Nothing is deleted: a field is hidden and its values stay.
+- **Custom fields and lists:** an Administrator adds fields to tasks, non-conformities and meetings without a new version of the program. They can be text, a number with a unit, a date, yes / no, or a choice from your own list. They appear in the form, on the record, as table columns, in the filters, in the exports and on the printed sheets. Nothing is deleted: a field is hidden and its values stay. A meeting schedule can give its meetings default values, and the non-conformity search also looks in the text fields.
 - **Calculated fields (formulas):** a number worked out from other fields, for example `round([Timp oprire] / 60 * [Preț oră]; 2)`.
   - The formula editor has a live preview, and forms show the result while people type.
   - A changed formula never changes old results by itself. A record gets the new formula when it is saved, or when an Administrator presses **Recalculează toate / Recalculate all**.

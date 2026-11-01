@@ -276,6 +276,10 @@ test('non-conformities: a required custom field blocks saving, values show in th
   assert.equal(file.trim().split(/\r?\n/).length, 2);
   assert.match(file, /Client SA/); assert.match(file.split(/\r?\n/)[0], /Cauză NC/);
   assert.match((await lead.get(`/calitate/neconformitati/${n.id}/tipar`)).text, /Client SA/);
+  // the search box also finds text typed in a custom field
+  const found = (await lead.get('/calitate?view=all&q=client%20sa')).text;
+  assert.match(found, /NC cu câmpuri/); assert.ok(!found.includes('NC alta'));
+  assert.ok(!(await lead.get('/calitate?view=all&q=%25')).text.includes('NC cu câmpuri'), 'a % is a character, not a wildcard');
   // editing the main part keeps the custom fields; the evaluation part does not touch them
   const ed = await post(lead, `/calitate/neconformitati/${n.id}/editeaza`, { part: 'main', title: 'NC cu câmpuri', [key('req')]: String(ids.items[2]), [key('ncrText')]: 'Client SA' }, `/calitate/neconformitati/${n.id}/editeaza`);
   assert.equal(ed.status, 303);
@@ -308,6 +312,34 @@ test('meetings: custom fields in the form, the page, the list filter and a new e
   // the minutes-only forms leave custom values alone
   await post(lead, `/sedinte/${m.id}/note`, { agenda: 'ordine', minutes: 'proces verbal' }, `/sedinte/${m.id}`);
   assert.equal(custom.valuesOf(app.db, 'meeting', m.id)[F.mtg], 'Reclamații');
+});
+
+test('a meeting series gives its default custom values to the meetings it makes; a changed default reaches only meetings nobody changed by hand', async () => {
+  const meetings = require('../domain/meetings');
+  const F = ids.f; const key = `cf_${F.mtg}`;
+  const form = (await lead.get('/sedinte/serii/nou')).text;
+  assert.match(form, /Subiect principal/); assert.ok(!form.includes(`name="${key}" required`), 'a default is never required');
+  const base = { title: 'Serie cu valori', teams: ['quality'], days: ['1', '2', '3', '4', '5', '6', '7'], start_time: '07:30', duration_min: '15', interval_weeks: '1' };
+  assert.equal((await post(lead, '/sedinte/serii/nou', { ...base, [key]: 'Calitate zilnică' }, '/sedinte/serii/nou')).status, 303);
+  const s = app.db.get("SELECT id FROM meeting_series WHERE title = 'Serie cu valori'").id;
+  meetings.ensure(app.db, meetings.today(), 14);
+  const made = app.db.all("SELECT id FROM meetings WHERE series_id = ? AND status = 'planned' ORDER BY meeting_date", s).map((r) => r.id);
+  assert.ok(made.length >= 10);
+  for (const id of made) assert.equal(custom.valuesOf(app.db, 'meeting', id)[F.mtg], 'Calitate zilnică');
+  // one meeting is changed by hand; then the default changes
+  await post(lead, `/sedinte/${made[1]}/editeaza`, { title: 'Serie cu valori', meeting_date: app.db.get('SELECT meeting_date FROM meetings WHERE id = ?', made[1]).meeting_date, start_time: '07:30', duration_min: '15', teams: ['quality'], [key]: 'Audit client' }, `/sedinte/${made[1]}/editeaza`);
+  assert.match((await lead.get(`/sedinte/serii/${s}/editeaza`)).text, /Calitate zilnică/);
+  assert.equal((await post(lead, `/sedinte/serii/${s}/editeaza`, { ...base, [key]: 'Calitate și reclamații' }, `/sedinte/serii/${s}/editeaza`)).status, 303);
+  assert.equal(custom.valuesOf(app.db, 'meeting', made[0])[F.mtg], 'Calitate și reclamații');
+  assert.equal(custom.valuesOf(app.db, 'meeting', made[1])[F.mtg], 'Audit client', 'a value typed by hand stays');
+  assert.match(JSON.stringify(app.db.get("SELECT details FROM audit_log WHERE action = 'meeting_series_save' ORDER BY id DESC LIMIT 1")), /Calitate și reclamații/);
+  // a wrong value is refused with the form shown again, and nothing is saved
+  app.db.run("UPDATE custom_fields SET type = 'number' WHERE id = ?", F.mtg);   // (test only: a field's type never changes in the app)
+  const bad = await post(lead, `/sedinte/serii/${s}/editeaza`, { ...base, [key]: 'abc' }, `/sedinte/serii/${s}/editeaza`);
+  app.db.run("UPDATE custom_fields SET type = 'text' WHERE id = ?", F.mtg);
+  assert.equal(bad.status, 422);
+  assert.equal(meetings.seriesDefaults(app.db, s)[F.mtg], 'Calitate și reclamații');
+  await post(lead, `/sedinte/serii/${s}/activ`, { active: '0' }, '/sedinte/serii');
 });
 
 // ------------------------------------------------------------------ safety

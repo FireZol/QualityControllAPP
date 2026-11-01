@@ -41,6 +41,8 @@ Per person: **Utilizatori / Users** → open a user → **Acces la module / Modu
 - **Add the field:** what it applies to (tasks, of all teams or one; non-conformities; meetings), its type, its name in Romanian and English, and whether it is required and shown as a table column.
 - **Fields are never deleted.** Untick **Activ / Active** to hide one. Its values stay on the records and in the exports.
 - **The type of a field cannot change after it is made.** A list used by an active field cannot be hidden.
+- **Meeting fields and schedules:** a schedule (**Ședințe → Programări / Meetings → Schedules**) can give the meeting fields default values. Every meeting it makes starts with them, and each meeting can still be changed. A changed default also reaches the planned meetings that nobody changed by hand.
+- **Searching non-conformities:** the search box also looks in the text fields you added.
 
 ## 7. Calculated fields (formulas)
 Choose the type **Număr calculat (formulă) / Calculated number (formula)**.

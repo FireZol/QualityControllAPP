@@ -11,8 +11,8 @@ const { textField, selectField, textArea } = require('./layout');
 const NUM = /^-?\d+(\.\d+)?$/;
 const shownValue = (f, v) => (v === undefined || v === null ? '' : f.type === 'number' && NUM.test(String(v)) ? calc.dec(v) : v);
 
-/** The inputs of a form (one per active field); `values` {fieldId: raw}, `errors` as the form's own (names cf_<id>). */
-function inputs(fields, values, errors, current) {
+/** The inputs of a form (one per active field); `values` {fieldId: raw}, `errors` as the form's own (names cf_<id>); `opts` {legend, hint} replaces the box title. */
+function inputs(fields, values, errors, current, opts) {
   if (!fields.length) return '';
   const vals = values || {};
   const one = (f) => {
@@ -38,7 +38,7 @@ function inputs(fields, values, errors, current) {
     const stored = Object.fromEntries(Object.entries({ ...(current || {}), ...vals }).filter(([id]) => !inForm.has(Number(id))));
     cfg = JSON.stringify({ calcs: calcs.map((c) => ({ id: c.id, f: c.formula, d: c.decimals === null || c.decimals === undefined ? 2 : c.decimals, u: c.unit || '' })), types, stored });
   }
-  return html`<fieldset class="custom-fields"${cfg ? html` data-calcs="${cfg}"` : ''}><legend>${T.custom.section}</legend><div class="row">${fields.map(one)}</div></fieldset>`;
+  return html`<fieldset class="custom-fields"${cfg ? html` data-calcs="${cfg}"` : ''}><legend>${(opts && opts.legend) || T.custom.section}</legend>${opts && opts.hint ? html`<p class="muted">${opts.hint}</p>` : ''}<div class="row">${fields.map(one)}</div></fieldset>`;
 }
 
 /** Rows for a facts list (<dl class="facts">): every field that applies, "—" where nothing was entered. */
