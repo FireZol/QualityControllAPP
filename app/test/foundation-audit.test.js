@@ -16,6 +16,8 @@ const { Db, migrate } = require('../db/db');
 const { seedAll } = require('../../tools/demo-data');
 
 const ROOT = path.resolve(__dirname, '..');
+/** A file name relative to app/, always with / (the allow-lists are written that way; Windows gives \). */
+const rel = (f) => path.relative(ROOT, f).split(path.sep).join('/');
 
 // ============================================================ 1. calculations
 test('calc: a reading exactly on a limit is in limits, even when the computed value carries floating-point noise', () => {
@@ -341,7 +343,10 @@ test('sql: hostile values in every filter of every list never cause an error or 
   for (const base of lists) {
     for (const v of evil) {
       const qs = names.map((k) => `${k}=${encodeURIComponent(v)}`).join('&');
-      const res = await admin.get(base + (base.includes('?') ? '&' : '?') + qs);
+      // a very long address may be refused by the operating system's socket before Node answers (Windows resets it): that is a refusal too,
+      // as long as the server keeps serving afterwards
+      const res = await admin.get(base + (base.includes('?') ? '&' : '?') + qs).catch((e) => { if (v.length < 1000) throw e; return null; });
+      if (!res) { assert.equal((await admin.get('/')).status, 200, 'the server still answers after a refused huge address'); n++; continue; }
       assert.ok(res.status < 500, `${base} with ${JSON.stringify(v.slice(0, 20))} -> ${res.status}`);
       assert.ok(!/SQLITE|syntax error|no such (table|column)|near "/i.test(res.text), `${base}: SQL error text in the page`);
       n++;
@@ -368,7 +373,7 @@ test('sql: every dynamic fragment in the code is a placeholder list or a whiteli
       for (const e of m[1].matchAll(/\$\{([^}]*)\}/g)) {
         const ex = e[1].trim();
         const safe = /^(ids|list|teams|persons|f\.persons|steps|keys)?\.?map\(\(\) => '\?'\)\.join\(','\)$/.test(ex) || /\.map\(\(\) => '\?'\)\.join\(','\)/.test(ex) || /^where(\.join\(' AND '\))?$|^where\.length \? 'WHERE ' \+ where\.join\(' AND '\) : ''$/.test(ex) || /^(order|sets|sql|cols|key\.(col|name|join)|col|table|t|extra|f\.limit|Math\.min\(.*\)|k|ph|placeholders|SORTS\[.*\]|orderBy|key\.col|limit|LIMIT)$/.test(ex) || /^Math\.min\(Number\(/.test(ex) || /^\(?filter/.test(ex) || ex.startsWith("where.length") || ex.startsWith("by === ") || ex.startsWith("f.view") || ex.startsWith("onlyUnread") || ex.startsWith("ids.map") || ex.startsWith("Object.keys(changes)");
-        if (!safe) risky.push(`${path.relative(ROOT, f)}: \${${ex}}`);
+        if (!safe) risky.push(`${rel(f)}: \${${ex}}`);
       }
     }
   }
@@ -391,7 +396,7 @@ test('integrity: the demo database passes the SQLite checks; measurements, revis
   const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) { if (!['test', 'public'].includes(e.name)) walk(p); } else if (p.endsWith('.js')) files.push(p); } };
   walk(ROOT);
   const deletes = {};
-  for (const f of files) for (const m of fs.readFileSync(f, 'utf8').matchAll(/DELETE FROM (\$\{[^}]+\}|[a-z_]+)/g)) (deletes[path.relative(ROOT, f)] ||= new Set()).add(m[1]);
+  for (const f of files) for (const m of fs.readFileSync(f, 'utf8').matchAll(/DELETE FROM (\$\{[^}]+\}|[a-z_]+)/g)) (deletes[rel(f)] ||= new Set()).add(m[1]);
   const ALLOWED = {
     'lib/auth.js': ['sessions', 'login_attempts'], 'routes/auth.js': ['sessions'], 'domain/golive.js': ['${t}', 'login_attempts'],   // the one-time, backed-up, audited "Start production" reset
     'domain/access.js': ['user_modules'], 'domain/lists.js': ['machine_type_families'], 'routes/admin.js': ['sessions', 'login_attempts'], 'domain/tasks.js': ['task_assignees', 'task_checklist'], 'domain/meetings.js': ['meeting_attendees', 'meeting_series_people'], 'domain/preventive.js': ['pm_plan_people', 'pm_plan_steps'],

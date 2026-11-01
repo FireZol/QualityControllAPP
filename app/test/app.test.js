@@ -606,7 +606,7 @@ test('28. every page: correct Romanian diacritics, no marker for missing strings
     for (const u of list) {
       const r = await client.get(u);
       assert.equal(r.status, 200, u);
-      const t = textOf(r.text);
+      const t = textOf(r.text).replace(/[A-Za-z]:\\\S*|\/(?:tmp|home|Users)\/\S*/g, ' ');   // file paths (the backup folder: C:\Users\... on Windows) are not UI text
       assert.ok(!bad.test(t), `cedilla in ${u}`);
       assert.ok(!/⟦|undefined|\[object Object\]|NaN/.test(t), `bad token in ${u}: ${(/.{30}(⟦|undefined|\[object Object\]|NaN).{30}/.exec(t) || [''])[0]}`);
       assert.ok(!english.test(t), `English text in ${u}: ${(english.exec(t) || [''])[0]}`);
