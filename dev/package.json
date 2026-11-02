@@ -1,0 +1,8 @@
+{
+  "name": "romcab-ctc-dev-tools",
+  "private": true,
+  "description": "Developer-only tools (browser audits in tools/). Not part of the application or the release package. Install once: npm install --prefix dev",
+  "devDependencies": {
+    "playwright-core": "1.62.1"
+  }
+}

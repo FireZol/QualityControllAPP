@@ -3,8 +3,7 @@
 // background is below the threshold (default 4.5, WCAG AA for normal text). Groups by element and colours.
 //   node tools/contrast-audit.js [threshold]       needs Playwright (npm root -g)
 const path = require('node:path');
-const { execSync } = require('node:child_process');
-const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+const pw = require('./browser');
 const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');

@@ -3,8 +3,7 @@
 // phone width and lists controls under 44 px.   node tools/tasks-audit.js [screenshot-dir]   needs Playwright (npm root -g)
 const path = require('node:path');
 const fs = require('node:fs');
-const { execSync } = require('node:child_process');
-const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+const pw = require('./browser');
 const { startApp, adminClient } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');

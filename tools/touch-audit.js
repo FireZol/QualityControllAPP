@@ -4,8 +4,7 @@
 //   node tools/touch-audit.js [screenshot-dir]        needs Playwright (npm root -g)
 const path = require('node:path');
 const fs = require('node:fs');
-const { execSync } = require('node:child_process');
-const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+const pw = require('./browser');
 const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 
 const MIN = 44;

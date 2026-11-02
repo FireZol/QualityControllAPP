@@ -5,10 +5,9 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { execSync } = require('node:child_process');
 const assert = require('node:assert/strict');
 
-const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+const pw = require('./browser');
 const { createApp } = require('../app/app');
 
 const shots = process.argv[2] || fs.mkdtempSync(path.join(os.tmpdir(), 'ctc-shots-'));

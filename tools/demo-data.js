@@ -6,7 +6,6 @@
 //   node tools/demo-data.js [--save demo.db] [--shots <dir>]        needs Playwright (npm root -g) only for --shots
 const fs = require('node:fs');
 const path = require('node:path');
-const { execSync } = require('node:child_process');
 const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 const tasks = require('../app/domain/tasks');
 const meetings = require('../app/domain/meetings');
@@ -172,7 +171,7 @@ async function main() {
   if (save) { fs.rmSync(save, { force: true }); db.run('VACUUM INTO ?', path.resolve(save)); console.log('Database copy written to', save); }
   const shots = arg('--shots');
   if (shots) {
-    const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+    const pw = require('./browser');
     const browser = await pw.chromium.launch();
     const rec = db.get('SELECT record_no FROM measurements WHERE id = (SELECT max(id) FROM measurements)').record_no;
     const outRec = db.get("SELECT m.record_no FROM measurements m JOIN measurement_results r ON r.measurement_id = m.id WHERE r.verdict IN ('sub','peste') LIMIT 1");

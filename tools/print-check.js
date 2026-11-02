@@ -2,9 +2,8 @@
 // Dev check of the printed documents in headless Chromium (Playwright): every sheet is split into pages that
 // carry "Pag. x / y", and the PDF has exactly as many pages. (Firefox is not installed in the dev environment.)
 const path = require('node:path');
-const { execSync } = require('node:child_process');
 const assert = require('node:assert/strict');
-const pw = require(path.join(execSync('npm root -g').toString().trim(), 'playwright'));
+const pw = require('./browser');
 const { startApp, adminClient } = require('../app/test/helpers');
 
 (async () => {

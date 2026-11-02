@@ -1,8 +1,8 @@
 'use strict';
 // Dev tool: builds a finished-cable batch through the real routes and screenshots the entry form, the batch page and the certificate.
 //   node tools/cable-walkthrough.js <screenshot-dir>
-const path=require('path'),{execSync}=require('child_process');
-const pw=require(path.join(execSync('npm root -g').toString().trim(),'playwright'));
+const path=require('path');
+const pw=require('./browser');
 const { startApp, adminClient, makeUser } = require('../app/test/helpers');
 (async()=>{
  const app=await startApp(); const admin=await adminClient(app);

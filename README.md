@@ -18,4 +18,4 @@ npm test                # unit + integration tests (node:test)
 
 Adapting: `docs/ADAPTARE.md` (what is editable and where). Read first: `CLAUDE.md`, `docs/DECISIONS.md`, `docs/SPECIFICATIE.md`, `docs/DATA-MODEL.md`, `docs/ETAPA-1.md` … `docs/ETAPA-4.md`, `docs/INTREBARI.md` (open questions), `docs/GHID-CONFIGURARE.md` (first setup), `docs/TEST-PE-CALCULATOR.md` (factory PC checklist), `docs/SECURITY.md` (security notes), `README-INSTALARE.md` (Windows install, in Romanian).
 
-Development tools (not part of the app; need Playwright): `tools/walkthrough.js` (browser walk-through with screenshots), `tools/print-check.js` (printed pages in Chromium).
+Development tools (not part of the app; need Playwright: run `npm install --prefix dev` once, which puts `playwright-core` in the git-ignored `dev/node_modules` and drives the Edge already on the PC): `tools/walkthrough.js` (browser walk-through with screenshots), `tools/print-check.js` (printed pages in Chromium).

@@ -56,7 +56,8 @@ Then: `npm test`, `node tools/custom-walkthrough.js <dir>`, `node tools/contrast
 ```
 node app/server.js                        # dev; uses ./data and ./config.json (copy config.example.json)
 npm test                                  # = node --test "app/test/*.test.js"  (Node 22 needs the glob)
-node tools/walkthrough.js <dir>           # Playwright browser walk-through with screenshots (dev only, Playwright from `npm root -g`)
+npm install --prefix dev                  # once per dev PC: playwright-core into dev/node_modules (git-ignored, never in the package); the browser tools then drive the installed Edge
+node tools/walkthrough.js <dir>           # Playwright browser walk-through with screenshots (dev only; every browser tool loads it through tools/browser.js: dev/ playwright-core + Edge, else a global Playwright; CTC_BROWSER=chrome picks Chrome)
 node tools/touch-audit.js [dir]           # controls under 44 px on the main screens (dev only)
 node tools/load-check.js [N]              # N measurements (default 50 000) and page timings
 node tools/upgrade-rehearsal.js <ref>     # previous release makes a database, this code upgrades it (run before every release)
@@ -73,7 +74,7 @@ Target: Windows with a portable Node in `node\` (`start.bat`; the scheduled task
 ## Working style
 - One step at a time, small commits with clear messages, tests green before every push; update `docs/` when behaviour changes.
 - When a requirement is ambiguous, write the question in `docs/INTREBARI.md` and continue with the most conservative option, noting it there. The owner answers in short messages ("1 yes, 2 …"): record each answer as a numbered item.
-- Verify UI changes in a real browser (screenshots at laptop, tablet and phone widths); the dev environment has headless Chromium only.
+- Verify UI changes in a real browser (screenshots at laptop, tablet and phone widths); on the owner's Windows PC the tools run headless Edge (`tools/browser.js`); the cloud environment had headless Chromium.
 - Lessons: a CSV/Excel file or page that lists "all rows" must not pass thousands of `?` to SQLite (chunk); sticky elements inside an `overflow` container do not stick to the page; `pkill -f` in a shell command kills that shell if its own text matches; a working copy can vanish between sessions — everything lives on GitHub.
 
 ## Modular direction (owner approved 2026-10-30; in progress)

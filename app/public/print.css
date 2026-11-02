@@ -34,8 +34,10 @@ table.sheet thead th { background: #e6e6e6; -webkit-print-color-adjust: exact; p
 .new { font-size: 7.5pt; border: 1px solid #000; padding: 0 3px; }
 /* pages built by print-paginate.js (identical in Chrome, Edge and Firefox); on screen they look like sheets of paper */
 .pg-stage { position: absolute; left: -10000px; top: 0; visibility: hidden; }
-.pg-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-bottom: 30px; }
-.pg { display: flex; flex-direction: column; background: #fff; border: 1px solid #b9c2cf; box-shadow: 0 1px 6px rgba(0,0,0,0.12); padding: 0; box-sizing: content-box; }
+/* centred by auto margins, not align-items: a sheet wider than the screen (landscape on a tablet) then starts at the left edge and scrolls,
+   instead of overflowing on both sides with its left part out of reach */
+.pg-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 30px; }
+.pg { margin-left: auto; margin-right: auto; display: flex; flex-direction: column; background: #fff; border: 1px solid #b9c2cf; box-shadow: 0 1px 6px rgba(0,0,0,0.12); padding: 0; box-sizing: content-box; }
 .pg-body { flex: 1; }
 .pg-num { text-align: right; font-size: 9pt; margin-top: 4px; }
 .pg-foot { font-size: 9pt; }
