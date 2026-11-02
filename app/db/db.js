@@ -97,7 +97,8 @@ class Db {
  */
 function migrate(db, { dir, backupDir }) {
   const files = fs.readdirSync(dir).filter((f) => /^\d{3}_.+\.sql$/.test(f)).sort();
-  const sum = (f) => crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f))).digest('hex');
+  // line endings do not count: a package built on Windows (CRLF checkout) and one built on Linux (LF) hold the same migration
+  const sum = (f) => crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f), 'utf8').replace(/\r\n/g, '\n')).digest('hex');
   const hasTable = db.value("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='schema_migrations'") > 0;
   const ensureChecksumColumn = () => { if (!db.all('PRAGMA table_info(schema_migrations)').some((c) => c.name === 'checksum')) db.exec('ALTER TABLE schema_migrations ADD COLUMN checksum TEXT'); };
   if (hasTable) ensureChecksumColumn();

@@ -133,6 +133,12 @@ test('migrations: applied in order with checksums, a database from a newer progr
   fs.writeFileSync(path.join(mdir, '999_probe.sql'), 'CREATE TABLE probe_added (id INTEGER PRIMARY KEY);');
   const r2 = migrate(db, { dir: mdir, backupDir: bdir });
   assert.deepEqual(r2.applied, [999]); assert.ok(r2.backup && fs.existsSync(r2.backup), 'backup taken before the pending migration');
+  // the same file with other line endings (a package built on Windows, then one built on Linux) is not an edit
+  const probe = path.join(mdir, '999_probe.sql');
+  fs.writeFileSync(probe, fs.readFileSync(probe, 'utf8') + '\r\n-- note\r\n');
+  db.run('UPDATE schema_migrations SET checksum = NULL WHERE version = 999'); migrate(db, { dir: mdir, backupDir: bdir });
+  fs.writeFileSync(probe, fs.readFileSync(probe, 'utf8').replace(/\r\n/g, '\n'));
+  assert.deepEqual(migrate(db, { dir: mdir, backupDir: bdir }).changed, [], 'CRLF and LF give the same checksum');
   // a file edited after it was applied is reported (not silently ignored)
   fs.appendFileSync(path.join(mdir, '999_probe.sql'), '\n-- edited later\n');
   assert.deepEqual(migrate(db, { dir: mdir, backupDir: bdir }).changed, [999]);
