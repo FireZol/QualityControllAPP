@@ -154,7 +154,7 @@ const tasksPrio = (p) => (require('../i18n').current() === 'en' && p.name_en ? p
 
 function minutesPage(ctx, d) {
   const { m, company, by, now } = d;
-  const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+  const footer = P.signFooter(by, now);
   const content = html`<table class="sheet kv"><tbody>
     <tr><th>${T.common.date}</th><td>${dayName(m.meeting_date)} ${displayDate(m.meeting_date)}</td><th>${T.meetings.time}</th><td>${timeRange(m)}</td></tr>
     <tr><th>${T.meetings.teams}</th><td>${m.teamList.map((t) => T.modules[t].name).join(', ')}</td><th>${T.meetings.where}</th><td>${m.location || ''}</td></tr>

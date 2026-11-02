@@ -153,7 +153,7 @@ function topPage(ctx, d) {
 
 function printPage(ctx, d) {
   const { n, company, by, now } = d;
-  const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+  const footer = P.signFooter(by, now);
   const content = html`<table class="sheet kv"><tbody>
     <tr><th>${T.ncr.no}</th><td>${n.no}</td><th>${T.common.status}</th><td>${T.ncr.status[n.status]}</td></tr>
     <tr><th>${T.ncr.what}</th><td colspan="3"><strong>${n.title}</strong></td></tr>

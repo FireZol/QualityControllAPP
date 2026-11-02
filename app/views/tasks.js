@@ -186,7 +186,7 @@ function planCard(ctx, t, d) {
 /** One task on paper: facts, steps with boxes, space for notes, signature. */
 function workOrderPage(ctx, d) {
   const { t, company, by, now } = d;
-  const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+  const footer = P.signFooter(by, now);
   const content = html`<table class="sheet kv"><tbody>
     <tr><th>${T.tasks.no}</th><td>${t.no}</td><th>${T.tasks.priority}</th><td>${prioName(t)}</td></tr>
     <tr><th>${T.tasks.task}</th><td colspan="3"><strong>${t.title}</strong></td></tr>
@@ -243,7 +243,7 @@ function printPage(ctx, d) {
     <tbody>${list.map((t) => html`<tr><td class="nowrap">${t.no}</td><td><strong>${t.title}</strong>${t.description ? html`<div class="small">${t.description}</div>` : ''}</td><td>${where(t)}</td><td>${prioName(t)}</td><td class="nowrap">${t.due_date ? displayDate(t.due_date) : ''}</td>${group ? '' : html`<td>${t.assignees.map((a) => a.name).join(', ')}</td>`}<td class="box">☐</td><td class="blank"></td></tr>`)}</tbody></table>`;
   const content = html`<p class="small">${filters.length ? filters.join(' · ') : T.print.no_filters} — ${f(T.tasks.count, { n: rows.length })}</p>
     ${group ? groups.map((g) => html`<h3 class="group-head">${g.name}</h3>${table(g.rows)}`) : table(rows)}`;
-  const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+  const footer = P.signFooter(by, now);
   return P.page({
     title: `${T.tasks.work_list} — ${T.modules[team].name}`, landscape: true,
     toolbar: P.toolbar(ctx, { backHref: d.backHref, action: '/sarcini/tipar', hidden: d.hidden }),

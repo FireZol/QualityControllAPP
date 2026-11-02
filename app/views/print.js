@@ -239,7 +239,7 @@ function registerPrint(ctx, d) {
     <tbody>${rows.map((r) => html`<tr><td>${r.record_no}${r.versions > 1 ? html`<sup>v${r.version}</sup>` : ''}</td><td>${displayDateTime(r.created_at)}</td><td>${T.shift[r.shift]}</td><td>${r.crew_name || ''}</td>
       <td>${r.construction_label} ${r.material_code}${r.family_code === 'FLEXIBIL_CL5' ? ' · ' + T.level[r.level] : ''}</td><td>${r.machine_name}</td><td>${r.operator_name || ''}</td><td>${r.client_name || ''}</td><td>${r.sample_type_name}${r.length_no ? ' ' + r.length_no : ''}</td>
       <td class="nowrap">${dia(r)}</td><td>${valueCell(r.resultMap.mass_gm, 'mass_gm')}</td><td>${valueCell(r.resultMap.r20_echiv || r.resultMap.r20, 'r20')}</td><td>${valueCell(r.resultMap.r20_theor, 'r20_theor')}</td><td>${r.notes || ''}</td></tr>`)}</tbody></table>`;
-  const footer = html`<div class="doc-foot"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(d.now) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+  const footer = signFooter(by, d.now);
   return page({
     title: T.register.title, landscape: true,
     toolbar: toolbar(ctx, { backHref: '/masuratori' + (d.qs ? '?' + d.qs : ''), action: '/masuratori/tipar', hidden: filters, withExemplar: false }),
@@ -247,4 +247,7 @@ function registerPrint(ctx, d) {
   });
 }
 
-module.exports = { revisionPrint, registerPrint, page, toolbar, frame, table };
+/** The footer of a sheet without boxes of its own: who printed it and when on the left, a signature line on the right. */
+const signFooter = (by, when) => html`<div class="doc-foot sign"><div>${f(T.print.printed_by, { user: by, when: displayDateTime(when) })}</div><div><span class="k">${T.print.signature}:</span> <span class="sigline"></span></div></div>`;
+
+module.exports = { revisionPrint, registerPrint, page, toolbar, frame, table, signFooter };
